@@ -682,17 +682,16 @@ function catering_ajax_get_meal_schedule_week(){
     wp_send_json_success(['schedule'=>$data,'terms'=>$term_map]);
 }
 
-add_action('wp_ajax_export_catering_csv','export_catering_csv');
-function export_catering_csv(){
-    if(! current_user_can('manage_options') ){
-        wp_die('No permission');
-    }
-    $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
-    $start      = isset($_POST['start_date']) ? sanitize_text_field($_POST['start_date']) : '';
-    $end        = isset($_POST['end_date'])   ? sanitize_text_field($_POST['end_date'])   : '';
-    if( ! preg_match('/^\d{4}-\d{2}-\d{2}$/',$start) || ! preg_match('/^\d{4}-\d{2}-\d{2}$/',$end) ){
-        wp_die('Invalid date range');
-    }
+add_action('wp_ajax_export_catering_schedule','export_catering_schedule');
+function export_catering_schedule(){
+    if(! current_user_can('manage_options') ) wp_die('No permission');
+    $product_id = isset($_GET['product_id'])?absint($_GET['product_id']):0;
+    $start      = isset($_GET['start_date'])?sanitize_text_field($_GET['start_date']):'';
+    $end        = isset($_GET['end_date'])?sanitize_text_field($_GET['end_date']):'';
+    if(!$product_id 
+     || !preg_match('/^\d{4}-\d{2}-\d{2}$/',$start) 
+     || !preg_match('/^\d{4}-\d{2}-\d{2}$/',$end)
+    ) wp_die('Invalid parameters');
     global $wpdb;
     // fetch schedule rows
     $rows = $wpdb->get_results($wpdb->prepare("
@@ -700,55 +699,55 @@ function export_catering_csv(){
         FROM {$wpdb->prefix}catering_schedule
         WHERE product_id=%d AND date BETWEEN %s AND %s
         ORDER BY date ASC
-    ", $product_id, $start, $end), ARRAY_A);
-    if(empty($rows)){
-        wp_die('No data');
-    }
-    // gather category titles
-    $all_cids = [];
-    foreach($rows as $r){
-        $ids = maybe_unserialize($r['cat_id']);
-        if(is_array($ids)) $all_cids = array_merge($all_cids,$ids);
-    }
-    $all_cids = array_unique(array_map('absint',$all_cids));
-    if($all_cids){
-        $ph = implode(',', array_fill(0,count($all_cids),'%d'));
-        $cats = $wpdb->get_results($wpdb->prepare("
-            SELECT ID,title FROM {$wpdb->prefix}catering_terms
-            WHERE ID IN ($ph)
-        ", $all_cids), OBJECT_K);
-    } else {
-        $cats = [];
-    }
-    // gather meal info
-    $mids = array_unique(array_column($rows,'meal_id'));
-    if($mids){
-        $phm = implode(',', array_fill(0,count($mids),'%d'));
+    ", $product_id,$start,$end), ARRAY_A);
+    // meal lookup
+    $meal_ids = array_unique(array_column($rows,'meal_id'));
+    if($meal_ids){
+        $ph = implode(',', array_fill(0,count($meal_ids),'%d'));
         $meals = $wpdb->get_results($wpdb->prepare("
             SELECT ID,sku,title FROM {$wpdb->prefix}catering_meal
-            WHERE ID IN ($phm)
-        ", $mids), OBJECT_K);
+            WHERE ID IN ($ph)
+        ", $meal_ids), OBJECT_K);
     } else {
         $meals = [];
     }
+    // term lookup
+    $all_terms = [];
+    foreach($rows as $r){
+        foreach((array) maybe_unserialize($r['cat_id']) as $cid){
+            $all_terms[$cid]=1;
+        }
+    }
+    $term_map = [];
+    if($all_terms){
+        $ids = array_keys($all_terms);
+        $ph  = implode(',', array_fill(0,count($ids),'%d'));
+        $terms = $wpdb->get_results($wpdb->prepare("
+            SELECT ID,title FROM {$wpdb->prefix}catering_terms
+            WHERE type='category' AND ID IN ($ph)
+        ", $ids), OBJECT_K);
+        foreach($terms as $t){
+            $term_map[$t->ID] = $t->title;
+        }
+    }
     // output CSV
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="schedule_'.$start.'_to_'.$end.'.csv"');
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="schedule-'.$start.'-'.$end.'.csv"');
     $out = fopen('php://output','w');
     fputcsv($out, ['Date','Category','ID','SKU','Meal_title','Tag']);
     foreach($rows as $r){
-        $cat_ids = maybe_unserialize($r['cat_id']);
-        if(!is_array($cat_ids)) $cat_ids = $cat_ids?[$cat_ids]:[];
+        $cats = (array) maybe_unserialize($r['cat_id']);
         $titles = [];
-        foreach($cat_ids as $cid){
-            if(isset($cats[$cid])) $titles[] = $cats[$cid]->title;
+        foreach($cats as $cid){
+            if(isset($term_map[$cid])) $titles[] = $term_map[$cid];
         }
+        $meal = isset($meals[$r['meal_id']]) ? $meals[$r['meal_id']] : null;
         fputcsv($out, [
             $r['date'],
             implode('|',$titles),
             $r['meal_id'],
-            (isset($meals[$r['meal_id']])?$meals[$r['meal_id']]->sku:''),
-            (isset($meals[$r['meal_id']])?$meals[$r['meal_id']]->title:''),
+            $meal ? $meal->sku : '',
+            $meal ? $meal->title : '',
             $r['tag']
         ]);
     }
