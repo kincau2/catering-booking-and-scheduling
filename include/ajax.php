@@ -681,3 +681,77 @@ function catering_ajax_get_meal_schedule_week(){
     }
     wp_send_json_success(['schedule'=>$data,'terms'=>$term_map]);
 }
+
+add_action('wp_ajax_export_catering_csv','export_catering_csv');
+function export_catering_csv(){
+    if(! current_user_can('manage_options') ){
+        wp_die('No permission');
+    }
+    $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+    $start      = isset($_POST['start_date']) ? sanitize_text_field($_POST['start_date']) : '';
+    $end        = isset($_POST['end_date'])   ? sanitize_text_field($_POST['end_date'])   : '';
+    if( ! preg_match('/^\d{4}-\d{2}-\d{2}$/',$start) || ! preg_match('/^\d{4}-\d{2}-\d{2}$/',$end) ){
+        wp_die('Invalid date range');
+    }
+    global $wpdb;
+    // fetch schedule rows
+    $rows = $wpdb->get_results($wpdb->prepare("
+        SELECT date, meal_id, cat_id, tag
+        FROM {$wpdb->prefix}catering_schedule
+        WHERE product_id=%d AND date BETWEEN %s AND %s
+        ORDER BY date ASC
+    ", $product_id, $start, $end), ARRAY_A);
+    if(empty($rows)){
+        wp_die('No data');
+    }
+    // gather category titles
+    $all_cids = [];
+    foreach($rows as $r){
+        $ids = maybe_unserialize($r['cat_id']);
+        if(is_array($ids)) $all_cids = array_merge($all_cids,$ids);
+    }
+    $all_cids = array_unique(array_map('absint',$all_cids));
+    if($all_cids){
+        $ph = implode(',', array_fill(0,count($all_cids),'%d'));
+        $cats = $wpdb->get_results($wpdb->prepare("
+            SELECT ID,title FROM {$wpdb->prefix}catering_terms
+            WHERE ID IN ($ph)
+        ", $all_cids), OBJECT_K);
+    } else {
+        $cats = [];
+    }
+    // gather meal info
+    $mids = array_unique(array_column($rows,'meal_id'));
+    if($mids){
+        $phm = implode(',', array_fill(0,count($mids),'%d'));
+        $meals = $wpdb->get_results($wpdb->prepare("
+            SELECT ID,sku,title FROM {$wpdb->prefix}catering_meal
+            WHERE ID IN ($phm)
+        ", $mids), OBJECT_K);
+    } else {
+        $meals = [];
+    }
+    // output CSV
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="schedule_'.$start.'_to_'.$end.'.csv"');
+    $out = fopen('php://output','w');
+    fputcsv($out, ['Date','Category','ID','SKU','Meal_title','Tag']);
+    foreach($rows as $r){
+        $cat_ids = maybe_unserialize($r['cat_id']);
+        if(!is_array($cat_ids)) $cat_ids = $cat_ids?[$cat_ids]:[];
+        $titles = [];
+        foreach($cat_ids as $cid){
+            if(isset($cats[$cid])) $titles[] = $cats[$cid]->title;
+        }
+        fputcsv($out, [
+            $r['date'],
+            implode('|',$titles),
+            $r['meal_id'],
+            (isset($meals[$r['meal_id']])?$meals[$r['meal_id']]->sku:''),
+            (isset($meals[$r['meal_id']])?$meals[$r['meal_id']]->title:''),
+            $r['tag']
+        ]);
+    }
+    fclose($out);
+    exit;
+}

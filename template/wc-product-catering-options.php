@@ -32,6 +32,27 @@ global $post;
             <div id="csv-import-message"></div>
         </div>
 
+        <!-- Export CSV modal -->
+        <div id="csv-export-modal" style="display:none; position:fixed; top:25%; left:35%; width:300px; background:#fff; border:1px solid #ccc; padding:15px; z-index:9999;">
+            <h3><?php _e('Export Schedule CSV','catering-booking-and-scheduling'); ?></h3>
+            <p>
+                <label><?php _e('Start Date','catering-booking-and-scheduling'); ?><br>
+                <input type="date" id="export-start"></label>
+            </p>
+            <p>
+                <label><?php _e('End Date','catering-booking-and-scheduling'); ?><br>
+                <input type="date" id="export-end"></label>
+            </p>
+            <button type="button" id="csv-export-submit" class="button button-primary"><?php _e('Download','catering-booking-and-scheduling'); ?></button>
+            <button type="button" id="csv-export-cancel" class="button"><?php _e('Cancel','catering-booking-and-scheduling'); ?></button>
+        </div>
+        <form id="csv-export-form" style="display:none" method="POST" target="_blank" action="<?php echo admin_url('admin-ajax.php'); ?>">
+            <input type="hidden" name="action" value="export_catering_csv">
+            <input type="hidden" name="product_id" value="<?php echo intval($post->ID); ?>">
+            <input type="hidden" name="start_date" id="export-start-input">
+            <input type="hidden" name="end_date" id="export-end-input">
+        </form>
+
         <!-- Weekly Meal Schedule Widget -->
         <div id="catering-schedule-widget" style="margin-top:30px;">
             <h3><?php _e('Weekly Meal Schedule','catering-booking-and-scheduling'); ?></h3>
@@ -634,6 +655,24 @@ global $post;
                 $('#schedule-modal').show();
             });
             $('#modal-close').click(function(){ $('#schedule-modal').hide(); });
+
+            // show export modal
+            $('#csv-export-btn').off('click').on('click', function(){
+                $('#csv-export-modal').show();
+            });
+            // cancel export
+            $('#csv-export-cancel').on('click', function(){
+                $('#csv-export-modal').hide();
+            });
+            // submit export
+            $('#csv-export-submit').on('click', function(){
+                var s = $('#export-start').val(), e = $('#export-end').val();
+                if(!s||!e){ alert('<?php _e('Please select both start and end date','catering-booking-and-scheduling'); ?>'); return; }
+                $('#export-start-input').val(s);
+                $('#export-end-input').val(e);
+                $('#csv-export-form').submit();
+                $('#csv-export-modal').hide();
+            });
         });
         </script>
     </div>
