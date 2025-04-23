@@ -734,20 +734,20 @@ function export_catering_schedule(){
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment; filename="schedule-'.$start.'-'.$end.'.csv"');
     $out = fopen('php://output','w');
-    fputcsv($out, ['Date','Category','ID','SKU','Meal_title','Tag']);
+    fputcsv($out, ['ID','SKU','Meal_title','Category','Date','Tag']);
     foreach($rows as $r){
-        $cats = (array) maybe_unserialize($r['cat_id']);
+        $cats   = (array) maybe_unserialize($r['cat_id']);
         $titles = [];
         foreach($cats as $cid){
             if(isset($term_map[$cid])) $titles[] = $term_map[$cid];
         }
         $meal = isset($meals[$r['meal_id']]) ? $meals[$r['meal_id']] : null;
         fputcsv($out, [
-            $r['date'],
-            implode('|',$titles),
             $r['meal_id'],
             $meal ? $meal->sku : '',
             $meal ? $meal->title : '',
+            implode('|',$titles),
+            $r['date'],
             $r['tag']
         ]);
     }
