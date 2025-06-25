@@ -131,7 +131,10 @@ function catering_create_booking_on_order_status($order_id, $order = null) {
             $cat_qty        = is_array($raw) ? $raw : @maybe_unserialize($raw);
             $order_item_id  = $item->get_id();
             $expiry         = get_post_meta($parent_product->get_id(), 'catering_expiry', true);
-            
+            if( !$plan_days || !$user_id || !$order_item_id || !$cat_qty ) {
+                // missing required data, skip this item
+                continue;
+            }
             try {
                 // include health_status
                 $booking_id = create_booking( $user_id, $order_item_id, $plan_days, $expiry, $cat_qty, $health_status, $type );
@@ -314,7 +317,7 @@ function catering_load_address() {
     wp_send_json_success($out);
 }
 
-// Displays a custom booking action button and includes booking popup template for catering_plan products
+// Displays a custom action button and includes booking popup template for catering_plan products
 add_action('woocommerce_after_order_itemmeta', 'add_custom_button_after_order_itemmeta', 10, 3);
 function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
     if (!$product) {
@@ -354,8 +357,11 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
             include_once plugin_dir_path(__FILE__) . '../template/catering-booking-popup.php';
 
         } else {
-            $day_remaining = $item->get_meta('plan_days');
+            // No booking found, display a message
+            echo '<p class="catering-no-booking">' . esc_html__('No booking found for this item.', 'catering-booking-and-scheduling') . '</p>';
         }
+
+        
         
 
     } else {
@@ -655,6 +661,103 @@ function save_delivery_status_order_meta( $order_id, $post ) {
         $order->update_meta_data( '_delivery_status', sanitize_text_field($_POST['delivery_status']) );
         $order->save();
     }
+}
+
+// Save catering_plan order item metadata (for admin order edit page on manual order creation)
+add_action('woocommerce_process_shop_order_meta', 'save_catering_plan_item_meta', 46, 2);
+function save_catering_plan_item_meta( $order_id, $post ) {
+    $order = wc_get_order( $order_id );
+    if ( ! $order ) {
+        return;
+    }
+    global $wpdb;
+    foreach ( $order->get_items() as $item ) {
+        $product = $item->get_product();
+        if ( ! $product ) {
+            continue;
+        }
+
+        // Get parent product if this is a variation
+        $parent_product = ( $product->get_type() === 'variation' ) ? wc_get_product( $product->get_parent_id() ) : $product;
+        
+        if ( $parent_product && $parent_product->get_type() === 'catering_plan' ) {
+            
+            // 1. Check and add catering_cat_qty meta
+            if ( ! $item->get_meta( 'catering_cat_qty' ) ) {
+                $cat_qty = $parent_product->get_meta( 'catering_cat_qty' );
+                if ( $cat_qty ) {
+                    $item->add_meta_data( 'catering_cat_qty', sanitize_text_field( $cat_qty ), true );
+                    
+                    // Add per-category metas based on catering_cat_qty value
+                    global $wpdb;
+                    $terms_table = $wpdb->prefix . 'catering_terms';
+                    $raw = $cat_qty;
+                    $arr = is_array( $raw ) ? $raw : @unserialize( $raw );
+                    if ( is_array( $arr ) ) {
+                        foreach ( $arr as $term_id => $max_pick ) {
+                            $term_id = absint( $term_id );
+                            $title = $wpdb->get_var(
+                                $wpdb->prepare( "SELECT title FROM {$terms_table} WHERE ID=%d", $term_id )
+                            );
+                            if ( $title ) {
+                                $item->add_meta_data( 
+                                    __( 'Daily picks for', 'catering-booking-and-scheduling' ) . ' ' . sanitize_text_field( $title ), 
+                                    sanitize_text_field( $max_pick ), 
+                                    true
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Check and add plan_days meta
+            if ( ! $item->get_meta( 'plan_days' ) ) {
+                $variation_product = ( $product->get_type() === 'variation' ) ? $product : $parent_product;
+                $plan_days = $variation_product->get_attribute( 'pa_plan-days' );
+                if ( $plan_days ) {
+                    $item->add_meta_data( 'plan_days', sanitize_text_field( $plan_days ), true );
+                }
+            }
+
+            // 3. Check and add catering_type meta
+            if ( ! $item->get_meta( 'catering_type' ) ) {
+                $catering_type = $parent_product->get_meta( 'catering_type' );
+                if ( $catering_type ) {
+                    $item->add_meta_data( 'catering_type', sanitize_text_field( $catering_type ), true );
+                }
+            }
+
+            // Save the item with new metadata
+            $item->save();
+            
+            if( $order->get_status() == 'processing' || $order->get_status() == 'completed' ) {
+                // If order is processing or completed, create bookings for catering_plan items
+                $user_id        = $order->get_user_id();
+                $plan_days      = (int) $item->get_meta('plan_days');
+                $raw            = $item->get_meta('catering_cat_qty');
+                $type           = $item->get_meta('catering_type');
+                $cat_qty        = is_array($raw) ? $raw : @maybe_unserialize($raw);
+                $order_item_id  = $item->get_id();
+                $expiry         = get_post_meta($parent_product->get_id(), 'catering_expiry', true);
+                if( !$plan_days || !$user_id || !$order_item_id || !$cat_qty ) {
+                    // missing required data, skip this item
+                    continue;
+                }
+                try {
+                    // include health_status
+                    
+                    $booking_id = create_booking( $user_id, $order_item_id, $plan_days, $expiry, $cat_qty, $health_status, $type );
+                    $booking    = new Booking($booking_id);
+                    $booking->set('status', 'active');
+                } catch (Exception $e) {
+                    error_log($e->getMessage());
+                }
+            }
+
+        }
+    }
+
 }
 
 // Set delivery status when a new order is created based on its product types

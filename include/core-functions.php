@@ -52,7 +52,6 @@ function create_booking($user_id, $order_item_id, $plan_days, $expiry, $cat_qty,
         'health_status'     => maybe_serialize($health_status),
     ];
     $format = ['%s', '%d', '%d', '%d', '%d' , '%s', '%s','%s', '%s'];  // status, user_id, order_item_id, plan_days, date_amended_gmt, cat_qty, health_status
-
     $inserted = $wpdb->insert($table, $data, $format);
     if (false === $inserted) {
         throw new Exception(__('Failed to create booking', 'catering-booking-and-scheduling'));

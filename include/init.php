@@ -175,7 +175,7 @@ function maybe_install_plugin_table() {
 	  plan_days INT NOT NULL,
       expiry INT,
       cat_qty varchar(255) NOT NULL,
-      health_status varchar(255) NOT NULL,
+      health_status varchar(255),
       type varchar(255),
       date_created_gmt date,
       PRIMARY KEY (ID)
