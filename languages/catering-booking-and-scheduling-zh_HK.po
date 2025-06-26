@@ -347,6 +347,10 @@ msgstr "餐飲選項"
 msgid "Days Remaining:"
 msgstr "剩餘天數："
 
+#: template/catering-booking-popup.php:1433
+msgid "Nil"
+msgstr "無"
+
 #: template/catering-booking-popup.php:694
 #: public/catering-i18n.js:4
 msgid "allergy"

@@ -66,8 +66,8 @@ class Booking {
         $where_format = ['%d'];
 
         $updated = $wpdb->update($table, $data, $where, $format, $where_format);
-        if (false === $updated) {
-            throw new Exception(sprintf(__('Failed to update %s', 'catering-booking-and-scheduling'), $param));
+        if ( !$updated) {
+            return false; // update failed
         }
 
         // update object property
@@ -219,6 +219,34 @@ class Booking {
             )
         );
         return (int) $count;
+    }
+
+    public function delete() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'catering_booking';
+        $deleted = $wpdb->delete(
+            $table,
+            ['ID' => $this->id],
+            ['%d']
+        );
+        if (false === $deleted) {
+            throw new Exception(__('Failed to delete booking', 'catering-booking-and-scheduling'));
+        }
+        return true;
+    }
+
+    public function delete_meal_choices() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'catering_choice';
+        $deleted = $wpdb->delete(
+            $table,
+            ['booking_id' => $this->id, 'user_id' => $this->user_id],
+            ['%d', '%d']
+        );
+        if (false === $deleted) {
+            throw new Exception(__('Failed to delete meal choices', 'catering-booking-and-scheduling'));
+        }
+        return true;
     }
 
 }

@@ -1430,7 +1430,7 @@ jQuery(function($){
                           addr.address + '<br>' +
                           addr.city + '<br>' +
                           '<?php _e('Phone','catering-booking-and-scheduling'); ?>: ' + addr.phone + '<br>' +
-                          '<?php _e('Delivery Note','catering-booking-and-scheduling'); ?>: ' + (addr.delivery_note || 'Nil') + '<br>';
+                          '<?php _e('Delivery Note','catering-booking-and-scheduling'); ?>: ' + (addr.delivery_note || '<?php _e('Nil','catering-booking-and-scheduling'); ?>') + '<br>';
 
         $('#popup-tooltip').html(tooltipHtml).css({
              top: e.pageY + 10,

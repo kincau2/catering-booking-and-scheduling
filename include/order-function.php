@@ -324,11 +324,12 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
         global $wpdb;
         // Retrieve booking ID from catering_booking table using order_item_id
         $booking = get_booking_by_order_item_id( $item->get_id() );
-        set_transient('debug', $booking, 60); // for debugging, remove in production
+
         // Compute remaining day count as in template/catering-booking.php
         if($booking){
             $choice_count = $booking->get_choice_count();
             $day_remaining = (int)$booking->plan_days - $choice_count;
+            if($day_remaining < 0) $day_remaining = 0;
 
             echo '<button type="button" class="button catering-pick-meal-btn" style="margin-top:5px;" '
            . 'data-product-id="' . esc_attr($parent_product->get_id()) . '" '
@@ -929,5 +930,44 @@ function catering_on_wc_order_untrash($order_id) {
         }
     }
 }
+
+// Handle permanently deleted order - delete bookings and all related meal choices
+add_action('woocommerce_before_delete_order', 'catering_on_order_permanent_delete', 10, 2);
+function catering_on_order_permanent_delete($order_id,$order) {
+    if ($order) {
+        global $wpdb;
+        $table_booking = $wpdb->prefix . 'catering_booking';
+        $table_choice = $wpdb->prefix . 'catering_choice';
+        
+        foreach ($order->get_items() as $item) {
+            $product = $item->get_product();        
+            // Check if it's a catering_plan product
+            if (is_catering_product($product)) {
+                $order_item_id = $item->get_id();
+                // Get booking ID for this order item
+                $booking = get_booking_by_order_item_id($order_item_id);
+                set_transient('debug',$booking, 60);
+                if ($booking) {
+                    try {
+
+                        $booking->delete_meal_choices();
+                        $booking->delete();
+                        // Then delete the booking itself
+                        $deleted_booking = $wpdb->delete(
+                            $table_booking,
+                            array('ID' => $booking_id),
+                            array('%d')
+                        );
+                    } catch (Exception $e) {
+                        error_log("Error handling permanently deleted order: " . $e->getMessage());
+                    }
+                }
+                
+            }
+        }
+    }
+}
+
+
 
 ?>

@@ -693,13 +693,9 @@ function catering_ajax_get_meal_schedule_week(){
     // NEW: calculate day remaining if booking_id provided
     $day_remaining = null;
     if($booking_id){
-        $booking = $wpdb->get_row($wpdb->prepare("
-            SELECT plan_days, user_id FROM {$wpdb->prefix}catering_booking WHERE ID=%d
-        ", $booking_id));
+        $booking = new Booking($booking_id);
         if($booking){
-            $choice_count = (int)$wpdb->get_var($wpdb->prepare("
-                SELECT COUNT(*) FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND user_id=%d
-            ", $booking_id, $booking->user_id ));
+            $choice_count = $booking->get_choice_count();
             $day_remaining = (int)$booking->plan_days - $choice_count;
             if($day_remaining < 0) $day_remaining = 0;
         }
@@ -1053,12 +1049,9 @@ function catering_ajax_get_day_schedule(){
         $address = maybe_unserialize($addr);
     } else {
         // obtain shipping address from order via booking record
-        $table_booking = $wpdb->prefix.'catering_booking';
-        $booking_row = $wpdb->get_row($wpdb->prepare(
-            "SELECT order_item_id FROM $table_booking WHERE ID=%d", $booking_id
-        ));
-        if($booking_row && function_exists('wc_get_order_id_by_order_item_id')){
-            $order_id = wc_get_order_id_by_order_item_id($booking_row->order_item_id);
+        $booking = new Booking($booking_id);
+        if($booking && function_exists('wc_get_order_id_by_order_item_id')){
+            $order_id = wc_get_order_id_by_order_item_id($booking->order_item_id);
             if($order_id){
                 $order = wc_get_order($order_id);
                 if($order){
@@ -1135,11 +1128,7 @@ function catering_ajax_validate_booking(){
     if(!$booking_id){
          wp_send_json_error('Invalid booking ID.');
     }
-    global $wpdb;
-    $table = $wpdb->prefix . 'catering_booking';
-    $booking = $wpdb->get_row(
-       $wpdb->prepare("SELECT user_id FROM $table WHERE ID=%d", $booking_id)
-    );
+    $booking = new Booking($booking_id);
     if(!$booking){
          wp_send_json_error('Booking not found.');
     }
@@ -1536,9 +1525,7 @@ function catering_ajax_get_health_status(){
     if(!$booking_id){
         wp_send_json_error('Invalid booking ID');
     }
-    global $wpdb;
-    $table = $wpdb->prefix . 'catering_booking';
-    $booking = $wpdb->get_row($wpdb->prepare("SELECT health_status FROM $table WHERE ID=%d", $booking_id));
+    $booking = new Booking($booking_id);
     if(!$booking){
         wp_send_json_error('Booking not found');
     }
@@ -1562,8 +1549,8 @@ function catering_ajax_update_health_status(){
         wp_send_json_error('Booking not found or permission denied');
     }
     $serialized = maybe_serialize($health_status);
-    $res = $wpdb->update($table, ['health_status' => $serialized], ['ID' => $booking_id], ['%s'], ['%d']);
-    if(false === $res){
+    $res = $booking->set('health_status', $serialized);
+    if( !$res ){
         wp_send_json_error('Failed to update health status');
     }
     $message = 'Health status updated.';
