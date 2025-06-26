@@ -1003,7 +1003,7 @@ jQuery(function($){
 
     // close popup & reset left panel
     $(document).on('click','#catering-popup-close',function(){
-        $('#catering-pick-meal-popup').hide();
+        location.reload();
     });
     // New helper to render the meal/address form for both Add and Edit
     function renderMealForm(date, respData, isEdit){

@@ -97,5 +97,33 @@ function display_schedule_preview_button($atts) {
     return ob_get_clean();
     
 }
+
+function get_booking_by_order_item_id($order_item_id) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'catering_booking';
+    $booking = $wpdb->get_row(
+        $wpdb->prepare("SELECT * FROM {$table} WHERE order_item_id = %d", $order_item_id)
+    );
+    if (! $booking) {
+        return false; // booking not found
+    }
+    return new Booking($booking->ID);
+}
+
+function is_catering_product($product) {
+    
+    if ($product && $product->get_type() === 'variation') {
+        $parent_product = wc_get_product($product->get_parent_id());
+    } else {
+        return false; // not a variation or product
+    }
+
+    if ($parent_product && $parent_product->get_type() === 'catering_plan') {
+        return true; // it's a catering product
+    } else {
+        return false; // not a catering product
+    }
+}
+
 ?>
 

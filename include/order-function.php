@@ -94,11 +94,13 @@ function display_custom_cart_item_data($item_data, $cart_item) {
 }
 
 // Hides raw metadata from front-end order item meta display
-add_filter('woocommerce_order_item_get_formatted_meta_data', 'catering_hide_formatted_order_itemmeta', 10, 2);
-function catering_hide_formatted_order_itemmeta($formatted_meta, $item) {
+add_filter('woocommerce_order_item_get_formatted_meta_data', 'catering_formatted_order_itemmeta', 10, 2);
+function catering_formatted_order_itemmeta($formatted_meta, $item) {
     foreach ($formatted_meta as $meta_id => $meta) {
         if (in_array($meta->key, ['catering_cat_qty','plan_days','catering_type'], true)) {
             unset($formatted_meta[$meta_id]);
+        } elseif ($meta->key === 'due_date') {
+            $meta->display_key = __('Due Date', 'catering-booking-and-scheduling');
         }
     }
     return $formatted_meta;
@@ -115,16 +117,11 @@ function catering_create_booking_on_order_status($order_id, $order = null) {
     
     // fetch health status meta
     $health_status = $order->get_meta('catering_health_status');
-
     foreach ($order->get_items() as $item) {
         $product = $item->get_product();
-        if( $product && $product->get_type() === 'variation' ){
-            $parent_product = wc_get_product($product->get_parent_id());
-        } else{
-            continue;
-        }
         
-        if ($parent_product && $parent_product->get_type() === 'catering_plan') {
+        if (is_catering_product($product)) {
+            $parent_product = wc_get_product($product->get_parent_id());
             $plan_days      = (int) $item->get_meta('plan_days');
             $raw            = $item->get_meta('catering_cat_qty');
             $type           = $item->get_meta('catering_type');
@@ -135,11 +132,14 @@ function catering_create_booking_on_order_status($order_id, $order = null) {
                 // missing required data, skip this item
                 continue;
             }
+            
             try {
                 // include health_status
                 $booking_id = create_booking( $user_id, $order_item_id, $plan_days, $expiry, $cat_qty, $health_status, $type );
                 $booking    = new Booking($booking_id);
                 $booking->set('status', 'active');
+                $item->add_meta_data( 'due_date', ($health_status['due_date']) ?? '' , true );
+                $item->save();
             } catch (Exception $e) {
                 error_log($e->getMessage());
 
@@ -171,18 +171,11 @@ function catering_inactivate_booking_on_status_change($order_id, $old_status, $n
         // check catering_plan or its variation
         if ($parent_product && $parent_product->get_type() === 'catering_plan') {
             $order_item_id = $item->get_id();
-            $booking_id = $wpdb->get_var(
-                $wpdb->prepare(
-                    "SELECT ID FROM {$table} WHERE user_id=%d AND order_item_id=%d",
-                    $user_id,
-                    $order_item_id
-                )
-            );
-            if (! $booking_id) {
+            $booking = get_booking_by_order_item_id($order_item_id);
+            if (!$booking) {
                 continue;
             }
             try {
-                $booking = new Booking($booking_id);
                 $booking->set('status', 'inactive');
             } catch (Exception $e) {
                 error_log($e->getMessage());
@@ -323,32 +316,23 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
     if (!$product) {
         return;
     }
-    // if product is a variation, get the parent product
-    $parent_product = ($product->get_type() === 'variation') ? wc_get_product($product->get_parent_id()) : $product;
-    if ($parent_product && $parent_product->get_type() === 'catering_plan') {
+
+    if (is_catering_product($product)) {
+            // if product is a variation, get the parent product
+        $parent_product = wc_get_product($product->get_parent_id());
+
         global $wpdb;
         // Retrieve booking ID from catering_booking table using order_item_id
-        $booking_id = $wpdb->get_var(
-            $wpdb->prepare("SELECT ID FROM {$wpdb->prefix}catering_booking WHERE order_item_id = %d", $item->get_id())
-        );
+        $booking = get_booking_by_order_item_id( $item->get_id() );
+        set_transient('debug', $booking, 60); // for debugging, remove in production
         // Compute remaining day count as in template/catering-booking.php
-        if($booking_id){
-            $booking_row = $wpdb->get_row($wpdb->prepare(
-                "SELECT plan_days, user_id FROM {$wpdb->prefix}catering_booking WHERE ID=%d", $booking_id
-            ));
-            if($booking_row){
-                $choice_count = (int)$wpdb->get_var($wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND user_id=%d",
-                    $booking_id, $booking_row->user_id
-                ));
-                $day_remaining = (int)$booking_row->plan_days - $choice_count;
-            } else {
-                $day_remaining = $item->get_meta('plan_days');
-            }
+        if($booking){
+            $choice_count = $booking->get_choice_count();
+            $day_remaining = (int)$booking->plan_days - $choice_count;
 
             echo '<button type="button" class="button catering-pick-meal-btn" style="margin-top:5px;" '
            . 'data-product-id="' . esc_attr($parent_product->get_id()) . '" '
-           . 'data-booking-id="' . esc_attr($booking_id) . '" '
+           . 'data-booking-id="' . esc_attr($booking->id) . '" '
            . 'data-product-title="' . esc_attr($parent_product->get_title()) . '" '
            . 'data-days-left="' . esc_attr($day_remaining) . '">'
            . __('Open booking','catering-booking-and-scheduling') 
@@ -360,9 +344,6 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
             // No booking found, display a message
             echo '<p class="catering-no-booking">' . esc_html__('No booking found for this item.', 'catering-booking-and-scheduling') . '</p>';
         }
-
-        
-        
 
     } else {
         ?>
@@ -745,8 +726,6 @@ function save_catering_plan_item_meta( $order_id, $post ) {
                     continue;
                 }
                 try {
-                    // include health_status
-                    
                     $booking_id = create_booking( $user_id, $order_item_id, $plan_days, $expiry, $cat_qty, $health_status, $type );
                     $booking    = new Booking($booking_id);
                     $booking->set('status', 'active');
@@ -844,6 +823,110 @@ function catering_render_delivery_status_column( $column, $order ) {
                 $label = '';
         }
         echo '<span class="order-status delivery-status-label ' . $delivery_status . ' ">' . esc_html( $label ) . '</span>';
+    }
+}
+
+// Customize admin billing fields
+add_filter('woocommerce_admin_billing_fields', 'catering_admin_address_fields');
+add_filter('woocommerce_admin_shipping_fields', 'catering_admin_address_fields');
+function catering_admin_address_fields($fields) {
+    // Disable address_2, postcode, and state fields
+    unset($fields['address_2']);
+    unset($fields['postcode']);
+    unset($fields['state']);
+    unset($fields['country']);
+    unset($fields['company']);
+    
+    // Make city a select field with Hong Kong districts
+    if (isset($fields['city'])) {
+        $fields['city']['type'] = 'select';
+        $fields['city']['label'] = __('District', 'catering-booking-and-scheduling');
+        $fields['city']['class'] = 'test';
+        $fields['city']['options'] = array(
+            ''   => '請選擇地區',
+            '灣仔區'   => '灣仔區',
+            '東區'     => '東區',
+            '中西區'   => '中西區',
+            '南區'     => '南區',
+            '北區'     => '北區',
+            '觀塘區'   => '觀塘區',
+            '油尖旺區' => '油尖旺區',
+            '黃大仙區' => '黃大仙區',
+            '深水埗區' => '深水埗區',
+            '九龍城區' => '九龍城區',
+            '荃灣區'   => '荃灣區',
+            '離島區'   => '離島區',
+            '葵青區'   => '葵青區',
+            '西貢區'   => '西貢區',
+            '沙田區'   => '沙田區',
+            '元朗區'   => '元朗區',
+            '屯門區'   => '屯門區',
+            '大埔區'   => '大埔區',
+        );
+    }
+    
+    return $fields;
+}
+
+// Handle booking status when order is trashed
+add_action('woocommerce_trash_order', 'catering_on_wc_order_trash', 10, 1);
+function catering_on_wc_order_trash($order_id) {
+    $order = wc_get_order($order_id);
+    if ($order) {
+        $user_id = $order->get_user_id();
+        global $wpdb;
+        $table = $wpdb->prefix . 'catering_booking';
+        
+        foreach ($order->get_items() as $item) {
+            $product = $item->get_product();
+            if ( is_catering_product($product) ) {
+                $order_item_id = $item->get_id();
+                $booking = get_booking_by_order_item_id($order_item_id);
+                
+                if ($booking) {
+                    try {
+                        // Mark booking as inactive when order is trashed
+                        $booking->set('status', 'inactive');
+                    } catch (Exception $e) {
+                        error_log("Error handling trashed order booking: " . $e->getMessage());
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Handle booking status when order being restored from trash
+
+add_action('woocommerce_untrash_order', 'catering_on_wc_order_untrash', 10, 1);
+function catering_on_wc_order_untrash($order_id) {
+    $order = wc_get_order($order_id);
+    if ($order) {
+        // Check if order status should reactivate bookings
+        $order_status = $order->get_status();
+        if (in_array($order_status, ['processing', 'completed'], true)) {
+
+            $user_id = $order->get_user_id();
+    
+            foreach ($order->get_items() as $item) {
+                $product = $item->get_product();
+                // Check if it's a catering_plan product
+                if ( is_catering_product($product) ) {
+                    $order_item_id = $item->get_id();
+                    $booking = get_booking_by_order_item_id($order_item_id);
+                    
+                    if ($booking) {
+                        try {
+                            // Mark booking as active when order is restored and has proper status
+                            $booking->set('status', 'active');
+                            error_log("Booking ID {$booking->id} set to active due to order restore from trash");
+                        } catch (Exception $e) {
+                            error_log("Error handling untrashed order booking: " . $e->getMessage());
+                        }
+                    } 
+                }
+            }
+        }
     }
 }
 

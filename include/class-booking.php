@@ -193,6 +193,34 @@ class Booking {
         }
         return null;
     }
+
+    public function get_meal_choices() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'catering_choice';
+        $choices = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM {$table} WHERE booking_id=%d AND user_id=%d ORDER BY `date` ASC",
+                $this->id,
+                $this->user_id
+            ),
+            ARRAY_A
+        );
+        return $choices ?: [];
+    }
+
+    public function get_choice_count() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'catering_choice';
+        $count = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table} WHERE booking_id=%d AND user_id=%d",
+                $this->id,
+                $this->user_id
+            )
+        );
+        return (int) $count;
+    }
+
 }
 
 ?>

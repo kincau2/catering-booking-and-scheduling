@@ -1557,7 +1557,7 @@ function catering_ajax_update_health_status(){
     global $wpdb;
     $table = $wpdb->prefix . 'catering_booking';
     // Update query now retrieves full booking info (including type)
-    $booking = $wpdb->get_row($wpdb->prepare("SELECT user_id, type FROM $table WHERE ID=%d", $booking_id));
+    $booking = new Booking($booking_id);
     if( !$booking || ( $booking->user_id != get_current_user_id() && !current_user_can('manage_catering') ) ){
         wp_send_json_error('Booking not found or permission denied');
     }
@@ -1677,7 +1677,7 @@ function catering_ajax_update_health_status(){
                 $alert_msg = __('There are unsuitable meal choices after the new due date on following dates: ','catering-booking-and-scheduling') .
                              implode(", ", $alert_dates) .
                              '. '. 
- __('Please delete unsuitable meal(s). Please contact CS Team if some of the meal(s) are not able to delete.','catering-booking-and-scheduling');
+                             __('Please delete unsuitable meal(s). Please contact CS Team if some of the meal(s) are not able to delete.','catering-booking-and-scheduling');
                 $message .= " " . $alert_msg;
             }
             // NEW: Clear valid prenatal meal choices (those before new due date) that have an existing notice
@@ -1697,6 +1697,9 @@ function catering_ajax_update_health_status(){
                 $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => ''], ['ID' => $cc['ID']], ['%s'], ['%d']);
             }
         }
+        $order_item = $booking->get_order_item();
+        $order_item->add_meta_data( 'due_date', $health_status['due_date'] , true );
+        $order_item->save();
     }
     wp_send_json_success([
         "alert"   => !empty($alert_dates),
