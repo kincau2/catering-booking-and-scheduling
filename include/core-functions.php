@@ -125,5 +125,35 @@ function is_catering_product($product) {
     }
 }
 
+/**
+ * Helper function to log meal choice changes to catering_log table
+ */
+function log_meal_choice_change($booking_id, $choice_date, $previous_choice, $new_choice, $changed_by_user_id, $action_type, $change_reason = '') {
+    global $wpdb;
+    
+    // Get user role for changed_by_user_type
+    $user = get_user_by('ID', $changed_by_user_id);
+    $user_type = $user ? implode(',', $user->roles) : 'unknown';
+    
+    // Insert into catering_log
+    $result = $wpdb->insert(
+        $wpdb->prefix . 'catering_log',
+        [
+            'booking_id' => $booking_id,
+            'choice_date' => $choice_date,
+            'previous_choice' => $previous_choice,
+            'new_choice' => $new_choice,
+            'changed_by_user_id' => $changed_by_user_id,
+            'changed_by_user_type' => $user_type,
+            'change_reason' => $change_reason,
+            'action_type' => $action_type,
+            'amended_time' => current_time('mysql')
+        ],
+        ['%d', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s']
+    );
+    
+    return $result !== false;
+}
+
 ?>
 

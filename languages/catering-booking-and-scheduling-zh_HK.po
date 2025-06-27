@@ -1408,3 +1408,59 @@ msgstr "保存失敗。"
 #: template/catering-booking-popup.php:1208
 msgid "Duplicate meal selected. Please choose a different meal."
 msgstr "已選擇重複的餐點。請選擇其他餐點。"
+
+#: template/catering-booking-popup.php:866
+msgid "Meal History"
+msgstr "餐點歷史記錄"
+
+#: template/catering-booking-popup.php:1764
+msgid "Meal Choice History"
+msgstr "餐點選擇歷史記錄"
+
+#: template/catering-booking-popup.php:1789
+msgid "No history found or error loading data."
+msgstr "未找到歷史記錄或加載數據時出錯。"
+
+#: template/catering-booking-popup.php:1792
+msgid "Error loading meal history."
+msgstr "加載餐點歷史記錄時出錯。"
+
+#: template/catering-booking-popup.php:1798
+msgid "No meal choice history found for this date."
+msgstr "此日期未找到餐點選擇歷史記錄。"
+
+#: template/catering-booking-popup.php:1833
+msgid "Changed by"
+msgstr "更改者"
+
+#: template/catering-booking-popup.php:1835
+msgid "Reason"
+msgstr "原因"
+
+#: template/catering-booking-popup.php:1841
+msgid "Previous Choice"
+msgstr "之前的選擇"
+
+#: template/catering-booking-popup.php:1848
+msgid "New Choice"
+msgstr "新選擇"
+
+#: template/catering-booking-popup.php:1863
+msgid "Initial Choice"
+msgstr "初始選擇"
+
+#: template/catering-booking-popup.php:1865
+msgid "Updated Choice"
+msgstr "已更新選擇"
+
+#: template/catering-booking-popup.php:1867
+msgid "Deleted Choice"
+msgstr "已刪除選擇"
+
+#: template/catering-booking-popup.php:1869
+msgid "Other Action"
+msgstr "其他操作"
+
+#: template/catering-booking-popup.php:1875
+msgid "No data"
+msgstr "無數據"

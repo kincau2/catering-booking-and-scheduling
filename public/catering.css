@@ -1618,3 +1618,705 @@ button#place_order {
 .order_data_column p.form-field._shipping_city_field{
     width: 100% !important;
 }
+
+/* ========================================
+   CATERING POPUP STYLES
+   ======================================== */
+
+/* Base popup styling */
+#catering-pick-meal-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(44, 62, 80, 0.8);
+  z-index: 9999;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  color: var(--text-dark);
+  overflow: hidden;
+}
+
+#catering-pick-meal-popup .catering-popup-container {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: var(--white);
+  overflow: hidden;
+}
+
+#catering-pick-meal-popup .catering-product-title{
+  color: var(--primary-dark);
+}
+
+#catering-pick-meal-popup .catering-popup-panel {
+  padding: 2.5rem 1.5rem;
+}
+
+#catering-pick-meal-popup #catering-popup-left {
+  position: relative;    /* added to anchor .loading-overlay */
+  flex: 4;
+  overflow-y: auto;
+  border-right: 1px solid rgba(0,0,0,0.08);
+}
+
+#catering-pick-meal-popup #catering-popup-right {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  background: var(--secondary-color);
+}
+
+#catering-pick-meal-popup .panel-title {
+  margin-top: 0;
+  color: var(--primary-dark);
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+#catering-pick-meal-popup .panel-info {
+  flex: 1;
+}
+
+#catering-pick-meal-popup .selected-date {
+  margin-top: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+#catering-pick-meal-popup .selection-display {
+  margin-top: 1rem;
+  background: var(--white);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-light);
+}
+
+/* Button styles */
+#catering-pick-meal-popup .cb-btn {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+#catering-pick-meal-popup .cb-btn--primary {
+  background: var(--primary-color);
+  color: var(--white);
+}
+
+#catering-pick-meal-popup .cb-btn--primary:hover {
+  background: var(--primary-dark);
+}
+
+#catering-pick-meal-popup .cb-btn--secondary {
+  background: var(--secondary-color);
+  color: var(--text-dark);
+}
+
+#catering-pick-meal-popup .cb-btn--secondary:hover {
+  background: var(--accent-color);
+  color: var(--white);
+}
+
+#catering-pick-meal-popup .cb-btn--danger {
+  background: var(--danger-color);
+  color: var(--white);
+}
+
+#catering-pick-meal-popup .cb-btn--danger:hover {
+  background: var(--danger-dark);
+}
+
+#catering-pick-meal-popup .cb-btn--icon {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  background: transparent;
+  color: var(--text-dark);
+  font-size: 1.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 50%;
+  z-index: 10;
+}
+
+#catering-pick-meal-popup .cb-btn--icon:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* Form element styling */
+#catering-pick-meal-popup #catering-popup-left .step {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  margin-bottom: 1rem;
+}
+
+#catering-pick-meal-popup #catering-popup-left .step h5 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  color: var(--primary-dark);
+}
+
+#catering-pick-meal-popup #catering-popup-left label {
+  display: block;
+  color: var(--text-dark);
+}
+
+#catering-pick-meal-popup #catering-popup-left input[type="text"],
+#catering-pick-meal-popup #catering-popup-left input[type="date"],
+#catering-pick-meal-popup #catering-popup-left select,
+#catering-pick-meal-popup #catering-popup-left textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.25rem 0 0.75rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+#catering-pick-meal-popup #catering-popup-left textarea {
+  height: 5rem;
+}
+
+#catering-pick-meal-popup #catering-popup-left .steps-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+/* Calendar styling */
+#catering-pick-meal-popup .popup-week-days {
+  background: var(--primary-color);
+  color: var(--white);
+  padding: 10px 8px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 13px;
+  border-radius: var(--border-radius);
+  letter-spacing: 0.3px;
+}
+
+#catering-pick-meal-popup #catering-week-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#catering-pick-meal-popup #catering-week-grid .day-grid-item {
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 0.75rem;
+  border-radius: var(--border-radius);
+  background: var(--white);
+  box-shadow: var(--shadow-light);
+  transition: transform 0.2s ease;
+  min-height: 150px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+#catering-pick-meal-popup #catering-week-grid .day-grid-item:hover{
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+#catering-pick-meal-popup .day-grid-top .calendar-date {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background: unset !important;
+  padding: unset !important;
+}
+
+/* Calendar navigation */
+#catering-pick-meal-popup #catering-prev-week,
+#catering-pick-meal-popup #catering-next-week {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.25rem 0.5rem;
+  margin: 0 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#catering-pick-meal-popup #catering-week-range {
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-top: 4px;
+}
+
+#catering-pick-meal-popup .week-navigator {
+  display: flex;
+  justify-content: center;
+}
+
+#catering-pick-meal-popup .day-grid-item {
+  border: 1px solid #ccc;
+  padding: 5px;
+  background: #FFF;
+  color: #333333;
+}
+
+#catering-pick-meal-popup .day-grid-item.disabled {
+  background: #f7f7f7!important;
+  color: #999999!important;
+}
+
+#catering-pick-meal-popup .popup-day-grid{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Updated utility classes */
+#catering-pick-meal-popup .catering-loading {
+  text-align: center;
+  padding: 1.25rem;
+  font-size: 1rem;
+}
+
+#catering-pick-meal-popup .holiday {
+  color: var(--danger-color);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Loading overlay */
+#catering-pick-meal-popup .loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#catering-pick-meal-popup .spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--secondary-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: catering-spin 1s linear infinite;
+  visibility: visible!important;
+  background-image: unset!important;
+  background: unset!important;
+}
+
+@keyframes catering-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Additional classes */
+#catering-pick-meal-popup .user-choice {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+#catering-pick-meal-popup .meal-badge {
+  padding: 3px 8px!important;
+  margin: unset!important;
+  border-radius: var(--border-radius);
+  display: inline-block;
+  color: var(--text-dark);
+  font-size: 0.8rem;
+  word-break: break-word;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+#catering-pick-meal-popup .day-grid-top,
+#catering-pick-meal-popup .day-grid-second {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+#catering-pick-meal-popup .day-grid-top > div,
+#catering-pick-meal-popup .day-grid-second > div {
+  margin-bottom: 0.25rem;
+}
+
+#catering-pick-meal-popup .catering-edit-meal,
+#catering-pick-meal-popup .catering-add-meal {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.25rem 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+}
+
+#catering-pick-meal-popup .catering-edit-meal:hover,
+#catering-pick-meal-popup .catering-add-meal:hover {
+  background: var(--primary-dark);
+}
+
+#catering-pick-meal-popup .delete-meal-choice {
+  color: var(--danger-color);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  margin-top: 1rem;
+  padding: 0;
+  font-size: 0.8rem;
+  width: 100%;
+  text-align: center;
+}
+
+#catering-pick-meal-popup .delete-meal-choice:hover {
+  color: var(--danger-dark);
+  text-decoration: underline;
+}
+
+#catering-pick-meal-popup .meal-history-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: var(--secondary-color);
+  color: var(--text-dark);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--border-radius);
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-weight: 400;
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  transition: all 0.2s ease;
+}
+
+#catering-pick-meal-popup .meal-history-btn:hover {
+  background: var(--accent-color);
+  color: var(--white);
+  border-color: var(--accent-color);
+}
+
+/* Meal History Modal Styling */
+#catering-pick-meal-popup #meal-history-overlay {
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: blur(2px);
+}
+
+#catering-pick-meal-popup #meal-history-overlay h3 {
+  color: var(--primary-dark);
+  font-weight: 600;
+  margin: 0;
+}
+
+#catering-pick-meal-popup #close-meal-history {
+  background: var(--secondary-color);
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  color: var(--text-dark);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#catering-pick-meal-popup #close-meal-history:hover {
+  background: var(--accent-color);
+  color: var(--white);
+  border-color: var(--accent-color);
+}
+
+#catering-pick-meal-popup .meal-history-timeline {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+#catering-pick-meal-popup .history-entry {
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  background: var(--white);
+  box-shadow: var(--shadow-light);
+  transition: box-shadow 0.2s ease;
+  margin-bottom: 10px;
+  padding: 15px;
+  border-radius: var(--border-radius);
+}
+
+#catering-pick-meal-popup .history-entry:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+#catering-pick-meal-popup .history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+#catering-pick-meal-popup .history-meta {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+#catering-pick-meal-popup .previous-choice,
+#catering-pick-meal-popup .new-choice {
+  margin-bottom: 10px;
+}
+
+#catering-pick-meal-popup .previous-choice strong,
+#catering-pick-meal-popup .new-choice strong {
+  color: var(--primary-dark);
+}
+
+#catering-pick-meal-popup .history-initial {
+  border-left: 4px solid var(--success-color) !important;
+}
+
+#catering-pick-meal-popup .history-update {
+  border-left: 4px solid var(--primary-color) !important;
+}
+
+#catering-pick-meal-popup .history-delete {
+  border-left: 4px solid var(--danger-color) !important;
+}
+
+#catering-pick-meal-popup .history-other {
+  border-left: 4px solid var(--accent-color) !important;
+}
+
+#catering-pick-meal-popup i.catering-address {
+  font-size: 1.125rem;
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+#catering-pick-meal-popup .user-choice span.meal-badge, 
+#catering-pick-meal-popup .user-choice span.item-badge{
+  color: var(--text-dark);
+  text-align: center;
+  font-weight: 500;
+  border: unset;
+  padding: 6px 10px !important;
+}
+
+/* Health status styling */
+#catering-pick-meal-popup #health-status-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  background: var(--white);
+  box-shadow: var(--shadow-light);
+}
+
+#catering-pick-meal-popup #health-status-display {
+  display: flex;
+  flex-direction: column;
+  margin: 0.75rem 0;
+}
+
+#catering-pick-meal-popup #edit-health-status {
+  align-self: flex-start;
+}
+
+#catering-pick-meal-popup .meal-type {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius);
+  font-size: 0.8rem;
+  display: inline-block;
+}
+
+#catering-pick-meal-popup .meal-type.prenatal {
+  background-color: #ffcaca;
+  color: #000;
+}
+
+#catering-pick-meal-popup .meal-type.postpartum {
+  background-color: rgb(187, 215, 253);
+  color: #000;
+}
+
+#catering-pick-meal-popup .due-date {
+  font-weight: 700;
+  color: var(--danger-color);
+  font-size: 0.8rem;
+}
+
+#catering-pick-meal-popup .choice-cat {
+  margin: 0.5rem 0!important;
+}
+
+#catering-pick-meal-popup .choice-cat strong {
+  display: block;
+  font-size: 13px;
+}
+
+/* Select2 styling enhancements */
+#catering-pick-meal-popup .select2-container {
+  margin-bottom: 0.5rem;
+}
+
+#catering-pick-meal-popup .select2-container--default .select2-selection--single {
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--border-radius);
+  height: 38px;
+}
+
+#catering-pick-meal-popup .select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: 36px;
+  padding-left: 12px;
+}
+
+#catering-pick-meal-popup .select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 36px;
+}
+
+/* Tooltip styling */
+#catering-pick-meal-popup #popup-tooltip {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 0.75rem;
+  max-width: 280px;
+  z-index: 10000;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+#catering-pick-meal-popup #catering-meal-form .left-buttons{
+  display: flex;
+  gap: 10px;
+}
+
+#catering-pick-meal-popup #catering-meal-form input[type="checkbox"] {
+  box-shadow: unset !important;
+  border: unset !important;
+  margin: unset !important;
+  background: #ffffff00;
+}
+
+#catering-pick-meal-popup #catering-meal-form input[type=checkbox]:checked::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  background: #00ffbc;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  margin: unset !important;
+  z-index: 0;
+}
+
+#catering-pick-meal-popup #catering-meal-form .step {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+#catering-pick-meal-popup #catering-meal-form label.meal-choice {
+  padding: 15px 10px;
+  position: relative;
+  display: block;
+  margin: 4px 0;
+  cursor: pointer;
+  max-width: 500px;
+  background: #f7f7f7;
+  border-radius: 5px;
+}
+
+#catering-pick-meal-popup #catering-meal-form .meal-title {
+  display: inline;
+  position: relative;
+  z-index: 9;
+}
+
+#catering-pick-meal-popup #catering-meal-form label.meal-choice input,
+#catering-pick-meal-popup #catering-meal-form label.meal-choice select,
+#catering-pick-meal-popup #catering-meal-form label.meal-choice textarea {
+  padding: 8px;
+}
+
+#catering-pick-meal-popup .additional-meals span.select2-selection, 
+#catering-pick-meal-popup .additional-meals span.select2-selection span {
+  height: 40px !important;
+  line-height: 40px!important;
+}
+
+#catering-pick-meal-popup .additional-meals button.remove-select2 {
+  border: unset;
+  background: #FFF;
+  font-size: 16px;
+  color: #ff5d5d;
+  margin-left: 5px;
+}
+
+#catering-pick-meal-popup .additional-meals button.add-select2 {
+  padding: 5px 10px !important;
+  background: #3498db;
+  color: #FFF;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  #catering-pick-meal-popup #catering-popup-left {
+    border-right: none;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #catering-pick-meal-popup #catering-popup-right {
+      display: none;
+  }
+
+  #catering-pick-meal-popup .show-if-mobile{
+      display: block!important;
+  }
+  
+  #catering-pick-meal-popup #catering-meal-form{
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+  }
+
+  #catering-pick-meal-popup #catering-meal-form label.meal-choice {
+      max-width: unset!important;
+  }
+}
+
+@media (max-width: 480px) {
+  #catering-pick-meal-popup .catering-popup-panel {
+    padding: 1rem;
+  }
+  
+  #catering-pick-meal-popup .cb-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 439px) {
+  #catering-pick-meal-popup #catering-week-grid {
+    gap: 20px;
+  }
+
+  #catering-pick-meal-popup .popup-day-grid{
+    gap: 10px;
+  }
+}

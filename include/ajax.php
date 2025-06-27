@@ -1246,6 +1246,16 @@ function catering_ajax_save_user_choice(){
         "SELECT COUNT(*) FROM $table_choice WHERE booking_id=%d AND user_id=%d AND date=%s",
         $booking_id, $user_id, $date
     ));
+    
+    // Get previous choice for logging (if updating)
+    $previous_choice_data = null;
+    if($existing) {
+        $prev = $wpdb->get_row($wpdb->prepare(
+            "SELECT choice FROM $table_choice WHERE booking_id=%d AND user_id=%d AND date=%s",
+            $booking_id, $user_id, $date
+        ));
+        $previous_choice_data = $prev ? $prev->choice : null;
+    }
     // If no entry exists, it's a new submission; check total count
     if(!$existing){
         $total_choices = (int)$wpdb->get_var($wpdb->prepare(
@@ -1335,6 +1345,23 @@ function catering_ajax_save_user_choice(){
     if(false === $res){
          wp_send_json_error('DB insert/update failed.');
     }
+    
+    // Log the change to catering_log
+    if($res !== false) {
+        $action_type = $existing ? 'meal_choice_update' : 'initial_choice';
+        $change_reason = current_user_can('manage_catering') ? 'Admin modification' : 'Customer selection';
+        
+        log_meal_choice_change(
+            $booking_id,
+            $date,
+            $previous_choice_data,
+            $serialized_choice,
+            get_current_user_id(),
+            $action_type,
+            $change_reason
+        );
+    }
+    
     wp_send_json_success('User choice saved.');
 }
 
@@ -1507,6 +1534,13 @@ function catering_ajax_delete_user_meal_choice(){
 
     // Proceed to delete if requirement met
     $table = $wpdb->prefix . 'catering_choice';
+    
+    // Get current choice for logging before deletion
+    $current_choice = $wpdb->get_var($wpdb->prepare(
+        "SELECT choice FROM $table WHERE booking_id=%d AND user_id=%d AND date=%s",
+        $booking_id, $user_id, $date
+    ));
+    
     $result = $wpdb->delete($table, [
          'booking_id' => $booking_id,
          'user_id'    => $user_id,
@@ -1515,6 +1549,20 @@ function catering_ajax_delete_user_meal_choice(){
     if($result === false){
          wp_send_json_error('DB error');
     }
+    
+    // Log the deletion to catering_log
+    if($result !== false && $result > 0) {
+        log_meal_choice_change(
+            $booking_id,
+            $date,
+            $current_choice,
+            null, // new_choice is null for deletion
+            get_current_user_id(),
+            'meal_choice_deletion',
+            'Choice deleted by ' . (current_user_can('manage_catering') ? 'admin' : 'customer')
+        );
+    }
+    
     wp_send_json_success('Meal choice deleted');
 }
 
@@ -1990,6 +2038,28 @@ function catering_ajax_get_daily_delivery_items(){
     $grouped = [];
     foreach($items as $row){
         $oi = absint($row['order_item_id']);
+        
+        // Check order status using WooCommerce function
+        if(function_exists('wc_get_order_id_by_order_item_id')){
+            $order_id = wc_get_order_id_by_order_item_id($oi);
+            if($order_id){
+                $order = wc_get_order($order_id);
+                if($order){
+                    $order_status = $order->get_status();
+                    // Only process items from orders with 'processing' or 'completed' status
+                    if(!in_array($order_status, ['processing', 'completed'])){
+                        continue; // Skip this item
+                    }
+                } else {
+                    continue; // Skip if order not found
+                }
+            } else {
+                continue; // Skip if order ID not found
+            }
+        } else {
+            continue; // Skip if WooCommerce function not available
+        }
+        
         $pid = (int) $wpdb->get_var($wpdb->prepare(
             "SELECT meta_value FROM $meta WHERE order_item_id=%d AND meta_key=%s",
             $oi, '_product_id'
@@ -2022,7 +2092,7 @@ function catering_ajax_get_daily_delivery_items(){
 // NEW: Endpoint to get badge delivery info
 add_action('wp_ajax_get_badge_delivery_info','catering_ajax_get_badge_delivery_info');
 function catering_ajax_get_badge_delivery_info(){
-    if ( ! current_user_can('manage_catering') ) {
+    if ( ! current_user_can( 'manage_catering' ) ) {
         wp_send_json_error('No permission');
     }
     $order_item_input = isset($_POST['order_item_id']) ? sanitize_text_field($_POST['order_item_id']) : '';
@@ -2074,5 +2144,157 @@ function catering_ajax_get_badge_delivery_info(){
         ];
     }
     wp_send_json_success($results);
+}
+
+// AJAX function to retrieve meal choice history from catering_log table
+add_action('wp_ajax_get_meal_choice_history', 'catering_ajax_get_meal_choice_history');
+function catering_ajax_get_meal_choice_history() {
+    if (!current_user_can('manage_catering')) {
+        wp_send_json_error('No permission');
+    }
+    
+    $booking_id = isset($_POST['booking_id']) ? absint($_POST['booking_id']) : 0;
+    $choice_date = isset($_POST['choice_date']) ? sanitize_text_field($_POST['choice_date']) : '';
+    
+    if (!$booking_id || !$choice_date) {
+        wp_send_json_error('Invalid parameters');
+    }
+    
+    global $wpdb;
+    
+    // Get meal choice history from catering_log table
+    $log_table = $wpdb->prefix . 'catering_log';
+    $history = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM $log_table 
+         WHERE booking_id = %d AND choice_date = %s 
+         ORDER BY amended_time DESC",
+        $booking_id, $choice_date
+    ), ARRAY_A);
+    
+    if (empty($history)) {
+        wp_send_json_success([]);
+        return;
+    }
+    
+    // Collect all unique category and meal IDs from all entries
+    $category_ids = [];
+    $meal_ids = [];
+    
+    foreach ($history as $entry) {
+        // Extract IDs from previous_choice
+        if ($entry['previous_choice']) {
+            $prev_choice = maybe_unserialize($entry['previous_choice']);
+            if (is_array($prev_choice)) {
+                foreach ($prev_choice as $cat_id => $meals) {
+                    $category_ids[] = $cat_id;
+                    if (is_array($meals)) {
+                        $meal_ids = array_merge($meal_ids, $meals);
+                    }
+                }
+            }
+        }
+        
+        // Extract IDs from new_choice
+        if ($entry['new_choice']) {
+            $new_choice = maybe_unserialize($entry['new_choice']);
+            if (is_array($new_choice)) {
+                foreach ($new_choice as $cat_id => $meals) {
+                    $category_ids[] = $cat_id;
+                    if (is_array($meals)) {
+                        $meal_ids = array_merge($meal_ids, $meals);
+                    }
+                }
+            }
+        }
+    }
+    
+    $category_ids = array_unique(array_filter($category_ids));
+    $meal_ids = array_unique(array_filter($meal_ids));
+    
+    // Fetch all category titles at once
+    $category_titles = [];
+    if (!empty($category_ids)) {
+        $cat_table = $wpdb->prefix . 'catering_terms';
+        $cat_placeholders = implode(',', array_fill(0, count($category_ids), '%d'));
+        $cat_data = $wpdb->get_results($wpdb->prepare(
+            "SELECT ID, title FROM $cat_table WHERE ID IN ($cat_placeholders)",
+            $category_ids
+        ), OBJECT_K);
+        
+        foreach ($cat_data as $cat) {
+            $category_titles[$cat->ID] = $cat->title;
+        }
+    }
+    
+    // Fetch all meal titles at once
+    $meal_titles = [];
+    if (!empty($meal_ids)) {
+        $meal_table = $wpdb->prefix . 'catering_meal';
+        $meal_placeholders = implode(',', array_fill(0, count($meal_ids), '%d'));
+        $meal_data = $wpdb->get_results($wpdb->prepare(
+            "SELECT ID, title FROM $meal_table WHERE ID IN ($meal_placeholders)",
+            $meal_ids
+        ), OBJECT_K);
+        
+        foreach ($meal_data as $meal) {
+            $meal_titles[$meal->ID] = $meal->title;
+        }
+    }
+    
+    // Helper function to map choice data to frontend-ready structure
+    $map_choice_data = function($choice_data) use ($category_titles, $meal_titles) {
+        if (!$choice_data) {
+            return null;
+        }
+        
+        $unserialized = maybe_unserialize($choice_data);
+        if (!is_array($unserialized)) {
+            return null;
+        }
+        
+        $mapped = [];
+        foreach ($unserialized as $cat_id => $meal_ids_array) {
+            if (!is_array($meal_ids_array)) {
+                continue;
+            }
+            
+            $meals = [];
+            foreach ($meal_ids_array as $meal_id) {
+                $meals[] = [
+                    'id' => $meal_id,
+                    'title' => isset($meal_titles[$meal_id]) ? $meal_titles[$meal_id] : "Meal #$meal_id (deleted)"
+                ];
+            }
+            
+            $mapped[] = [
+                'cat_id' => $cat_id,
+                'cat_title' => isset($category_titles[$cat_id]) ? $category_titles[$cat_id] : "Category #$cat_id (deleted)",
+                'meals' => $meals
+            ];
+        }
+        
+        return $mapped;
+    };
+    
+    // Process each history entry and map the choice data
+    $formatted_history = [];
+    foreach ($history as $entry) {
+        $formatted_entry = [
+            'id' => $entry['id'],
+            'booking_id' => $entry['booking_id'],
+            'choice_date' => $entry['choice_date'],
+            'previous_choice' => $map_choice_data($entry['previous_choice']),
+            'new_choice' => $map_choice_data($entry['new_choice']),
+            'changed_by_user_id' => $entry['changed_by_user_id'],
+            'changed_by_user_type' => $entry['changed_by_user_type'],
+            'change_reason' => $entry['change_reason'],
+            'action_type' => $entry['action_type'],
+            'amended_time' => $entry['amended_time']
+        ];
+        
+        $formatted_history[] = $formatted_entry;
+    }
+    
+    wp_send_json_success($formatted_history);
 }
 

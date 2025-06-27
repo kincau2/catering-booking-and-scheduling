@@ -112,7 +112,8 @@ function maybe_install_plugin_table() {
       cost INT,
       date_amended_gmt varchar(255) NOT NULL,
       PRIMARY KEY (ID),
-      UNIQUE (sku)
+      UNIQUE (sku),
+      INDEX idx_meal_title (title)
   );";
 
   maybe_create_table( $prefix."catering_meal" , $create_ddl);
@@ -125,7 +126,11 @@ function maybe_install_plugin_table() {
       cat_id varchar(255) NOT NULL,
       tag varchar(255) NOT NULL,
       type varchar(255),
-      PRIMARY KEY (ID)
+      PRIMARY KEY (ID),
+      INDEX idx_schedule_product_id (product_id),
+      INDEX idx_schedule_date (date),
+      INDEX idx_schedule_meal_id (meal_id),
+      INDEX idx_schedule_product_date (product_id, date)
   );";
 
   maybe_create_table( $prefix."catering_schedule" , $create_ddl);
@@ -148,10 +153,14 @@ function maybe_install_plugin_table() {
 	  locked varchar(255),
       notice varchar(255),
       type varchar(255),
-	  choice varchar(255) NOT NULL,
-      address mediumtext,
+	  choice varchar(2000) NOT NULL,
+      address varchar(2000),
       preference varchar(255),
-      PRIMARY KEY (ID)
+      PRIMARY KEY (ID),
+      INDEX idx_choice_booking_id (booking_id),
+      INDEX idx_choice_user_id (user_id),
+      INDEX idx_choice_date (date),
+      INDEX idx_choice_booking_date (booking_id, date)
   );";
 
   maybe_create_table( $prefix."catering_choice" , $create_ddl);
@@ -178,7 +187,11 @@ function maybe_install_plugin_table() {
       health_status varchar(255),
       type varchar(255),
       date_created_gmt date,
-      PRIMARY KEY (ID)
+      PRIMARY KEY (ID),
+      INDEX idx_booking_user_id (user_id),
+      INDEX idx_booking_status (status),
+      INDEX idx_booking_order_item_id (order_item_id),
+      INDEX idx_booking_date_created (date_created_gmt)
   );";
 
   maybe_create_table( $prefix."catering_booking" , $create_ddl);
@@ -192,6 +205,26 @@ function maybe_install_plugin_table() {
   );";
 
   maybe_create_table( $prefix."catering_holiday" , $create_ddl);
+
+  $create_ddl = "CREATE TABLE {$prefix}catering_log (
+      ID INT unsigned NOT NULL AUTO_INCREMENT,
+      booking_id INT NOT NULL,
+      choice_date date NOT NULL,
+      previous_choice varchar(2000),
+      new_choice varchar(2000),
+      changed_by_user_id INT NOT NULL,
+      changed_by_user_type varchar(50) NOT NULL,
+      change_reason varchar(255),
+      action_type varchar(50) NOT NULL DEFAULT 'meal_choice_update',
+      amended_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (ID),
+      INDEX idx_booking_id (booking_id),
+      INDEX idx_choice_date (choice_date),
+      INDEX idx_amended_time (amended_time),
+      INDEX idx_changed_by_user_id (changed_by_user_id)
+  );";
+
+  maybe_create_table( $prefix."catering_log" , $create_ddl);
 
 }
 

@@ -77,7 +77,7 @@ if ($bookings) {
              .' data-booking-id="'.esc_attr($booking->ID).'"'
              .' data-product-id="'.esc_attr($product_id).'"'
              .' data-days-left="'.esc_attr($day_left).'"'
-             .' data-product-title="'.esc_attr($order_item_title).' Days"'
+             .' data-product-title="'.esc_attr($order_item_title) . ' ' . __('days','catering-booking-and-scheduling') .'"'
              .' data-expiry-date="'.esc_attr($button_expiry_date).'"'
              .'>'.__('Pick Meal','catering-booking-and-scheduling').'</button></td>';
         echo '</tr>';

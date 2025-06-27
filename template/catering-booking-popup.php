@@ -58,622 +58,6 @@
     <button type="button" id="catering-popup-close" class="cb-btn cb-btn--icon">&times;</button>
   </div>
 </div>
-<style>
-  :root {
-    --primary-color: #3498db;
-    --primary-light: #5dade2;
-    --primary-dark: #2980b9;
-    --secondary-color: #f5f5f5;
-    --accent-color: #95a5a6;
-    --text-dark: #2c3e50;
-    --text-light: #7f8c8d;
-    --white: #FFFFFF;
-    --success-color: #2ecc71;
-    --success-dark: #27ae60;
-    --danger-color: #e74c3c;
-    --danger-dark: #c0392b;
-    --shadow-light: 0 1px 3px rgba(0,0,0,0.05);
-    --shadow-medium: 0 1px 4px rgba(0,0,0,0.08);
-    --border-radius: 4px;
-  }
-  
-  /* Base popup styling */
-  #catering-pick-meal-popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(44, 62, 80, 0.8);
-    z-index: 9999;
-    font-size: 16px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-    color: var(--text-dark);
-    overflow: hidden;
-  }
-  
-  .catering-popup-container {
-    position: relative;
-    display: flex;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    background: var(--white);
-    overflow: hidden;
-  }
-
-  .catering-product-title{
-    color: var(--primary-dark);
-  }
-  
-  .catering-popup-panel {
-    padding: 2.5rem 1.5rem;
-  }
-  
-  #catering-popup-left {
-    position: relative;    /* added to anchor .loading-overlay */
-    flex: 4;
-    overflow-y: auto;
-    border-right: 1px solid rgba(0,0,0,0.08);
-  }
-  
-  #catering-popup-right {
-    flex: 1;
-    min-width: 250px;
-    display: flex;
-    flex-direction: column;
-    background: var(--secondary-color);
-  }
-  
-  .panel-title {
-    margin-top: 0;
-    color: var(--primary-dark);
-    font-weight: 600;
-    font-size: 1.5rem;
-  }
-
-
-  
-  .panel-info {
-    flex: 1;
-  }
-  
-  .selected-date {
-    margin-top: 1.25rem;
-    font-weight: 600;
-    color: var(--text-dark);
-  }
-  
-  .selection-display {
-    margin-top: 1rem;
-    background: var(--white);
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-light);
-  }
-  
-  /* Button styles */
-  .cb-btn {
-    padding: 0.625rem 1.25rem;
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-  }
-  
-  .cb-btn--primary {
-    background: var(--primary-color);
-    color: var(--white);
-  }
-  
-  .cb-btn--primary:hover {
-    background: var(--primary-dark);
-  }
-  
-  .cb-btn--secondary {
-    background: var(--secondary-color);
-    color: var(--text-dark);
-  }
-  
-  .cb-btn--secondary:hover {
-    background: var(--accent-color);
-    color: var(--white);
-  }
-  
-  .cb-btn--danger {
-    background: var(--danger-color);
-    color: var,--white;
-  }
-  
-  .cb-btn--danger:hover {
-    background: var(--danger-dark);
-  }
-  
-  .cb-btn--icon {
-    position: absolute;
-    top: 50px;
-    right: 20px;
-    background: transparent;
-    color: var(--text-dark);
-    font-size: 1.5rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 50%;
-    z-index: 10;
-  }
-  
-  .cb-btn--icon:hover {
-    background: rgba(0,0,0,0.05);
-  }
-  
-  /* Form element styling */
-  #catering-popup-left .step {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    margin-bottom: 1rem;
-  }
-  
-  #catering-popup-left .step h5 {
-    margin: 0 0 0.75rem;
-    font-size: 1.1rem;
-    color: var(--primary-dark);
-  }
-  
-  #catering-popup-left label {
-    display: block;
-    color: var(--text-dark);
-  }
-  
-  #catering-popup-left input[type="text"],
-  #catering-popup-left input[type="date"],
-  #catering-popup-left select,
-  #catering-popup-left textarea {
-    width: 100%;
-    padding: 0.5rem;
-    margin: 0.25rem 0 0.75rem;
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: var(--border-radius);
-    font-size: 0.9rem;
-  }
-  
-  #catering-popup-left textarea {
-    height: 5rem;
-  }
-  
-  #catering-popup-left .steps-nav {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1.5rem;
-  }
-  
-  /* Calendar styling */
-  .popup-week-days {
-    background: var(--primary-color);
-    color: var(--white);
-    padding: 10px 8px;
-    text-align: center;
-    font-weight: 500;
-    font-size: 13px;
-    border-radius: var(--border-radius);
-    letter-spacing: 0.3px;
-  }
-  
-  #catering-week-grid {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  
-  #catering-week-grid .day-grid-item {
-    border: 1px solid rgba(0,0,0,0.08);
-    padding: 0.75rem;
-    border-radius: var(--border-radius);
-    background: var(--white);
-    box-shadow: var(--shadow-light);
-    transition: transform 0.2s ease;
-    min-height: 150px;
-    overflow-y: auto;
-    flex: 1;
-  }
-  
-  #catering-week-grid .day-grid-item{
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-medium);
-  }
-  
-  .day-grid-top .calendar-date {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--primary-dark);
-    background: unset !important;
-    padding: unset !important;
-  }
-  
-  /* Calendar navigation */
-  #catering-prev-week,
-  #catering-next-week {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.25rem 0.5rem;
-    margin: 0 0.5rem 1rem;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  #catering-week-range {
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-top: 4px;
-  }
-
-  .week-navigator {
-    display: flex;
-    justify-content: center;
-}
-
-  .day-grid-item {
-    border:'1px solid #ccc';
-    padding:'5px';
-    background: #FFF;
-    color: #333333;
-  }
-
-  .day-grid-item.disabled {
-    background: #f7f7f7!important;
-    color: #999999!important;
-  }
-
-  .popup-day-grid{
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  /* Mobile responsiveness */
-  @media (max-width: 768px) {
-
-    #catering-popup-left {
-      border-right: none;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      display: flex;
-      flex-direction: column;
-    }
-    
-    #catering-popup-right {
-        display: none;
-    }
-
-    .show-if-mobile{
-        display: block!important;
-    }
-    #catering-meal-form{
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-    }
-
-    #catering-meal-form label.meal-choice {
-        max-width: unset!important;
-    }
-
-
-  }
-
-  @media (max-width: 480px) {
-    .catering-popup-panel {
-      padding: 1rem;
-    }
-    
-    .cb-btn {
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-    }
-  }
-
-  @media (max-width: 439px) {
-
-    #catering-week-grid {
-      gap: 20px;
-    }
-
-    .popup-day-grid{
-      gap: 10px;
-    }
-  }
-  
-  /* Updated utility classes */
-  .catering-loading {
-    text-align: center;
-    padding: 1.25rem;
-    font-size: 1rem;
-  }
-  
-  .holiday {
-    color: var(--danger-color);
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
-  }
-  
-  /* Loading overlay */
-  .loading-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--secondary-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    visibility: visible!important;
-    background-image: unset!important;
-    background: unset!important;
-  }
-  
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  
-  /* Additional classes */
-  .user-choice {
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
-  }
-  
-  .meal-badge {
-    padding: 3px 8px!important;
-    margin: unset!important;
-    border-radius: var(--border-radius);
-    display: inline-block;
-    color: var(--text-dark);
-    font-size: 0.8rem;
-    word-break: break-word;
-    border: 1px solid rgba(0,0,0,0.1);
-  }
-  
-  .day-grid-top,
-  .day-grid-second {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    flex-wrap: wrap;
-  }
-  
-  .day-grid-top > div,
-  .day-grid-second > div {
-    margin-bottom: 0.25rem;
-  }
-  
-  .catering-edit-meal,
-  .catering-add-meal {
-    display: inline-block;
-    margin-top: 0.5rem;
-    background: var(--primary-color);
-    color: var(--white);
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.25rem 0.75rem;
-    cursor: pointer;
-    font-weight: 600;
-    width: 100%;
-    text-align: center;
-    font-size: 13px;
-  }
-  
-  .catering-edit-meal:hover,
-  .catering-add-meal:hover {
-    background: var(--primary-dark);
-  }
-  
-  .delete-meal-choice {
-    color: var(--danger-color);
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    margin-top: 1rem;
-    padding: 0;
-    font-size: 0.8rem;
-    width: 100%;
-    text-align: center;
-  }
-  
-  .delete-meal-choice:hover {
-    color: var(--danger-dark);
-    text-decoration: underline;
-  }
-  
-  i.catering-address {
-    font-size: 1.125rem;
-    color: var(--primary-color);
-    cursor: pointer;
-  }
-
-  .user-choice span.meal-badge, 
-  .user-choice span.item-badge{
-    color: var(--text-dark);
-    text-align: center;
-    font-weight: 500;
-    border: unset;
-    padding: 6px 10px !important;
-  }
-  
-  /* Health status styling */
-  #health-status-section {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    background: var(--white);
-    box-shadow: var(--shadow-light);
-  }
-  
-  #health-status-display {
-    display: flex;
-    flex-direction: column;
-    margin: 0.75rem 0;
-  }
-  
-  #edit-health-status {
-    align-self: flex-start;
-  }
-  
-  .meal-type {
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--border-radius);
-    font-size: 0.8rem;
-    display: inline-block;
-  }
-  
-  .meal-type.prenatal {
-    background-color: #ffcaca;
-    color: #000;
-  }
-  
-  .meal-type.postpartum {
-    background-color: rgb(187, 215, 253);
-    color: #000;
-  }
-  
-  .due-date {
-    font-weight: 700;
-    color: var(--danger-color);
-    font-size: 0.8rem;
-  }
-  
-  .choice-cat {
-    margin: 0.5rem 0!important;
-  }
-  
-  .choice-cat strong {
-    display: block;
-    font-size: 13px;
-  }
-  
-  /* Select2 styling enhancements */
-  .select2-container {
-    margin-bottom: 0.5rem;
-  }
-  
-  .select2-container--default .select2-selection--single {
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: var(--border-radius);
-    height: 38px;
-  }
-  
-  .select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 36px;
-    padding-left: 12px;
-  }
-  
-  .select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 36px;
-  }
-  
-  /* Tooltip styling */
-  #popup-tooltip {
-    background: var(--white);
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    padding: 0.75rem;
-    max-width: 280px;
-    z-index: 10000;
-    font-size: 0.875rem;
-    line-height: 1.4;
-  }
-
-  #catering-meal-form .left-buttons{
-    display: flex;
-    gap: 10px;
-  }
-
-  #catering-meal-form input[type="checkbox"] {
-    box-shadow: unset !important;
-    border: unset !important;
-    margin: unset !important;
-    background: #ffffff00;
-  }
-
-  #catering-meal-form input[type=checkbox]:checked::before {
-    content: "";
-    width: 100%;
-    height: 100%;
-    border-radius: 4px;
-    background: #00ffbc;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    margin: unset !important;
-    z-index: 0;
-  }
-
-  #catering-meal-form .step {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    flex: 1;
-  }
-
-  #catering-meal-form label.meal-choice {
-    padding: 15px 10px;
-    position: relative;
-    display: block;
-    margin: 4px 0;
-    cursor: pointer;
-    max-width: 500px;
-    background: #f7f7f7;
-    border-radius: 5px;
-  }
-
-  #catering-meal-form  .meal-title {
-    display: inline;
-    position: relative;
-    z-index: 9;
-  }
-
-  #catering-meal-form label.meal-choice input,
-  #catering-meal-form label.meal-choice select,
-  #catering-meal-form label.meal-choice textarea {
-    padding: 8px;
-  }
-
-  .additional-meals span.select2-selection, 
-  .additional-meals span.select2-selection span {
-    height: 40px !important;
-    line-height: 40px!important;
-  }
-
-  .additional-meals button.remove-select2 {
-    border: unset;
-    background: #FFF;
-    font-size: 16px;
-    color: #ff5d5d;
-    margin-left: 5px;
-  }
-
-  .additional-meals button.add-select2 {
-    padding: 5px 10px !important;
-    background: #3498db;
-    color: #FFF;
-  }
-
-      
-
-
-</style>
 <script>
 <?php
 global $wpdb;
@@ -860,6 +244,12 @@ jQuery(function($){
                     html += '<button class="catering-add-meal" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
                 <?php endif ;?>
             }
+            
+            // Add meal history button for all days (only show if user can manage catering)
+            <?php if(current_user_can('manage_catering')): ?>
+            html += '<button type="button" class="meal-history-btn" data-date="'+dateStr+'"><?php _e("Meal History","catering-booking-and-scheduling") ?></button>';
+            <?php endif; ?>
+            
             html += '</div>';
             $('<div class="popup-day-grid"></div>')
               .html(html)
@@ -1743,5 +1133,180 @@ jQuery(function($){
     $(document).on('click', '.catering-pick-meal-btn', function() {
         setTimeout(equalizeGridWidths, 300); // Delay to ensure popup is fully rendered
     });
+
+    // NEW: Meal History functionality
+    $(document).on('click', '.meal-history-btn', function(e) {
+        e.preventDefault();
+        var date = $(this).data('date');
+        showMealHistory(date);
+    });
+
+    function showMealHistory(date) {
+        // Create overlay layer
+        var overlayHtml = '<div id="meal-history-overlay" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:1000;padding:40px;overflow-y:auto;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
+            '<h3><?php _e("Meal Choice History","catering-booking-and-scheduling") ?> - ' + date + '</h3>' +
+            '<button type="button" id="close-meal-history"><?php _e("Close","catering-booking-and-scheduling") ?></button>' +
+            '</div>' +
+            '<div id="meal-history-content">' +
+            '<div class="loading-overlay"><div class="spinner"></div></div>' +
+            '</div>' +
+            '</div>';
+        
+        $('#catering-popup-left').append(overlayHtml);
+        
+        // Load meal history data
+        loadMealHistoryData(date);
+    }
+
+    function loadMealHistoryData(date) {
+        // AJAX call to get meal choice history for the specific date
+        $.post(catering_frontend_ajax.ajaxurl, {
+            action: 'get_meal_choice_history',
+            booking_id: currentBookingId,
+            choice_date: date
+        }, function(response) {
+            if (response.success) {
+                console.log(response.data);
+                displayMealHistory(response.data);
+            } else {
+                $('#meal-history-content').html('<p><?php _e("No history found or error loading data.","catering-booking-and-scheduling") ?></p>');
+            }
+        }).fail(function() {
+            $('#meal-history-content').html('<p><?php _e("Error loading meal history.","catering-booking-and-scheduling") ?></p>');
+        });
+    }
+
+    function displayMealHistory(historyData) {
+        if (!historyData || historyData.length === 0) {
+            $('#meal-history-content').html('<p><?php _e("No meal choice history found for this date.","catering-booking-and-scheduling") ?></p>');
+            return;
+        }
+
+        var html = '<div class="meal-history-timeline">';
+        
+        historyData.forEach(function(entry, index) {
+            var actionIcon = '';
+            var actionClass = '';
+            
+            switch(entry.action_type) {
+                case 'initial_choice':
+                    actionIcon = '<i class="fa-solid fa-plus" style="color:green;"></i>';
+                    actionClass = 'history-initial';
+                    break;
+                case 'meal_choice_update':
+                    actionIcon = '<i class="fa-solid fa-pen" style="color:blue;"></i>';
+                    actionClass = 'history-update';
+                    break;
+                case 'meal_choice_deletion':
+                    actionIcon = '<i class="fa-solid fa-trash" style="color:red;"></i>';
+                    actionClass = 'history-delete';
+                    break;
+                default:
+                    actionIcon = '<i class="fa-solid fa-circle" style="color:gray;"></i>';
+                    actionClass = 'history-other';
+            }
+
+            html += '<div class="history-entry ' + actionClass + '">';
+            html += '<div class="history-header">';
+            html += '<span>' + actionIcon + ' ' + getActionTypeText(entry.action_type) + '</span>';
+            
+            // Convert time to Hong Kong time (GMT+8)
+            var timeString = entry.amended_time;
+            var localTime;
+            
+            // Check if the time string includes timezone info
+            if (timeString.includes('UTC') || timeString.includes('+') || timeString.includes('-')) {
+                localTime = new Date(timeString);
+            } else {
+                // Assume it's already in server timezone, convert to Hong Kong time
+                localTime = new Date(timeString + ' UTC'); // Treat as UTC first
+            }
+            
+            // Convert to Hong Kong time using toLocaleString
+            var hkTimeString = localTime.toLocaleString("en-GB", {
+                timeZone: "Asia/Hong_Kong",
+                year: 'numeric',
+                month: '2-digit', 
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).replace(/(\d{2})\/(\d{2})\/(\d{4}), (\d{2}:\d{2}:\d{2})/, '$3-$2-$1 $4');
+            
+            html += '<span style="font-size:12px;color:#666;">' + hkTimeString + '</span>';
+            html += '</div>';
+            
+            html += '<div class="history-meta">';
+            html += '<?php _e("Changed by","catering-booking-and-scheduling") ?>: ' + entry.changed_by_user_type + ' (ID: ' + entry.changed_by_user_id + ')';
+            if (entry.change_reason) {
+                html += ' | <?php _e("Reason","catering-booking-and-scheduling") ?>: ' + entry.change_reason;
+            }
+            html += '</div>';
+
+            if (entry.previous_choice && entry.action_type !== 'initial_choice') {
+                html += '<div class="previous-choice">';
+                html += '<strong><?php _e("Previous Choice","catering-booking-and-scheduling") ?>:</strong>';
+                html += formatMealChoice(entry.previous_choice);
+                html += '</div>';
+            }
+
+            if (entry.new_choice && entry.action_type !== 'meal_choice_deletion') {
+                html += '<div class="new-choice">';
+                html += '<strong><?php _e("New Choice","catering-booking-and-scheduling") ?>:</strong>';
+                html += formatMealChoice(entry.new_choice);
+                html += '</div>';
+            }
+
+            html += '</div>';
+        });
+        
+        html += '</div>';
+        $('#meal-history-content').html(html);
+    }
+
+    function getActionTypeText(actionType) {
+        switch(actionType) {
+            case 'initial_choice':
+                return '<?php _e("Initial Choice","catering-booking-and-scheduling") ?>';
+            case 'meal_choice_update':
+                return '<?php _e("Updated Choice","catering-booking-and-scheduling") ?>';
+            case 'meal_choice_deletion':
+                return '<?php _e("Deleted Choice","catering-booking-and-scheduling") ?>';
+            default:
+                return '<?php _e("Other Action","catering-booking-and-scheduling") ?>';
+        }
+    }
+
+    function formatMealChoice(choiceData) {
+        if (!choiceData || !Array.isArray(choiceData) || choiceData.length === 0) {
+            return '<div style="color:#999;font-style:italic;"><?php _e("No data","catering-booking-and-scheduling") ?></div>';
+        }
+        
+        var html = '<div style="margin-left:20px;margin-top:5px;">';
+        
+        choiceData.forEach(function(category) {
+            if (category.meals && category.meals.length > 0) {
+                html += '<div style="margin-bottom:8px;">';
+                html += '<strong style="color:#333;">' + category.cat_title + ':</strong><br>';
+                
+                category.meals.forEach(function(meal) {
+                    html += '<span style="background:#f0f0f0;padding:2px 6px;margin:2px;border-radius:3px;font-size:12px;">' + meal.title + '</span> ';
+                });
+                
+                html += '</div>';
+            }
+        });
+        
+        html += '</div>';
+        return html;
+    }
+
+    // Close meal history overlay
+    $(document).on('click', '#close-meal-history', function() {
+        $('#meal-history-overlay').remove();
+    });
+
 });
 </script>
