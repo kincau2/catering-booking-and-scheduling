@@ -2,6 +2,7 @@
 
 class Booking {
     public $id;
+    public $ID; // for backward compatibility
     public $user_id;
     public $order_item_id;
     public $plan_days;
@@ -15,6 +16,7 @@ class Booking {
     public function __construct($id = null) {
         global $wpdb;
         $this->id = $id;
+        $this->ID = $id; // for backward compatibility
         if ($id) {
             $table = $wpdb->prefix . 'catering_booking';
             // remove ARRAY_A so we get an object
@@ -247,6 +249,13 @@ class Booking {
             throw new Exception(__('Failed to delete meal choices', 'catering-booking-and-scheduling'));
         }
         return true;
+    }
+
+    public function get_remaining_days() {
+        global $wpdb;
+        $table = $wpdb->prefix . 'catering_choice';
+        $count = $this->get_choice_count();
+        return max(0, (int)$this->plan_days - (int)$count);
     }
 
 }

@@ -1464,3 +1464,72 @@ msgstr "其他操作"
 #: template/catering-booking-popup.php:1875
 msgid "No data"
 msgstr "無數據"
+
+#: include/email.php:15
+msgid "Your order has been completed. Thank you for choosing our catering service! We hope you enjoy your meals."
+msgstr "您的訂單已完成。感謝您選擇我們的餐飲服務！希望您享受美味的餐點。"
+
+#: include/email.php:16
+msgid "You may also contact us for any comment about our services."
+msgstr "您也可以聯繫我們，對我們的服務提出任何意見。"
+
+#: include/email.php:25
+#: include/email.php:36
+msgid "Thank you for choosing Ms. Lo Soup! We have received you order and confirmed your payment."
+msgstr "感謝您選擇盧太太湯水！我們已收到您的訂單並確認付款。"
+
+#: include/email.php:26
+msgid "You can now book you meal via following button, or on catering booking tab on my account page."
+msgstr "您現在可以通過以下按鈕預訂餐點，或在我的帳戶頁面的餐飲預訂標籤中進行預訂。"
+
+#: include/email.php:28
+msgid "Book Meal"
+msgstr "預訂餐點"
+
+#: include/email.php:29
+#: include/email.php:37
+#: include/email.php:47
+#: include/email.php:62
+#: include/email.php:69
+msgid "If you have any questions or special requests, please don't hesitate to contact us."
+msgstr "如果您有任何問題或特殊要求，請隨時聯繫我們。"
+
+#: include/email.php:20
+#: include/email.php:33
+#: include/email.php:41
+#: include/email.php:51
+#: include/email.php:61
+msgid "Your order details are shown below for your reference:"
+msgstr "您的訂單詳情如下供參考："
+
+#: include/email.php:46
+msgid "Thank you for choosing Ms. Lo Soup! We have received your order and now waiting for payment to be settled. Please be awared that you order will be on-hold until we confirm payment has been received."
+msgstr "感謝您選擇盧太太湯水！我們已收到您的訂單，現在等待付款確認。請注意，您的訂單將保持暫停狀態，直到我們確認收到付款。"
+
+#: include/email.php:55
+msgid "Your order has been refunded. If you have any questions or concerns, please contact us."
+msgstr "您的訂單已退款。如果您有任何問題或疑慮，請聯繫我們。"
+
+#: include/email.php:68
+msgid "A note has been added to your order, the details are in the following:"
+msgstr "您的訂單已添加備註，詳情如下："
+
+#: include/email.php:94
+msgid "Someone requested that the password be reset for the following account:"
+msgstr "有人要求重設以下帳戶的密碼："
+
+#: include/email.php:95
+msgid "Username: {customer_username}"
+msgstr "用戶名：{customer_username}"
+
+#: include/email.php:96
+msgid "If you did not request a password reset, please ignore this email."
+msgstr "如果您沒有要求重設密碼，請忽略此電子郵件。"
+
+#: include/email.php:97
+msgid "To reset your password, visit the following address:"
+msgstr "要重設您的密碼，請訪問以下地址："
+
+#: include/email.php:101
+msgid "Thank you for joining Ms. Lo Soup!"
+msgstr "感謝您加入盧太太湯水！"

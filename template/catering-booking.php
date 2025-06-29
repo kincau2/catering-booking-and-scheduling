@@ -4,7 +4,7 @@ global $wpdb;
 $user_id = get_current_user_id();
 $table   = $wpdb->prefix . 'catering_booking';
 // Fetch bookings for current user
-$bookings = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE user_id=%d ORDER BY ID DESC", $user_id));
+$booking_ids = $wpdb->get_results($wpdb->prepare("SELECT ID FROM {$table} WHERE user_id=%d ORDER BY ID DESC", $user_id));
 echo '<div class="my-account-catering-booking">';
 echo '<table>';
 echo '<thead><tr>';
@@ -16,8 +16,9 @@ echo '<th>' . __('Expiry Date', 'catering-booking-and-scheduling') . '</th>';
 echo '<th>' . __('Action', 'catering-booking-and-scheduling') . '</th>';
 echo '</tr></thead>';
 echo '<tbody>';
-if ($bookings) {
-    foreach ($bookings as $booking) {
+if ($booking_ids) {
+    foreach ($booking_ids as $booking_id) {
+        $booking = new Booking($booking_id->ID);
         // Assuming wc_get_order_item() returns a WC_Order_Item instance
         $order_item = new WC_Order_Item_Product($booking->order_item_id);
         if (!$order_item) {
@@ -29,13 +30,7 @@ if ($bookings) {
         $order_item_title = $order_item->get_name();
         $product_id       = $order_item->get_product_id();  // new
         // Calculate Day Left: plan_days minus count from catering_choice table
-        $choice_count = $wpdb->get_var(
-            $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND user_id=%d", $booking->ID, $user_id)
-        );
-        $day_left = (int)$booking->plan_days - (int)$choice_count;
-        if($day_left < 0) {
-            $day_left = 0;
-        }
+        $day_left = $booking->get_remaining_days(); // new method to get remaining days
         $order_url = wc_get_endpoint_url(
             'view-order',
             $order_number,
@@ -74,7 +69,7 @@ if ($bookings) {
         echo '<td><button'
              .' class="catering-pick-meal-btn"'
              . $disabled
-             .' data-booking-id="'.esc_attr($booking->ID).'"'
+             .' data-booking-id="'.esc_attr($booking->id).'"'
              .' data-product-id="'.esc_attr($product_id).'"'
              .' data-days-left="'.esc_attr($day_left).'"'
              .' data-product-title="'.esc_attr($order_item_title) . ' ' . __('days','catering-booking-and-scheduling') .'"'

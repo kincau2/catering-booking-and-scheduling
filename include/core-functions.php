@@ -155,5 +155,20 @@ function log_meal_choice_change($booking_id, $choice_date, $previous_choice, $ne
     return $result !== false;
 }
 
+function is_order_contains_catering_product($order) {
+    if ( ! $order || ! is_a( $order, 'WC_Order' ) ) {
+        return false; // not a valid order
+    }
+    
+    foreach ( $order->get_items() as $item ) {
+        $product = $item->get_product();
+        if ( is_catering_product( $product ) ) {
+            return true; // found a catering product
+        }
+    }
+    
+    return false; // no catering products found in the order
+}
+
 ?>
 

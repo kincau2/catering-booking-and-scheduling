@@ -695,9 +695,7 @@ function catering_ajax_get_meal_schedule_week(){
     if($booking_id){
         $booking = new Booking($booking_id);
         if($booking){
-            $choice_count = $booking->get_choice_count();
-            $day_remaining = (int)$booking->plan_days - $choice_count;
-            if($day_remaining < 0) $day_remaining = 0;
+            $day_remaining = $booking->get_remaining_days();
         }
     }
 

@@ -11,6 +11,7 @@ include dirname(__FILE__) . '/core-functions.php' ;
 include dirname(__FILE__) . '/my-account.php' ;
 include dirname(__FILE__) . '/order-function.php' ;
 include dirname(__FILE__) . '/interface.php' ;
+include dirname(__FILE__) . '/email.php' ;
 include dirname(__FILE__) . '/wc-product-catering-plan.php' ;
 
 
