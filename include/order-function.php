@@ -114,7 +114,10 @@ function catering_create_booking_on_order_status($order_id, $order = null) {
         $order = wc_get_order($order_id);
     }
     $user_id = $order->get_user_id();
-    
+    if (!$user_id) {
+        // no user, cannot create booking
+        return;
+    }
     // fetch health status meta
     $health_status = $order->get_meta('catering_health_status');
     foreach ($order->get_items() as $item) {
