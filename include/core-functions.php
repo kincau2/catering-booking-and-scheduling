@@ -170,5 +170,6 @@ function is_order_contains_catering_product($order) {
     return false; // no catering products found in the order
 }
 
+
 ?>
 

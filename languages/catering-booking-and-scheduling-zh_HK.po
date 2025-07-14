@@ -1533,3 +1533,40 @@ msgstr "要重設您的密碼，請訪問以下地址："
 #: include/email.php:101
 msgid "Thank you for joining Ms. Lo Soup!"
 msgstr "感謝您加入盧太太湯水！"
+
+#: template/rewards.php:4
+#: include/my-account.php:226
+msgid "My Rewards"
+msgstr "我的獎勵"
+
+#: template/rewards.php:11
+msgid "Your current points balance:"
+msgstr "您目前的積分餘額："
+
+#: template/rewards.php:13
+msgid "Here is you history and usage of your rewards points."
+msgstr "以下是您的消費回贈積分歷史記錄和使用情況。"
+
+#: include/email.php:120
+msgid "Ms. Lo soup Points Summary"
+msgstr "盧太太湯水 消費回贈"
+
+#: include/email.php:121
+msgid "Here is your current Ms. Lo soup points balance:"
+msgstr "以下是您目前的盧太太湯水積分餘額："
+
+#: include/email.php:122
+msgid "You current points is equal to value: "
+msgstr "您目前的積分等值於："
+
+#: include/email.php:123
+msgid "You can use your points to redeem rewards or discounts on future orders."
+msgstr "您可以使用積分兌換獎勵或於未來訂單中享有折扣。"
+
+#: include/email.php:124
+msgid "You can view your points balance and usage history in your account."
+msgstr "您可以在帳戶中查看積分餘額和使用記錄。"
+
+#: include/email.php:124
+msgid "Point History"
+msgstr "積分記錄"

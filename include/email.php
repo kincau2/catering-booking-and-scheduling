@@ -107,4 +107,26 @@ function catering_booking_no_order_email($email) {
     echo $output;
 
 }
+
+add_action('woocommerce_email_after_order_table', 'add_point_summary_after_order_details', 10, 2);
+
+function add_point_summary_after_order_details( $order, $sent_to_admin ){
+    if( $sent_to_admin ){
+        return; // only show for customer emails
+    }
+    if(shortcode_exists('wr_points_balance') === false){
+        return; // if the points balance shortcode is not available, do not show the summary
+    }
+    $output  = '<h2>' . __('Ms. Lo soup Points Summary', 'catering-booking-and-scheduling') . '</h2>';
+    $output .=  '<p>' . __('Here is your current Ms. Lo soup points balance:', 'catering-booking-and-scheduling') ." ". do_shortcode('[wr_points_balance user_id="' . $order->get_user_id() . '"]') .  '</p>';
+    $output .= '<p>' . __('You current points is equal to value: ','catering-booking-and-scheduling') . do_shortcode('[wr_points_value]') . '</p>';
+    $output .= '<p>' . __('You can use your points to redeem rewards or discounts on future orders.','catering-booking-and-scheduling') . '</p>';
+    $output .= '<p>' . __('You can view your points balance and usage history in your account.','catering-booking-and-scheduling') . '</p>';
+    $output .= '<a style="font-weight: normal;color: #FFF;padding: 8px 30px;background: #932331;text-decoration: unset;font-weight: 500!important;"
+                href="' . esc_url( get_permalink( wc_get_page_id( 'myaccount' ) ) . 'point-history' ) . '" class="button">' . __('Point History', 'catering-booking-and-scheduling') . '</a>';
+    $output .= '<br><br>' . __('If you have any questions or special requests, please don\'t hesitate to contact us.','catering-booking-and-scheduling');
+
+    echo $output;
+
+}
 ?>

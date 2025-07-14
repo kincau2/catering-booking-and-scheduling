@@ -217,4 +217,27 @@ function catering_formatted_shipping_2($address, $customer_id, $address_name) {
     return $address;
 }
 
+add_filter('woocommerce_account_menu_items', 'add_point_history_tab', 99);
+function add_point_history_tab($items) {
+    $new_items = array();
+    foreach ($items as $key => $value) {
+         $new_items[$key] = $value;
+         if ($key === 'catering-bookings') {
+             $new_items['point-history'] = __('Point History', 'catering-booking-and-scheduling');
+         }
+    }
+    return $new_items;
+}
+
+add_action('init', 'add_point_history_endpoint');
+function add_point_history_endpoint() {
+    add_rewrite_endpoint('point-history', EP_ROOT | EP_PAGES);
+}
+
+// Content callback for the Catering Bookings tab
+add_action('woocommerce_account_point-history_endpoint', 'point_history_content');
+function point_history_content() {
+    include CATERING_PLUGIN_DIR . '/template/rewards.php';
+}
+
 ?>
