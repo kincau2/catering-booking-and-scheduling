@@ -255,33 +255,3 @@ function catering_render_terms_page( $term_type, $page_slug, $label_singular, $l
 function catering_render_meal_setting_page() {
     include CATERING_PLUGIN_DIR . '/template/meal-settings.php';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>

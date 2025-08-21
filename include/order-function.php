@@ -970,7 +970,3 @@ function catering_on_order_permanent_delete($order_id,$order) {
         }
     }
 }
-
-
-
-?>

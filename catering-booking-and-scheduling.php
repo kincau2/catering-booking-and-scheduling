@@ -122,6 +122,4 @@ function unschedule_daily_catering_meal_count() {
         wp_unschedule_event($timestamp, 'save_daily_catering_meal_count');
     }
 }
-
-
 ?>

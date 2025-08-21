@@ -2295,4 +2295,3 @@ function catering_ajax_get_meal_choice_history() {
     
     wp_send_json_success($formatted_history);
 }
-

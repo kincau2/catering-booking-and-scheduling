@@ -80,7 +80,6 @@ function catering_enqueue_plugin_assets_frontend() {
 add_action( 'init', 'init_plugin' );
 
 function init_plugin(){
-  ob_start();
   maybe_install_plugin_table();
   init_plugin_data();
   add_manage_catering_capability();
@@ -319,5 +318,3 @@ function add_manage_catering_capability() {
         }
     }
 }
-
-

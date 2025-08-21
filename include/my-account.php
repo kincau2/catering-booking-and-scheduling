@@ -239,5 +239,3 @@ add_action('woocommerce_account_point-history_endpoint', 'point_history_content'
 function point_history_content() {
     include CATERING_PLUGIN_DIR . '/template/rewards.php';
 }
-
-?>

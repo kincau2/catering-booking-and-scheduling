@@ -129,4 +129,3 @@ function add_point_summary_after_order_details( $order, $sent_to_admin ){
     echo $output;
 
 }
-?>
