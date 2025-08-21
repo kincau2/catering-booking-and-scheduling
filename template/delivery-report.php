@@ -580,7 +580,7 @@ foreach ( $records as $rec ) {
 
     $sheet2->setCellValue("B{$row}", $order_id );
     $sheet2->setCellValue("C{$row}", ($addr['first_name'] ?? '') . " " . ($addr['last_name'] ?? '') );
-    $sheet2->setCellValue("D{$row}", $addr['phone'] ?? '' );
+    $sheet2->setCellValue("D{$row}", ( $addr['phone_country']?? '' ) . ' ' . ($addr['phone'] ?? '') );
     $sheet2->setCellValue("E{$row}", $current_address );
 
     $WC_item = $booking->get_order_item();
@@ -722,7 +722,7 @@ foreach ( $records as $rec ) {
     // C: name
     $sheet3->setCellValue("C{$row3}", trim(($addr['first_name'] ?? '') . ' ' . ($addr['last_name'] ?? '')) );
     // D: phone
-    $sheet3->setCellValue("D{$row3}", $addr['phone'] ?? '' );
+    $sheet3->setCellValue("D{$row3}", ( $addr['phone_country']?? '' ) . ' ' . ($addr['phone'] ?? '') );
     // E: location
     $sheet3->setCellValue("E{$row3}", trim(($addr['city'] ?? '') . ' ' . ($addr['address'] ?? '')) );
 

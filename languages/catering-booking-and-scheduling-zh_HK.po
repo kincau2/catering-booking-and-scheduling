@@ -147,11 +147,70 @@ msgid "District"
 msgstr "地區"
 
 #: include/my-account.php:72
-#: include/my-account.php:127
 #: template/catering-booking-popup.php:1082
 #: template/catering-booking-popup.php:1425
 msgid "Phone"
 msgstr "聯絡電話"
+
+#: include/my-account.php:192
+#: include/my-account.php:262
+#: include/my-account.php:308
+#: template/catering-booking-popup.php:479
+msgid "Phone Country/Region Code"
+msgstr "電話地區代碼"
+
+#: include/my-account.php:205
+#: include/my-account.php:275
+#: template/catering-booking-popup.php:486
+msgid "Phone Number"
+msgstr "電話號碼"
+
+#: include/my-account.php:211
+#: include/my-account.php:281
+#: include/my-account.php:324
+#: template/catering-booking-popup.php:486
+msgid "Enter phone number"
+msgstr "輸入電話號碼"
+
+#: include/my-account.php:57
+msgid "%sphone: Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9)"
+msgstr "%s電話：請輸入有效的香港手機號碼（8位數字，以4、5、6或9開頭）"
+
+#: include/my-account.php:59
+msgid "%sphone: Please enter a valid Macau mobile number (8 digits starting with 6)"
+msgstr "%s電話：請輸入有效的澳門手機號碼（8位數字，以6開頭）"
+
+#: include/my-account.php:61
+msgid "%sphone: Please enter a valid China mobile number (11 digits starting with 1)"
+msgstr "%s電話：請輸入有效的中國手機號碼（11位數字，以1開頭）"
+
+#: include/my-account.php:63
+msgid "%sphone: Please enter a valid phone number"
+msgstr "%s電話：請輸入有效的電話號碼"
+
+#: include/ajax.php:1224
+#: template/catering-booking-popup.php:711
+msgid "Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9)."
+msgstr "請輸入有效的香港手機號碼（8位數字，以4、5、6或9開頭）。"
+
+#: include/ajax.php:1227
+#: template/catering-booking-popup.php:713
+msgid "Please enter a valid Macau mobile number (8 digits starting with 6)."
+msgstr "請輸入有效的澳門手機號碼（8位數字，以6開頭）。"
+
+#: include/ajax.php:1230
+#: template/catering-booking-popup.php:715
+msgid "Please enter a valid China mobile number (11 digits starting with 1)."
+msgstr "請輸入有效的中國手機號碼（11位數字，以1開頭）。"
+
+#: template/catering-booking-popup.php:732
+msgid "Phone country code is required."
+msgstr "電話國家代碼為必填項。"
+
+#: include/ajax.php:1233
+#: template/catering-booking-popup.php:717
+msgid "Please enter a valid mobile number."
+msgstr "請輸入有效的手機號碼。"
 
 #: include/my-account.php:82
 #: include/my-account.php:137
@@ -582,34 +641,42 @@ msgid "Limit reached"
 msgstr "已達上限"
 
 #: template/catering-booking-popup.php:1287
+#: include/ajax.php:1198
 msgid "First name is required."
 msgstr "名字為必填項。"
 
 #: template/catering-booking-popup.php:1288
+#: include/ajax.php:1201
 msgid "First name cannot contain numbers."
 msgstr "名字不能包含數字。"
 
 #: template/catering-booking-popup.php:1289
+#: include/ajax.php:1204
 msgid "Last name is required."
 msgstr "姓氏為必填項。"
 
 #: template/catering-booking-popup.php:1290
+#: include/ajax.php:1207
 msgid "Last name cannot contain numbers."
 msgstr "姓氏不能包含數字。"
 
 #: template/catering-booking-popup.php:1291
+#: include/ajax.php:1210
 msgid "Address is required."
 msgstr "地址為必填項。"
 
 #: template/catering-booking-popup.php:1292
+#: include/ajax.php:1213
 msgid "City is required."
 msgstr "城市為必填項。"
 
 #: template/catering-booking-popup.php:1294
+#: include/ajax.php:1216
 msgid "Please select a valid city."
 msgstr "請選擇有效的城市。"
 
 #: template/catering-booking-popup.php:1297
+#: include/ajax.php:1219
 msgid "Phone is required."
 msgstr "電話為必填項。"
 
@@ -1570,3 +1637,94 @@ msgstr "您可以在帳戶中查看積分餘額和使用記錄。"
 #: include/email.php:124
 msgid "Point History"
 msgstr "積分記錄"
+
+#: include/ajax.php:59
+#: include/ajax.php:100
+msgid "No meals or terms selected."
+msgstr "未選擇餐食或條款。"
+
+#: include/ajax.php:62
+#: include/ajax.php:103
+#: include/ajax.php:130
+msgid "Invalid termType"
+msgstr "無效的條款類型"
+
+#: include/ajax.php:161
+msgid "No iCal file uploaded or upload error."
+msgstr "未上傳iCal文件或上傳錯誤。"
+
+#: include/ajax.php:165
+msgid "Uploaded file not found on server."
+msgstr "在服務器上找不到上傳的文件。"
+
+#: include/ajax.php:173
+msgid "No valid events found in iCal file."
+msgstr "在iCal文件中找不到有效事件。"
+
+#: include/ajax.php:244
+msgid "Invalid year/month"
+msgstr "無效的年/月"
+
+#: include/ajax.php:284
+msgid "No changes_json provided"
+msgstr "未提供changes_json"
+
+#: include/ajax.php:292
+msgid "Invalid JSON for changes"
+msgstr "變更的JSON無效"
+
+#: include/ajax.php:347
+msgid "No events array provided"
+msgstr "未提供事件數組"
+
+#: include/ajax.php:430
+msgid "DB error or invalid term_id"
+msgstr "數據庫錯誤或無效的term_id"
+
+#: include/ajax.php:446
+msgid "Invalid data"
+msgstr "無效數據"
+
+#: include/ajax.php:517
+msgid "Invalid meals data"
+msgstr "無效的餐食數據"
+
+#: include/ajax.php:912
+msgid "Your selected date does not meet the minimum advance order requirement."
+msgstr "您選擇的日期不滿足最少提前訂購要求。"
+
+#: include/ajax.php:924
+msgid "Your plan has expired on this day"
+msgstr "您的方案在此日期已過期"
+
+#: include/ajax.php:1127
+msgid "Invalid booking ID."
+msgstr "無效的預訂ID。"
+
+#: include/ajax.php:1134
+msgid "Booking does not belong to current user."
+msgstr "預訂不屬於當前用戶。"
+
+#: include/class-booking.php:128
+msgid "Your selected date is later than your due date; meals not suitable."
+msgstr "您選擇的日期晚於您的預產期；餐點不適合。"
+
+#: include/class-booking.php:131
+msgid "Your selected date is before your due date; meals not suitable."
+msgstr "您選擇的日期早於您的預產期；餐點不適合。"
+
+#: include/class-booking.php:237
+msgid "Failed to delete booking"
+msgstr "刪除預訂失敗"
+
+#: include/class-booking.php:249
+msgid "Failed to delete meal choices"
+msgstr "刪除餐食選擇失敗"
+
+#: include/ajax.php:2133
+msgid "Invalid order item IDs"
+msgstr "無效的訂單項目ID"
+
+#: include/ajax.php:2136
+msgid "WooCommerce function missing"
+msgstr "缺少WooCommerce功能"

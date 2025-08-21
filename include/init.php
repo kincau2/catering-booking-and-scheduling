@@ -19,7 +19,7 @@ add_action( 'wp_enqueue_scripts', 'catering_enqueue_plugin_assets', 20 );
 add_action( 'admin_enqueue_scripts', 'catering_enqueue_plugin_assets', 20 );
 
 function catering_enqueue_plugin_assets() {
-	wp_enqueue_script( 'catering-js',  plugins_url( '/catering-booking-and-scheduling/public/catering.js'));
+	wp_enqueue_script( 'catering-js',  plugins_url( '/catering-booking-and-scheduling/public/catering.js'), array('jquery'), '1.0', true);
 	wp_enqueue_style( 'catering-css', plugins_url( '/catering-booking-and-scheduling/public/catering.css'));
 
     wp_enqueue_script(

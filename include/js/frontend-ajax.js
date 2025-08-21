@@ -11,7 +11,7 @@
                 date:         date
             },
             success: success,
-            error:   error || function(){ alert('Error fetching schedule.'); }
+            error:   error || function(){ alert(cateringi18n('Error fetching schedule.')); }
         });
     };
     window.getMealScheduleWeek = function(productId, startDate, endDate, bookingId, success, error){
@@ -28,7 +28,7 @@
                 booking_id: bookingId
             },
             success: success,
-            error:   error || function(){ alert('Error fetching week schedule.'); }
+            error:   error || function(){ alert(cateringi18n('Error fetching week schedule.')); }
         });
     };
     window.getHolidayData = function(year, month, success, error){
@@ -42,7 +42,7 @@
                 month:  month
             },
             success: success,
-            error:   error || function(){ alert('Error fetching holiday data.'); }
+            error:   error || function(){ alert(cateringi18n('Error fetching holiday data.')); }
         });
     };
 
@@ -55,7 +55,7 @@
                 action: 'get_min_day_before_order'
             },
             success: success,
-            error:   error || function(){ alert('Error fetching min‑order days.'); }
+            error:   error || function(){ alert(cateringi18n('Error fetching min‑order days.')); }
         });
     };
 
@@ -69,7 +69,7 @@
                 booking_id: bookingId
             },
             success: success,
-            error: error || function(){ alert('Error validating booking.'); }
+            error: error || function(){ alert(cateringi18n('Error validating booking.')); }
         });
     };
 
@@ -87,7 +87,7 @@
                 preference: preference
             },
             success: success,
-            error: error || function(){ alert('Error saving user choice.'); }
+            error: error || function(){ alert(cateringi18n('Error saving user choice.')); }
         });
     };
 
@@ -103,7 +103,7 @@
                 end_date: endDate
             },
             success: success,
-            error: error || function(){ alert('Error fetching user meal choices.'); }
+            error: error || function(){ alert(cateringi18n('Error fetching user meal choices.')); }
         });
     };
 
@@ -118,7 +118,7 @@
                 date: date
             },
             success: success,
-            error: error || function(){ alert('Error deleting user meal choice.'); }
+            error: error || function(){ alert(cateringi18n('Error deleting user meal choice.')); }
         });
     };
 
@@ -132,7 +132,7 @@
                 booking_id: bookingId
             },
             success: success,
-            error: error || function(){ alert('Error fetching health status.'); }
+            error: error || function(){ alert(cateringi18n('Error fetching health status.')); }
         });
     };
 
@@ -147,7 +147,7 @@
                 health_status: healthStatus
             },
             success: success,
-            error: error || function(){ alert('Error updating health status.'); }
+            error: error || function(){ alert(cateringi18n('Error updating health status.')); }
         });
     };
 
@@ -167,7 +167,7 @@
                     success([]);
                 }
             },
-            error: error || function(){ alert('Error searching meals.'); }
+            error: error || function(){ alert(cateringi18n('Error searching meals.')); }
         });
     };
 

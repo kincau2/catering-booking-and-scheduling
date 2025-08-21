@@ -403,7 +403,7 @@ jQuery(function($){
         currentCats.push({ cat_id: othersCatId, cat_title: "其他", max_qty: 10, meals: [] });
         <?php endif; ?>
         selection = {};
-        var addr = respData.address || { first_name:'', last_name:'', address:'', city:'', phone:'' };
+        var addr = respData.address || { first_name:'', last_name:'', address:'', city:'', phone:'', phone_country:'+852' };
 
         var stepCount = currentCats.length + 1; 
         $('#catering-selected-date').text(date + " ( 第" + respData.proportion.current_day + "天 / " + respData.proportion.plan_day + "天餐飲計劃 )");
@@ -476,7 +476,14 @@ jQuery(function($){
              +    '</select>'
              +  '</label>'
              +  '<label><?php _e("Address","catering-booking-and-scheduling");?>:<input type="text" name="delivery[address]"    value="'+addr.address+'"    required /></label>'
-             +  '<label><?php _e("Phone","catering-booking-and-scheduling");?>:<input type="text" name="delivery[phone]"   value="'+addr.phone+'"     required /></label>'
+             +  '<label><?php _e("Phone Country Code","catering-booking-and-scheduling");?>:'
+             +    '<select name="delivery[phone_country]" required style="display:block;width:100%;">'
+             +      '<option value="+852"'+ (addr.phone_country==="+852" ? " selected" : "") +'>+852 (Hong Kong)</option>'
+             +      '<option value="+853"'+ (addr.phone_country==="+853" ? " selected" : "") +'>+853 (Macau)</option>'
+             +      '<option value="+86" '+ (addr.phone_country==="+86"  ? " selected" : "") +'>+86 (China)</option>'
+             +    '</select>'
+             +  '</label>'
+             +  '<label><?php _e("Phone Number","catering-booking-and-scheduling");?>:<input type="text" name="delivery[phone]" value="'+addr.phone+'" required placeholder="<?php _e("Enter phone number","catering-booking-and-scheduling");?>" /></label>'
              +  '<label><?php _e("Delivery Note","catering-booking-and-scheduling");?>:<textarea type="text" name="delivery[delivery_note]" required >'+addr.delivery_note+'</textarea></label>'
              +  '</div>';
         html += '<div class="steps-nav"><div class="left-buttons">'
@@ -677,9 +684,39 @@ jQuery(function($){
             adr   = $.trim($('input[name="delivery[address]"]').val()),
             city  = $('select[name="delivery[city]"]').val(),
             phone = $.trim($('input[name="delivery[phone]"]').val()),
+            phoneCountry = $('select[name="delivery[phone_country]"]').val(),
             cities = ['灣仔區','東區','中西區','南區','北區','觀塘區','油尖旺區','黃大仙區','深水埗區','九龍城區','荃灣區','離島區','葵青區','西貢區','沙田區','元朗區','屯門區','大埔區'],
-            phoneRe = /^(?!999)[4569]\d{7}$/,
             nameRe  = /^\D+$/;
+
+        // Phone validation function with country code support
+        function validatePhoneWithCountry(phone, countryCode) {
+            // Remove any spaces, dashes, or brackets
+            phone = phone.replace(/[\s\-\(\)]/g, '');
+            
+            switch (countryCode) {
+                case '+852': // Hong Kong
+                    return /^[4569]\d{7}$/.test(phone);
+                case '+853': // Macau
+                    return /^6\d{7}$/.test(phone);
+                case '+86': // China
+                    return /^1[3456789]\d{9}$/.test(phone);
+                default:
+                    return false;
+            }
+        }
+
+        function getPhoneErrorMessage(countryCode) {
+            switch (countryCode) {
+                case '+852':
+                    return '<?php _e("Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9).","catering-booking-and-scheduling");?>';
+                case '+853':
+                    return '<?php _e("Please enter a valid Macau mobile number (8 digits starting with 6).","catering-booking-and-scheduling");?>';
+                case '+86':
+                    return '<?php _e("Please enter a valid China mobile number (11 digits starting with 1).","catering-booking-and-scheduling");?>';
+                default:
+                    return '<?php _e("Please enter a valid mobile number.","catering-booking-and-scheduling");?>';
+            }
+        }
 
         if (!first)    { alert('<?php _e("First name is required.","catering-booking-and-scheduling");?>'); return; }
         if (!nameRe.test(first))  { alert('<?php _e("First name cannot contain numbers.","catering-booking-and-scheduling");?>'); return; }
@@ -692,8 +729,9 @@ jQuery(function($){
             return;
         }
         if (!phone)    { alert('<?php _e("Phone is required.","catering-booking-and-scheduling");?>'); return; }
-        if (!phoneRe.test(phone)) {
-            alert('<?php _e("Please enter a valid Mobile number.","catering-booking-and-scheduling");?>');
+        if (!phoneCountry) { alert('<?php _e("Phone country code is required.","catering-booking-and-scheduling");?>'); return; }
+        if (!validatePhoneWithCountry(phone, phoneCountry)) {
+            alert(getPhoneErrorMessage(phoneCountry));
             return;
         }
         // --- end validation ---
@@ -741,6 +779,7 @@ jQuery(function($){
              address:    $('input[name="delivery[address]"]').val(),
              city:       $('select[name="delivery[city]"]').val(),
              phone:      $('input[name="delivery[phone]"]').val(),
+             phone_country: $('select[name="delivery[phone_country]"]').val(),
              delivery_note: $('textarea[name="delivery[delivery_note]"]').val() || ''
         };
 
@@ -819,7 +858,7 @@ jQuery(function($){
                           addr.first_name + ' ' + addr.last_name + '<br>' +
                           addr.address + '<br>' +
                           addr.city + '<br>' +
-                          '<?php _e('Phone','catering-booking-and-scheduling'); ?>: ' + addr.phone + '<br>' +
+                          '<?php _e('Phone','catering-booking-and-scheduling'); ?>: ' + addr.phone_country + ' ' + addr.phone + '<br>' +
                           '<?php _e('Delivery Note','catering-booking-and-scheduling'); ?>: ' + (addr.delivery_note || '<?php _e('Nil','catering-booking-and-scheduling'); ?>') + '<br>';
 
         $('#popup-tooltip').html(tooltipHtml).css({

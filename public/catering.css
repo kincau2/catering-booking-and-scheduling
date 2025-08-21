@@ -1548,6 +1548,115 @@ div#catering_custom_info {
     padding: 20px;
 }
 
+/* Phone field styling with country code */
+.woocommerce-checkout .form-row-first select[id*="phone_country"],
+.woocommerce-checkout .form-row-last input[id*="phone"],
+.woocommerce-account .form-row-first select[id*="phone_country"],
+.woocommerce-account .form-row-last input[id*="phone"] {
+    border-radius: unset !important;
+    border: unset !important;
+    padding: 12px !important;
+    background: #fff1f3 !important;
+}
+
+.woocommerce-checkout .form-row-first,
+.woocommerce-checkout .form-row-last {
+    margin-bottom: 0 !important;
+}
+
+.catering-phone-input input {
+    border-left: none !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+/* Phone validation error styling */
+.woocommerce-error li[data-id*="phone"] {
+    color: #932331 !important;
+    font-weight: 600;
+}
+
+/* Phone field validation error in catering popup */
+.phone-validation-error {
+    color: #932331 !important;
+    font-weight: 600;
+    background: rgba(231, 76, 60, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+/* Phone validation styling for catering popup */
+#catering-pick-meal-popup input.error {
+    border: 2px solid #932331 !important;
+    background: rgba(231, 76, 60, 0.1) !important;
+}
+
+/* Styling for phone fields in catering popup */
+#catering-pick-meal-popup select[name="delivery[phone_country]"],
+#catering-pick-meal-popup input[name="delivery[phone]"] {
+    margin-bottom: 8px;
+}
+
+#catering-pick-meal-popup select[name="delivery[phone_country]"] {
+    background: #fff1f3;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+#catering-pick-meal-popup input[name="delivery[phone]"] {
+    background: #fff1f3;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    width: 100%;
+}
+
+/* Phone field group styling */
+.phone-field-group {
+    display: flex !important;
+    align-items: stretch !important;
+}
+
+.phone-field-group select {
+    border-right: none !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    background: #fff1f3 !important;
+    min-width: 150px;
+}
+
+.phone-field-group input {
+    flex: 1 !important;
+    border-left: none !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    background: #fff1f3 !important;
+}
+
+@media (max-width: 768px) {
+    .woocommerce-checkout .form-row-first,
+    .woocommerce-checkout .form-row-last {
+        width: 100% !important;
+        float: none !important;
+        margin-right: 0 !important;
+    }
+    
+    .phone-field-group {
+        flex-direction: column !important;
+    }
+    
+    .phone-field-group select,
+    .phone-field-group input {
+        border-radius: unset !important;
+        border: unset !important;
+        width: 100% !important;
+    }
+}
+
 .woocommerce-shipping-fields input, 
 .woocommerce-shipping-fields select, 
 .woocommerce-shipping-fields textarea,

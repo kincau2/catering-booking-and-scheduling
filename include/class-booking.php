@@ -125,10 +125,10 @@ class Booking {
         $dueDate = $hs['due_date'] ?? '';
 
         if ($type === 'prenatal' && $dueDate && $date > $dueDate) {
-            return 'Your selected date is later than your due date; meals not suitable.';
+            return __('Your selected date is later than your due date; meals not suitable.', 'catering-booking-and-scheduling');
         }
         if ($type === 'postpartum' && $dueDate && $date < $dueDate) {
-            return 'Your selected date is before your due date; meals not suitable.';
+            return __('Your selected date is before your due date; meals not suitable.', 'catering-booking-and-scheduling');
         }
         return '';
     }

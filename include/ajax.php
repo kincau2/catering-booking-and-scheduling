@@ -8,7 +8,7 @@ function catering_search_categories() {
 
     // Check user capabilities if needed
     if ( ! current_user_can( 'manage_catering' ) ) {
-        wp_send_json_error( 'No permission' );
+        wp_send_json_error( __('No permission', 'catering-booking-and-scheduling') );
     }
 
     $search = isset( $_GET['q'] ) ? sanitize_text_field( $_GET['q'] ) : '';
@@ -56,10 +56,10 @@ function my_ajax_bulk_edit_set_terms(){
     $chosen   = isset($_POST['chosenTermIDs']) ? array_map('intval', (array)$_POST['chosenTermIDs']) : [];
 
     if (empty($mealIDs) || empty($chosen)) {
-       wp_send_json_error('No meals or terms selected.');
+       wp_send_json_error(__('No meals or terms selected.', 'catering-booking-and-scheduling'));
     }
     if ( $termType!=='category' && $termType!=='tag' ) {
-       wp_send_json_error('Invalid termType');
+       wp_send_json_error(__('Invalid termType', 'catering-booking-and-scheduling'));
     }
 
     global $wpdb;
@@ -86,7 +86,7 @@ function my_ajax_bulk_edit_set_terms(){
       }
     }
 
-    wp_send_json_success('Set terms done.');
+    wp_send_json_success(__('Set terms done.', 'catering-booking-and-scheduling'));
 }
 
 add_action('wp_ajax_bulk_edit_add_terms','my_ajax_bulk_edit_add_terms');
@@ -97,10 +97,10 @@ function my_ajax_bulk_edit_add_terms(){
     $chosen   = isset($_POST['chosenTermIDs']) ? array_map('intval', (array)$_POST['chosenTermIDs']) : [];
 
     if (empty($mealIDs) || empty($chosen)) {
-       wp_send_json_error('No meals or terms selected.');
+       wp_send_json_error(__('No meals or terms selected.', 'catering-booking-and-scheduling'));
     }
     if ( $termType!=='category' && $termType!=='tag' ) {
-       wp_send_json_error('Invalid termType');
+       wp_send_json_error(__('Invalid termType', 'catering-booking-and-scheduling'));
     }
 
     global $wpdb;
@@ -119,7 +119,7 @@ function my_ajax_bulk_edit_add_terms(){
       }
     }
 
-    wp_send_json_success('Add terms done.');
+    wp_send_json_success(__('Add terms done.', 'catering-booking-and-scheduling'));
 }
 
 add_action('wp_ajax_get_all_terms','my_ajax_get_all_terms');
@@ -127,7 +127,7 @@ function my_ajax_get_all_terms(){
 
     $termType = isset($_POST['termType']) ? sanitize_text_field($_POST['termType']) : '';
     if ( $termType !== 'category' && $termType !== 'tag' ) {
-        wp_send_json_error('Invalid termType');
+        wp_send_json_error(__('Invalid termType', 'catering-booking-and-scheduling'));
     }
 
     // Fetch all categories or all tags from your "catering_terms" table
@@ -158,11 +158,11 @@ function catering_ajax_import_ical(){
     // check_ajax_referer('import_ical_nonce');
 
     if (!isset($_FILES['ical_file']) || $_FILES['ical_file']['error'] !== UPLOAD_ERR_OK) {
-        wp_send_json_error('No iCal file uploaded or upload error.');
+        wp_send_json_error(__('No iCal file uploaded or upload error.', 'catering-booking-and-scheduling'));
     }
     $tmpName = $_FILES['ical_file']['tmp_name'];
     if (!file_exists($tmpName)) {
-        wp_send_json_error('Uploaded file not found on server.');
+        wp_send_json_error(__('Uploaded file not found on server.', 'catering-booking-and-scheduling'));
     }
 
     // parse
@@ -170,7 +170,7 @@ function catering_ajax_import_ical(){
     // $events is an array of { date:'YYYY-MM-DD', name:'Event Title'}
 
     if(empty($events)){
-        wp_send_json_error('No valid events found in iCal file.');
+        wp_send_json_error(__('No valid events found in iCal file.', 'catering-booking-and-scheduling'));
     }
 
     wp_send_json_success($events);
@@ -241,7 +241,7 @@ function catering_ajax_get_holiday_data(){
     $year  = isset($_POST['year']) ? absint($_POST['year']) : 0;
     $month = isset($_POST['month'])? absint($_POST['month']): 0;
     if($year<2000 || $year>2100 || $month<1 || $month>12){
-        wp_send_json_error('Invalid year/month');
+        wp_send_json_error(__('Invalid year/month', 'catering-booking-and-scheduling'));
     }
 
     global $wpdb;
@@ -281,7 +281,7 @@ function catering_ajax_update_holiday_batch(){
     // check_ajax_referer('some_nonce');
 
     if(!isset($_POST['changes_json'])){
-        wp_send_json_error('No changes_json provided');
+        wp_send_json_error(__('No changes_json provided', 'catering-booking-and-scheduling'));
     }
 
     // JSON decode
@@ -289,7 +289,7 @@ function catering_ajax_update_holiday_batch(){
     $changes = json_decode($changes_str, true);
 
     if(!is_array($changes)){
-        wp_send_json_error('Invalid JSON for changes');
+        wp_send_json_error(__('Invalid JSON for changes', 'catering-booking-and-scheduling'));
     }
 
     global $wpdb;
@@ -344,7 +344,7 @@ function catering_ajax_batch_holiday_set(){
     // check_ajax_referer('some_nonce');
 
     if (!isset($_POST['events']) || !is_array($_POST['events'])) {
-        wp_send_json_error('No events array provided');
+        wp_send_json_error(__('No events array provided', 'catering-booking-and-scheduling'));
     }
     $events = $_POST['events']; // each is { date, name }
 
@@ -399,13 +399,13 @@ function catering_ajax_batch_holiday_set(){
         }
     }
 
-    wp_send_json_success('All iCal events set as holiday');
+    wp_send_json_success(__('All iCal events set as holiday', 'catering-booking-and-scheduling'));
 }
 
 add_action('wp_ajax_update_term_color','my_update_term_color');
 function my_update_term_color(){
     if(!current_user_can('manage_catering')){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     global $wpdb;
     $table = $wpdb->prefix.'catering_terms';
@@ -427,7 +427,7 @@ function my_update_term_color(){
         [ '%d','%s' ]
     );
     if(false === $res){
-        wp_send_json_error('DB error or invalid term_id');
+        wp_send_json_error(__('DB error or invalid term_id', 'catering-booking-and-scheduling'));
     }
     wp_send_json_success();
 }
@@ -435,7 +435,7 @@ function my_update_term_color(){
 add_action('wp_ajax_update_category_ordering','my_update_category_ordering');
 function my_update_category_ordering(){
     if(!current_user_can('manage_catering')){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     global $wpdb;
     $table = $wpdb->prefix.'catering_terms';
@@ -443,7 +443,7 @@ function my_update_category_ordering(){
     $json = isset($_POST['new_order']) ? stripslashes($_POST['new_order']) : '';
     $arr  = json_decode($json, true);
     if(!is_array($arr)){
-        wp_send_json_error('Invalid data');
+        wp_send_json_error(__('Invalid data', 'catering-booking-and-scheduling'));
     }
 
     // $arr => [ { term_id:X, ordering:0 }, { term_id:Y, ordering:1 }, ... ]
@@ -466,12 +466,12 @@ function my_update_category_ordering(){
 add_action('wp_ajax_clear_catering_schedule', 'catering_ajax_clear_catering_schedule');
 function catering_ajax_clear_catering_schedule(){
     if( ! current_user_can('manage_catering') ){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
     $dates = isset($_POST['dates']) && is_array($_POST['dates']) ? $_POST['dates'] : [];
     if( ! $product_id || empty($dates) ){
-        wp_send_json_error('Invalid parameters');
+        wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
     global $wpdb;
     $table = $wpdb->prefix . 'catering_schedule';
@@ -481,9 +481,9 @@ function catering_ajax_clear_catering_schedule(){
     $params = array_merge([$product_id], $dates);
     $result = $wpdb->query($wpdb->prepare($query, $params));
     if($result === false){
-        wp_send_json_error('DB error');
+        wp_send_json_error(__('DB error', 'catering-booking-and-scheduling'));
     }
-    wp_send_json_success('Schedule cleared');
+    wp_send_json_success(__('Schedule cleared', 'catering-booking-and-scheduling'));
 }
 
 add_action('wp_ajax_check_catering_schedule', 'catering_ajax_check_catering_schedule');
@@ -491,7 +491,7 @@ function catering_ajax_check_catering_schedule(){
     $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
     $unique_dates = isset($_POST['unique_dates']) && is_array($_POST['unique_dates']) ? array_map('sanitize_text_field', $_POST['unique_dates']) : [];
     if(!$product_id || empty($unique_dates)){
-        wp_send_json_error('Invalid parameters');
+        wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
     
     global $wpdb;
@@ -511,10 +511,10 @@ function catering_ajax_check_catering_schedule(){
 add_action('wp_ajax_validate_catering_meals','catering_ajax_validate_catering_meals');
 function catering_ajax_validate_catering_meals(){
     if(!current_user_can('manage_catering')){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     if(! isset($_POST['meals']) || ! is_array($_POST['meals']) ){
-        wp_send_json_error('Invalid meals data');
+        wp_send_json_error(__('Invalid meals data', 'catering-booking-and-scheduling'));
     }
     global $wpdb;
     $table   = $wpdb->prefix . 'catering_meal';
@@ -544,7 +544,7 @@ function catering_ajax_validate_catering_meals(){
 add_action('wp_ajax_process_catering_schedule_row','catering_ajax_process_catering_schedule_row');
 function catering_ajax_process_catering_schedule_row(){
     if(! current_user_can('manage_catering') ){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     // capture row index
     $rownum = isset($_POST['row']) ? absint($_POST['row']) : 0;
@@ -568,11 +568,11 @@ function catering_ajax_process_catering_schedule_row(){
     $serialized_types = empty($types)? '' : maybe_serialize( $types );
 
     if( ! $post_id || ! $meal_id || ! $date_str ){
-        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . 'Missing parameters' );
+        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . __('Missing parameters', 'catering-booking-and-scheduling') );
     }
     // validate date format
     if( ! preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_str) ){
-        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . 'Invalid date' );
+        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . __('Invalid date', 'catering-booking-and-scheduling') );
     }
     global $wpdb;
     // verify meal exists
@@ -580,7 +580,7 @@ function catering_ajax_process_catering_schedule_row(){
         SELECT COUNT(*) FROM {$wpdb->prefix}catering_meal WHERE ID=%d
     ", $meal_id) );
     if( ! $exists ){
-        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . 'Meal ID not found' );
+        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . __('Meal ID not found', 'catering-booking-and-scheduling') );
     }
     // Skip if schedule entry already exists
     $dup = $wpdb->get_var( $wpdb->prepare(
@@ -589,7 +589,7 @@ function catering_ajax_process_catering_schedule_row(){
         $post_id, $meal_id, $date_str
     ) );
     if( $dup ) {
-        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . "Duplicate meal on {$date_str}" );
+        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . sprintf(__("Duplicate meal on %s", 'catering-booking-and-scheduling'), $date_str) );
     }
     // lookup category IDs
     if( $cats ){
@@ -604,7 +604,7 @@ function catering_ajax_process_catering_schedule_row(){
         $cat_ids = [];
         foreach($cats as $c){
             if( ! isset($map[$c]) ){
-                wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . "Category '{$c}' not found" );
+                wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . sprintf(__("Category '%s' not found", 'catering-booking-and-scheduling'), $c) );
             }
             $cat_ids[] = $map[$c];
         }
@@ -626,7 +626,7 @@ function catering_ajax_process_catering_schedule_row(){
         ['%d','%d','%s','%s','%s','%s']
     );
     if( false === $ok ){
-        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . 'DB insert failed' );
+        wp_send_json_error( ($rownum?"Row {$rownum}: ":"") . __('DB insert failed', 'catering-booking-and-scheduling') );
     }
     wp_send_json_success();
 }
@@ -639,7 +639,7 @@ function catering_ajax_get_meal_schedule_week(){
     // NEW: obtain booking_id to calculate day remaining
     $booking_id = isset($_POST['booking_id']) ? absint($_POST['booking_id']) : 0;
     if(!$product_id || !preg_match('/^\d{4}-\d{2}-\d{2}$/',$start) || !preg_match('/^\d{4}-\d{2}-\d{2}$/',$end)){
-        wp_send_json_error('Invalid parameters');
+        wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
 
     global $wpdb;
@@ -879,18 +879,18 @@ function catering_ajax_import_csv_row(){
 add_action('wp_ajax_delete_schedule_day','catering_ajax_delete_schedule_day');
 function catering_ajax_delete_schedule_day(){
     if (! current_user_can('manage_catering')) {
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
     $date       = isset($_POST['date'])       ? sanitize_text_field($_POST['date']) : '';
     if (!$product_id || ! preg_match('/^\d{4}-\d{2}-\d{2}$/',$date)) {
-        wp_send_json_error('Invalid parameters');
+        wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
     global $wpdb;
     $table  = $wpdb->prefix . 'catering_schedule';
     $deleted = $wpdb->delete( $table, [ 'product_id'=>$product_id, 'date'=>$date ], [ '%d','%s' ] );
     if ( false === $deleted ) {
-        wp_send_json_error('DB error');
+        wp_send_json_error(__('DB error', 'catering-booking-and-scheduling'));
     }
     wp_send_json_success();
 }
@@ -904,24 +904,24 @@ function catering_ajax_get_day_schedule(){
     $date        = isset($_GET['date'])         ? sanitize_text_field($_GET['date']) : '';
     $booking_id  = isset($_GET['booking_id'])   ? absint($_GET['booking_id'])   : 0;
     if( ! $product_id || ! preg_match('/^\d{4}-\d{2}-\d{2}$/',$date) ){
-        wp_send_json_error('Invalid parameters');
+        wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
     
     // New: Check minimum day requirement
     if( !current_user_can('manage_catering') && !is_min_day_requirement_met($date) ){
-        wp_send_json_error('Your selected date does not meet the minimum advance order requirement.');
+        wp_send_json_error(__('Your selected date does not meet the minimum advance order requirement.', 'catering-booking-and-scheduling'));
     }
 
     $booking    = new Booking($booking_id);
     if(!$booking){
-        wp_send_json_error('Booking not found.');
+        wp_send_json_error(__('Booking not found.', 'catering-booking-and-scheduling'));
     }
 
     if(!current_user_can('manage_catering') && !empty($booking->expiry) ){
         // calculate plan expiry date based on first choice
 
         if( $booking->is_date_expired($date) ) {
-            wp_send_json_error('Your plan has expired on this day ('.$date.').');
+            wp_send_json_error(sprintf(__('Your plan has expired on this day (%s).', 'catering-booking-and-scheduling'), $date));
         }
         
     }
@@ -1058,6 +1058,7 @@ function catering_ajax_get_day_schedule(){
                         'last_name'      => $order->get_shipping_last_name(),
                         'address'        => $order->get_shipping_address_1(),
                         'city'           => $order->get_shipping_city(),
+                        'phone_country'  => $order->get_meta('_shipping_phone_country') ?? '',
                         'phone'          => $order->get_shipping_phone(),
                         'delivery_note'  => $order->get_meta('_shipping_remarks') ?? '',
                         'order_note'     => $order->get_customer_note() ?? ''
@@ -1124,14 +1125,14 @@ function catering_ajax_validate_booking(){
     $current_user = get_current_user_id();
     $booking_id = isset($_POST['booking_id']) ? absint($_POST['booking_id']) : 0;
     if(!$booking_id){
-         wp_send_json_error('Invalid booking ID.');
+         wp_send_json_error(__('Invalid booking ID.', 'catering-booking-and-scheduling'));
     }
     $booking = new Booking($booking_id);
     if(!$booking){
-         wp_send_json_error('Booking not found.');
+         wp_send_json_error(__('Booking not found.', 'catering-booking-and-scheduling'));
     }
     if($booking->user_id != $current_user){
-         wp_send_json_error('Booking does not belong to current user.');
+         wp_send_json_error(__('Booking does not belong to current user.', 'catering-booking-and-scheduling'));
     }
     wp_send_json_success();
 }
@@ -1146,7 +1147,7 @@ function catering_ajax_save_user_choice(){
     $booking    = new Booking($booking_id);
 
     if(!$booking){
-        wp_send_json_error('Booking not found.');
+        wp_send_json_error(__('Booking not found.', 'catering-booking-and-scheduling'));
     }
 
     $user_id = $booking->user_id;
@@ -1158,7 +1159,7 @@ function catering_ajax_save_user_choice(){
                   ? $_POST['preference'] : [];
     
     if(!$booking_id || !$user_id || !$date || empty($choice) || empty($address) ){
-        wp_send_json_error('Missing or invalid parameters.');
+        wp_send_json_error(__('Missing or invalid parameters.', 'catering-booking-and-scheduling'));
     }
 
     // --- address validation ---
@@ -1167,46 +1168,76 @@ function catering_ajax_save_user_choice(){
     $adr   = sanitize_text_field($address['address']    ?? '');
     $city  = sanitize_text_field($address['city']       ?? '');
     $phone = sanitize_text_field($address['phone']      ?? '');
+    $phone_country = sanitize_text_field($address['phone_country'] ?? '+852');
 
     $allowed_cities = [
         '灣仔區','東區','中西區','南區','北區','觀塘區','油尖旺區',
         '黃大仙區','深水埗區','九龍城區','荃灣區','離島區','葵青區',
         '西貢區','沙田區','元朗區','屯門區','大埔區'
     ];
-    $phone_re = '/^(?!999)[4569]\d{7}$/';
+    
+    // Updated phone validation with country code support
+    function validate_phone_with_country($phone, $country_code) {
+        // Remove any spaces, dashes, or brackets
+        $phone = preg_replace('/[\s\-\(\)]/', '', $phone);
+        
+        switch ($country_code) {
+            case '+852': // Hong Kong
+                return preg_match('/^[4569]\d{7}$/', $phone);
+            case '+853': // Macau
+                return preg_match('/^6\d{7}$/', $phone);
+            case '+86': // China
+                return preg_match('/^1[3456789]\d{9}$/', $phone);
+            default:
+                return false;
+        }
+    }
+    
     $name_re  = '/^\D+$/';
 
     if (!$first) {
-        wp_send_json_error('First name is required.');
+        wp_send_json_error(__('First name is required.', 'catering-booking-and-scheduling'));
     }
     if (!preg_match($name_re, $first)) {
-        wp_send_json_error('First name cannot contain numbers.');
+        wp_send_json_error(__('First name cannot contain numbers.', 'catering-booking-and-scheduling'));
     }
     if (!$last) {
-        wp_send_json_error('Last name is required.');
+        wp_send_json_error(__('Last name is required.', 'catering-booking-and-scheduling'));
     }
     if (!preg_match($name_re, $last)) {
-        wp_send_json_error('Last name cannot contain numbers.');
+        wp_send_json_error(__('Last name cannot contain numbers.', 'catering-booking-and-scheduling'));
     }
     if (!$adr) {
-        wp_send_json_error('Address is required.');
+        wp_send_json_error(__('Address is required.', 'catering-booking-and-scheduling'));
     }
     if (!$city) {
-        wp_send_json_error('City is required.');
+        wp_send_json_error(__('City is required.', 'catering-booking-and-scheduling'));
     }
     if (!in_array($city, $allowed_cities, true)) {
-        wp_send_json_error('Please select a valid city.');
+        wp_send_json_error(__('Please select a valid city.', 'catering-booking-and-scheduling'));
     }
     if (!$phone) {
-        wp_send_json_error('Phone is required.');
+        wp_send_json_error(__('Phone is required.', 'catering-booking-and-scheduling'));
     }
-    if (!preg_match($phone_re, $phone)) {
-        wp_send_json_error('Please enter a valid mobile number.');
+    if (!validate_phone_with_country($phone, $phone_country)) {
+        switch ($phone_country) {
+            case '+852':
+                wp_send_json_error(__('Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9).', 'catering-booking-and-scheduling'));
+                break;
+            case '+853':
+                wp_send_json_error(__('Please enter a valid Macau mobile number (8 digits starting with 6).', 'catering-booking-and-scheduling'));
+                break;
+            case '+86':
+                wp_send_json_error(__('Please enter a valid China mobile number (11 digits starting with 1).', 'catering-booking-and-scheduling'));
+                break;
+            default:
+                wp_send_json_error(__('Please enter a valid mobile number.', 'catering-booking-and-scheduling'));
+        }
     }
     // --- end address validation ---
 
     if( ! current_user_can('manage_catering') && ! is_min_day_requirement_met($date) ){
-        wp_send_json_error('Your selected date does not meet the minimum advance order requirement.');
+        wp_send_json_error(__('Your selected date does not meet the minimum advance order requirement.', 'catering-booking-and-scheduling'));
     }
     
     // NEW VALIDATION: Check that the number of meals selected per category matches the expected cat_qty.
@@ -1219,7 +1250,7 @@ function catering_ajax_save_user_choice(){
                     // Retrieve category title from the database
                     $term = $wpdb->get_row($wpdb->prepare("SELECT title FROM {$wpdb->prefix}catering_terms WHERE ID=%d", $cat_id));
                     $cat_title = $term ? $term->title : $cat_id;
-                    wp_send_json_error("Please select exactly {$requiredCount} meal(s) for category {$cat_title}.");
+                    wp_send_json_error(sprintf(__("Please select exactly %d meal(s) for category %s.", 'catering-booking-and-scheduling'), $requiredCount, $cat_title));
                 }
             }
         }
@@ -1229,7 +1260,7 @@ function catering_ajax_save_user_choice(){
         // calculate plan expiry date based on first choice
 
         if( $booking->is_date_expired($date) ) {
-            wp_send_json_error('Your plan has expired on this day ('.$date.').');
+            wp_send_json_error(sprintf(__('Your plan has expired on this day (%s).', 'catering-booking-and-scheduling'), $date));
         }
         
     }
@@ -1261,7 +1292,7 @@ function catering_ajax_save_user_choice(){
             $booking_id, $user_id
         ));
         if( !current_user_can('manage_catering') && ($total_choices >= $plan_days) ){
-            wp_send_json_error('No remaining days on your plan.');
+            wp_send_json_error(__('No remaining days on your plan.', 'catering-booking-and-scheduling'));
         }
     }
 
@@ -1341,7 +1372,7 @@ function catering_ajax_save_user_choice(){
     }
 
     if(false === $res){
-         wp_send_json_error('DB insert/update failed.');
+         wp_send_json_error(__('DB insert/update failed.', 'catering-booking-and-scheduling'));
     }
     
     // Log the change to catering_log
@@ -1360,7 +1391,7 @@ function catering_ajax_save_user_choice(){
         );
     }
     
-    wp_send_json_success('User choice saved.');
+    wp_send_json_success(__('User choice saved.', 'catering-booking-and-scheduling'));
 }
 
 add_action('wp_ajax_get_user_meal_choices_range','catering_ajax_get_user_meal_choices_range');
@@ -1373,13 +1404,13 @@ function catering_ajax_get_user_meal_choices_range(){
     $end        = isset($_POST['end_date'])   ? sanitize_text_field($_POST['end_date'])   : '';
 
     if(!$booking_id || !$start || !$end){
-         wp_send_json_error('Invalid parameters.');
+         wp_send_json_error(__('Invalid parameters.', 'catering-booking-and-scheduling'));
     }
     
     $booking    = new Booking($booking_id);
     
     if(!$booking){
-        wp_send_json_error('Booking not found.');
+        wp_send_json_error(__('Booking not found.', 'catering-booking-and-scheduling'));
     }
     $user_id = $booking->user_id;
     
@@ -1500,13 +1531,13 @@ function catering_ajax_delete_user_meal_choice(){
     $date     = isset($_POST['date']) ? sanitize_text_field($_POST['date']) : '';
   
     if(!$booking_id || !$date){
-         wp_send_json_error('Invalid parameters');
+         wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
 
     $booking = new Booking($booking_id);
 
     if(!$booking){
-        wp_send_json_error('Booking not found.');
+        wp_send_json_error(__('Booking not found.', 'catering-booking-and-scheduling'));
     }
 
     $user_id = $booking->user_id;
@@ -1523,7 +1554,7 @@ function catering_ajax_delete_user_meal_choice(){
     $now = time();
     $target = strtotime($date);
     if($target === false){
-        wp_send_json_error('Invalid date format.');
+        wp_send_json_error(__('Invalid date format.', 'catering-booking-and-scheduling'));
     }
     
     if( !current_user_can('manage_catering') && !is_min_day_requirement_met($date) ){
@@ -1545,7 +1576,7 @@ function catering_ajax_delete_user_meal_choice(){
          'date'       => $date
     ], ['%d','%d','%s']);
     if($result === false){
-         wp_send_json_error('DB error');
+         wp_send_json_error(__('DB error', 'catering-booking-and-scheduling'));
     }
     
     // Log the deletion to catering_log
@@ -1561,7 +1592,7 @@ function catering_ajax_delete_user_meal_choice(){
         );
     }
     
-    wp_send_json_success('Meal choice deleted');
+    wp_send_json_success(__('Meal choice deleted', 'catering-booking-and-scheduling'));
 }
 
 // NEW: Endpoint to get booking health status
@@ -1569,11 +1600,11 @@ add_action('wp_ajax_get_health_status', 'catering_ajax_get_health_status');
 function catering_ajax_get_health_status(){
     $booking_id = isset($_POST['booking_id']) ? absint($_POST['booking_id']) : 0;
     if(!$booking_id){
-        wp_send_json_error('Invalid booking ID');
+        wp_send_json_error(__('Invalid booking ID', 'catering-booking-and-scheduling'));
     }
     $booking = new Booking($booking_id);
     if(!$booking){
-        wp_send_json_error('Booking not found');
+        wp_send_json_error(__('Booking not found', 'catering-booking-and-scheduling'));
     }
     $health_status = maybe_unserialize($booking->health_status);
     wp_send_json_success($health_status);
@@ -1585,19 +1616,19 @@ function catering_ajax_update_health_status(){
     $booking_id = isset($_POST['booking_id']) ? absint($_POST['booking_id']) : 0;
     $health_status = isset($_POST['health_status']) ? $_POST['health_status'] : '';
     if(!$booking_id || empty($health_status)){
-        wp_send_json_error('Invalid parameters');
+        wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
     global $wpdb;
     $table = $wpdb->prefix . 'catering_booking';
     // Update query now retrieves full booking info (including type)
     $booking = new Booking($booking_id);
     if( !$booking || ( $booking->user_id != get_current_user_id() && !current_user_can('manage_catering') ) ){
-        wp_send_json_error('Booking not found or permission denied');
+        wp_send_json_error(__('Booking not found or permission denied', 'catering-booking-and-scheduling'));
     }
     $serialized = maybe_serialize($health_status);
     $res = $booking->set('health_status', $serialized);
     if( !$res ){
-        wp_send_json_error('Failed to update health status');
+        wp_send_json_error(__('Failed to update health status', 'catering-booking-and-scheduling'));
     }
     $message = 'Health status updated.';
     if(isset($health_status['due_date']) && !empty($health_status['due_date'])){
@@ -1743,7 +1774,7 @@ function catering_ajax_update_health_status(){
 add_action('wp_ajax_search_meals', 'catering_ajax_search_meals');
 function catering_ajax_search_meals(){
     if( ! current_user_can('manage_catering') ){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $search = isset($_GET['q']) ? sanitize_text_field($_GET['q']) : '';
     global $wpdb;
@@ -1775,113 +1806,113 @@ function catering_ajax_search_meals(){
 add_action('wp_ajax_update_item_delivery_date', 'catering_ajax_update_item_delivery_date');
 function catering_ajax_update_item_delivery_date(){
     if ( ! current_user_can( 'manage_catering' ) ) {
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $order_item_id = isset($_POST['order_item_id']) ? absint($_POST['order_item_id']) : 0;
     $delivery_date = isset($_POST['delivery_date']) ? sanitize_text_field($_POST['delivery_date']) : '';
     if(!$order_item_id || !$delivery_date){
-        wp_send_json_error('Missing parameters');
+        wp_send_json_error(__('Missing parameters', 'catering-booking-and-scheduling'));
     }
     // Update order item meta (using WooCommerce function)
     if( function_exists('wc_update_order_item_meta') ){
         wc_update_order_item_meta($order_item_id, 'delivery_date', $delivery_date);
         wp_send_json_success();
     }
-    wp_send_json_error('Failed to update');
+    wp_send_json_error(__('Failed to update', 'catering-booking-and-scheduling'));
 }
 
 // NEW: Endpoint to update order item's tracking number
 add_action('wp_ajax_update_item_tracking_number', 'catering_ajax_update_item_tracking_number');
 function catering_ajax_update_item_tracking_number(){
     if ( ! current_user_can( 'manage_catering' ) ) {
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $order_item_id = isset($_POST['order_item_id']) ? absint($_POST['order_item_id']) : 0;
     $tracking_number = isset($_POST['tracking_number']) ? sanitize_text_field($_POST['tracking_number']) : '';
     if(!$order_item_id || !$tracking_number){
-        wp_send_json_error('Missing parameters');
+        wp_send_json_error(__('Missing parameters', 'catering-booking-and-scheduling'));
     }
     if( function_exists('wc_update_order_item_meta') ){
         wc_update_order_item_meta($order_item_id, 'tracking_number', $tracking_number);
         wp_send_json_success();
     }
-    wp_send_json_error('Failed to update');
+    wp_send_json_error(__('Failed to update', 'catering-booking-and-scheduling'));
 }
 
 // NEW: save CS note for an order item
 add_action('wp_ajax_update_item_cs_note','catering_ajax_update_item_cs_note');
 function catering_ajax_update_item_cs_note(){
     if(! current_user_can('manage_catering') ){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $order_item_id = isset($_POST['order_item_id']) ? absint($_POST['order_item_id']) : 0;
     $cs_note       = isset($_POST['cs_note'])       ? sanitize_textarea_field($_POST['cs_note']) : '';
     if(! $order_item_id){
-        wp_send_json_error('Missing parameters');
+        wp_send_json_error(__('Missing parameters', 'catering-booking-and-scheduling'));
     }
     if(function_exists('wc_update_order_item_meta')){
         wc_update_order_item_meta($order_item_id, 'cs_note', $cs_note);
         wp_send_json_success();
     }
-    wp_send_json_error('Failed to update CS note');
+    wp_send_json_error(__('Failed to update CS note', 'catering-booking-and-scheduling'));
 }
 
 // NEW: Endpoint to delete order item's delivery date
 add_action('wp_ajax_delete_item_delivery_date', 'catering_ajax_delete_item_delivery_date');
 function catering_ajax_delete_item_delivery_date(){
     if( ! current_user_can('manage_catering') ){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $order_item_id = isset($_POST['order_item_id']) ? absint($_POST['order_item_id']) : 0;
     if(!$order_item_id){
-        wp_send_json_error('Missing order item id');
+        wp_send_json_error(__('Missing order item id', 'catering-booking-and-scheduling'));
     }
     if(function_exists('wc_update_order_item_meta')){
         wc_update_order_item_meta($order_item_id, 'delivery_date', '');
         wp_send_json_success();
     }
-    wp_send_json_error('Failed to delete delivery date');
+    wp_send_json_error(__('Failed to delete delivery date', 'catering-booking-and-scheduling'));
 }
 
 // NEW: Endpoint to delete order item's tracking number
 add_action('wp_ajax_delete_item_tracking_number', 'catering_ajax_delete_item_tracking_number');
 function catering_ajax_delete_item_tracking_number(){
     if( ! current_user_can('manage_catering') ){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $order_item_id = isset($_POST['order_item_id']) ? absint($_POST['order_item_id']) : 0;
     if(!$order_item_id){
-        wp_send_json_error('Missing order item id');
+        wp_send_json_error(__('Missing order item id', 'catering-booking-and-scheduling'));
     }
     if(function_exists('wc_update_order_item_meta')){
         wc_update_order_item_meta($order_item_id, 'tracking_number', '');
         wp_send_json_success();
     }
-    wp_send_json_error('Failed to delete tracking number');
+    wp_send_json_error(__('Failed to delete tracking number', 'catering-booking-and-scheduling'));
 }
 
 // NEW: delete CS note for an order item
 add_action('wp_ajax_delete_item_cs_note','catering_ajax_delete_item_cs_note');
 function catering_ajax_delete_item_cs_note(){
     if(! current_user_can('manage_catering') ){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $order_item_id = isset($_POST['order_item_id']) ? absint($_POST['order_item_id']) : 0;
     if(! $order_item_id){
-        wp_send_json_error('Missing parameters');
+        wp_send_json_error(__('Missing parameters', 'catering-booking-and-scheduling'));
     }
     if(function_exists('wc_update_order_item_meta')){
         wc_update_order_item_meta($order_item_id, 'cs_note', '');
         wp_send_json_success();
     }
-    wp_send_json_error('Failed to delete CS note');
+    wp_send_json_error(__('Failed to delete CS note', 'catering-booking-and-scheduling'));
 }
 
 add_action('wp_ajax_get_daily_meal_choices','catering_ajax_get_daily_meal_choices');
 function catering_ajax_get_daily_meal_choices(){
     $dateStr = isset($_POST['date']) ? sanitize_text_field($_POST['date']) : '';
     if(! preg_match('/^\d{4}-\d{2}-\d{2}$/',$dateStr) ){
-        wp_send_json_error('Invalid date');
+        wp_send_json_error(__('Invalid date', 'catering-booking-and-scheduling'));
     }
 
     global $wpdb;
@@ -2018,11 +2049,11 @@ function catering_ajax_get_badge_booking_info(){
 add_action('wp_ajax_get_daily_delivery_items','catering_ajax_get_daily_delivery_items');
 function catering_ajax_get_daily_delivery_items(){
     if(! current_user_can('manage_catering') ){
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $date = isset($_POST['date']) ? sanitize_text_field($_POST['date']) : '';
     if(! preg_match('/^\d{4}-\d{2}-\d{2}$/',$date)){
-        wp_send_json_error('Invalid date');
+        wp_send_json_error(__('Invalid date', 'catering-booking-and-scheduling'));
     }
     global $wpdb;
     $meta = $wpdb->prefix . 'woocommerce_order_itemmeta';
@@ -2091,19 +2122,19 @@ function catering_ajax_get_daily_delivery_items(){
 add_action('wp_ajax_get_badge_delivery_info','catering_ajax_get_badge_delivery_info');
 function catering_ajax_get_badge_delivery_info(){
     if ( ! current_user_can( 'manage_catering' ) ) {
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     $order_item_input = isset($_POST['order_item_id']) ? sanitize_text_field($_POST['order_item_id']) : '';
     if ( empty($order_item_input) ) {
-        wp_send_json_error('Missing parameters');
+        wp_send_json_error(__('Missing parameters', 'catering-booking-and-scheduling'));
     }
     // Allow multiple order item IDs separated by comma
     $order_item_ids = array_map('absint', array_filter(explode(',', $order_item_input)));
     if ( empty($order_item_ids) ) {
-        wp_send_json_error('Invalid order item IDs');
+        wp_send_json_error(__('Invalid order item IDs', 'catering-booking-and-scheduling'));
     }
     if ( ! function_exists('wc_get_order_id_by_order_item_id') ) {
-        wp_send_json_error('WooCommerce function missing');
+        wp_send_json_error(__('WooCommerce function missing', 'catering-booking-and-scheduling'));
     }
     $results = [];
     foreach($order_item_ids as $oi_id){
@@ -2148,14 +2179,14 @@ function catering_ajax_get_badge_delivery_info(){
 add_action('wp_ajax_get_meal_choice_history', 'catering_ajax_get_meal_choice_history');
 function catering_ajax_get_meal_choice_history() {
     if (!current_user_can('manage_catering')) {
-        wp_send_json_error('No permission');
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
     }
     
     $booking_id = isset($_POST['booking_id']) ? absint($_POST['booking_id']) : 0;
     $choice_date = isset($_POST['choice_date']) ? sanitize_text_field($_POST['choice_date']) : '';
     
     if (!$booking_id || !$choice_date) {
-        wp_send_json_error('Invalid parameters');
+        wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
     
     global $wpdb;
