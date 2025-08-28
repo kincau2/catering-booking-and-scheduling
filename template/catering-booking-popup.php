@@ -435,6 +435,7 @@ jQuery(function($){
             var setting = respData.meal_setting.soup_container;
             html += '<div class="step" data-step="'+ currentCats.length +'" style="margin-bottom:20px;">'
                  + '<h5><?php _e("Which container would you like for the soup?","catering-booking-and-scheduling");?></h5>'
+                 + '<p><?php _e("Please note that during holidays, all soups will be served in soup cups.","catering-booking-and-scheduling");?></p>'
                  + '<label><select name="preference[soup_container]" required>';
             if ( setting === 'pot_only' ) {
                 html += '<option value="pot" selected><?php _e("Pot","catering-booking-and-scheduling");?></option>';

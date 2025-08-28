@@ -1989,7 +1989,11 @@ function catering_ajax_get_daily_meal_choices(){
 add_action('wp_ajax_get_badge_booking_info','catering_ajax_get_badge_booking_info');
 function catering_ajax_get_badge_booking_info(){
     global $wpdb;
-    $bids   = isset($_POST['booking_ids']) ? (array)$_POST['booking_ids'] : [];
+    $bids   = isset($_POST['booking_ids']) ? $_POST['booking_ids'] : [];
+    if(empty($bids)){
+        wp_send_json_error(__('No booking IDs provided', 'catering-booking-and-scheduling'));
+    }   
+    $bids = explode( ',', $bids );
     $mealId = isset($_POST['meal_id'])     ? absint($_POST['meal_id']) : 0;
     $date   = isset($_POST['date'])        ? sanitize_text_field($_POST['date']) : '';
     $out = [];
@@ -2008,6 +2012,8 @@ function catering_ajax_get_badge_booking_info(){
         // customer & phone
         $cust = trim($order->get_shipping_first_name().' '.$order->get_shipping_last_name());
         $phone= $order->get_shipping_phone();
+        $phone_country = $order->get_meta('_shipping_phone_country') ?: '+852';
+        $full_phone = $phone_country . ' ' . $phone;
         // due date
         $hs    = is_array($booking->health_status) ? $booking->health_status : maybe_unserialize($booking->health_status);
         $due   = $hs['due_date'] ?? '';
@@ -2038,11 +2044,12 @@ function catering_ajax_get_badge_booking_info(){
             'user_id'   => $booking->user_id,
             'customer'  => $cust,
             'due_date'  => $due,
-            'phone'     => $phone,
+            'phone'     => $full_phone,
             'product'   => $title,
             'count'     => $cnt
         ];
     }
+    
     wp_send_json_success($out);
 }
 
@@ -2163,11 +2170,13 @@ function catering_ajax_get_badge_delivery_info(){
         $product_name = $item->get_name();
         $customer     = trim($order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name());
         $phone        = $order->get_shipping_phone();
+        $phone_country = $order->get_meta('_shipping_phone_country') ?: '+852';
+        $full_phone   = $phone_country . ' ' . $phone;
         $results[] = [
             'order_id' => $order_id,
             'user_id'  => $order->get_user_id(),
             'customer' => $customer,
-            'phone'    => $phone,
+            'phone'    => $full_phone,
             'product'  => $product_name,
             'count'    => $quantity
         ];

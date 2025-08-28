@@ -62,11 +62,94 @@
     </div>
     <script>
     jQuery(document).ready(function($){
-        // initial disable
-        $("#customer_details, #order_review, #order_review_heading, #place_order").css({
-            'pointer-events':'none','opacity':'0.5','cursor':'not-allowed'
-        });
-        $('form.checkout button[name="woocommerce_checkout_place_order"]').prop('disabled',true).css('opacity','0.5');
+        // Function to save form data to localStorage
+        function saveFormData() {
+            var allergyData = {
+                allergies: [],
+                dueDate: $('#catering_due_date').val() || ''
+            };
+            
+            // Collect checked allergies
+            $("input[name='catering_food_allergy[]']:checked").each(function() {
+                allergyData.allergies.push($(this).val());
+            });
+            
+            localStorage.setItem('catering_allergy_form', JSON.stringify(allergyData));
+        }
+        
+        // Function to load form data from localStorage
+        function loadFormData() {
+            var savedData = localStorage.getItem('catering_allergy_form');
+            if (savedData) {
+                try {
+                    var data = JSON.parse(savedData);
+                    
+                    // Restore allergy selections
+                    if (data.allergies && data.allergies.length > 0) {
+                        data.allergies.forEach(function(allergyId) {
+                            $("input[name='catering_food_allergy[]'][value='" + allergyId + "']").prop('checked', true);
+                        });
+                    }
+                    
+                    // Restore due date
+                    if (data.dueDate && $('#catering_due_date').length) {
+                        $('#catering_due_date').val(data.dueDate);
+                    }
+                    
+                    // If data was restored, auto-confirm if valid
+                    if (isFormValid()) {
+                        autoConfirmForm();
+                    }
+                } catch (e) {
+                    // Invalid JSON, clear localStorage
+                    localStorage.removeItem('catering_allergy_form');
+                }
+            }
+        }
+        
+        // Function to check if form is valid
+        function isFormValid() {
+            var $checked = $("input[name='catering_food_allergy[]']:checked");
+            var hasAllergy = $checked.length > 0;
+            var noConflict = !($checked.filter("[value='no_allergy']").length && $checked.length > 1);
+            var hasDueDate = $('#catering_due_date').length === 0 || $('#catering_due_date').val();
+            
+            return hasAllergy && noConflict && hasDueDate;
+        }
+        
+        // Function to auto-confirm form if valid
+        function autoConfirmForm() {
+            $("#customer_details, #order_review, #order_review_heading, #place_order").css({
+                'pointer-events': '',
+                'opacity': '1',
+                'cursor': ''
+            });
+            $('form.checkout').find('button[name="woocommerce_checkout_place_order"]').prop('disabled', false).css('opacity', '1');
+            $('#catering_custom_info').hide();
+        }
+        
+        // Function to clear saved data (called after successful order)
+        function clearSavedData() {
+            localStorage.removeItem('catering_allergy_form');
+        }
+        
+        // Load saved data on page load
+        loadFormData();
+        
+        // Save data when form fields change
+        $("input[name='catering_food_allergy[]']").on('change', saveFormData);
+        $('#catering_due_date').on('change', saveFormData);
+        
+        // Clear saved data when order is successfully placed
+        $('form.checkout').on('checkout_place_order_success', clearSavedData);
+        
+        // initial disable (only if form is not already valid)
+        if (!isFormValid()) {
+            $("#customer_details, #order_review, #order_review_heading, #place_order").css({
+                'pointer-events':'none','opacity':'0.5','cursor':'not-allowed'
+            });
+            $('form.checkout button[name="woocommerce_checkout_place_order"]').prop('disabled',true).css('opacity','0.5');
+        }
 
         // validation & confirm logic
         $('#catering_custom_confirm').click(function(){
@@ -105,6 +188,9 @@
                 });
                 $('form.checkout').find('button[name="woocommerce_checkout_place_order"]').prop('disabled', false).css('opacity', '1');
                 $('#catering_custom_info').slideUp();
+                
+                // Save the confirmed form data
+                saveFormData();
             }
         });
 
@@ -119,6 +205,15 @@
                 });
                 $('form.checkout button[name="woocommerce_checkout_place_order"]')
                     .prop('disabled',true).css('opacity','0.5');
+            }
+        });
+        
+        // Clear localStorage when navigating away from checkout (optional)
+        $(window).on('beforeunload', function() {
+            // Only clear if we're not on the order received page
+            if (!window.location.href.includes('order-received')) {
+                // Don't clear here - let user keep data for potential refresh
+                // clearSavedData();
             }
         });
     });

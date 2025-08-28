@@ -482,7 +482,7 @@ msgstr "星期六"
 
 #: template/catering-booking-popup.php:794
 msgid "Holiday Meal will be delivered on the previous working day, please refer to our catering delivery policy on public holiday."
-msgstr "節假日的餐點將提前一天送達，請參考我們的節假日送餐政策。"
+msgstr "節日及假日的餐點將提前一天送達，請參考我們的節日及假日送餐政策。"
 
 #: template/catering-booking-popup.php:811
 msgid "This day is lock as was edited by our CS Team"
@@ -553,6 +553,10 @@ msgstr "新增"
 #: template/catering-booking-popup.php:1040
 msgid "Which container would you like for the soup?"
 msgstr "請問您希望用什麼容器盛湯？"
+
+#: template/catering-booking-popup.php:1041
+msgid "Please note that during holidays, all soups will be served in soup cups."
+msgstr "請留意假日湯水都必須為湯杯選項"
 
 #: template/catering-booking-popup.php:1043
 #: template/catering-booking-popup.php:1047

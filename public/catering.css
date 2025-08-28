@@ -1535,7 +1535,7 @@ button#catering_custom_confirm {
 	border-radius: unset;
 }
 
-.woocommerce-checkout h3 {
+.woocommerce-checkout form h3 {
     font-size: 18px !important;
     margin: unset !important;
     padding: 10px;

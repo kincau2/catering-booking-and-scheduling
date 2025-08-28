@@ -970,3 +970,32 @@ function catering_on_order_permanent_delete($order_id,$order) {
         }
     }
 }
+
+add_action('woocommerce_before_order_object_save', function (WC_Order $order) {
+    if ($order->get_type() !== 'shop_order') return;
+    if ($order->get_parent_id()) return;                 // avoid sub-orders
+    if ($order->get_meta('_seq_order_number')) return;    // already set
+
+    // Assign even for drafts (auto-draft/checkout-draft)
+    $next = my_seq_next_number('my_hpos_order_seq', 49999);
+    $order->update_meta_data('_seq_order_number', $next);
+}, 5);
+
+// Display filter
+add_filter('woocommerce_order_number', function ($display, $order) {
+    $n = $order->get_meta('_seq_order_number', true);
+    return $n ? $n : $display;
+}, 10, 2);
+
+// Atomic counter in wp_options
+function my_seq_next_number($option, $start_from) {
+    global $wpdb;
+    $table = $wpdb->options;
+    $wpdb->query($wpdb->prepare(
+        "INSERT INTO {$table} (option_name, option_value, autoload)
+         VALUES (%s, %s, 'no')
+         ON DUPLICATE KEY UPDATE option_value = LAST_INSERT_ID(option_value + 1)",
+        $option, (string) $start_from
+    ));
+    return (int) $wpdb->insert_id;
+}

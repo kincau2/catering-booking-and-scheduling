@@ -64,7 +64,11 @@ $records = $wpdb->get_results( $wpdb->prepare(
 
 if ( ! $records ) {
     wp_die( 'No records found for the specified date range.' );
+} else {
+    // wp_die( 'Records found: ' . count($records) ); // For debugging purposes
 }
+
+
 
 
 $tally = [];
@@ -105,6 +109,8 @@ $by_cat = [];
 foreach ( $choice_rows as $r ) {
     $by_cat[ $r['category_id'] ][] = $r;
 }
+
+
 
 // NEW: Load category titles from catering_terms
 global $wpdb;
@@ -243,9 +249,14 @@ if ( $other_items ) {
 }
 
 // 3) Soup‐water category with container breakdown
+// Initialize variables to prevent fatal errors when no soup items exist
+$total_pot = 0;
+$total_cup = 0;
+$prefix_map_soup = [];
+$letters = [];
+
 if ( $group3 ) {
     $container_counts = [];
-    $prefix_map_soup  = [];
 
     foreach ( $records as $rec ) {
         $cont      = maybe_unserialize($rec->preference)['soup_container'] ?? '';
@@ -258,8 +269,6 @@ if ( $group3 ) {
     }
 
     if ( $container_counts ) {
-        $total_pot = 0;
-        $total_cup = 0;
         // merge A over all container‐lines
         $lines = 0;
         foreach ( $container_counts as $arr ) {
@@ -288,6 +297,8 @@ if ( $group3 ) {
                 $rowNum++;
             }
         }
+        // Update letters array based on prefix_map_soup
+        $letters = array_values( array_unique( $prefix_map_soup ) );
     }
 }
 $rowNum++;
@@ -352,15 +363,16 @@ $sheet2->mergeCells('A2:F2');
 $soup_count_start_row = 5;
 $sheet2->setCellValue("E{$soup_count_start_row}", '湯');
 // collect all soup prefixes (letters) from category soup
-$letters = array_values( array_unique( $prefix_map_soup ) );
 $r = $soup_count_start_row;
-foreach ( $letters as $letter ) {
-    // per‐prefix pot
-    $sheet2->setCellValue("F{$r}", "湯款({$letter}) - 暖壺");
-    $r++;
-    // per‐prefix cup
-    $sheet2->setCellValue("F{$r}", "湯款({$letter}) - 湯杯");
-    $r++;
+if ( !empty($letters) ) {
+    foreach ( $letters as $letter ) {
+        // per‐prefix pot
+        $sheet2->setCellValue("F{$r}", "湯款({$letter}) - 暖壺");
+        $r++;
+        // per‐prefix cup
+        $sheet2->setCellValue("F{$r}", "湯款({$letter}) - 湯杯");
+        $r++;
+    }
 }
 // totals
 $sheet2->setCellValue("F{$r}", '總壺數');
@@ -442,23 +454,27 @@ for ($i = 0; $i < $day_count; $i++) {
         $r++;
     }
     $soup_count_end_row = $r;
-    $total_rows = ($soup_count_end_row - $soup_count_start_row - 1)/2;
+    $total_rows = count($letters);
     for( $j = 0; $j < $total_rows; $j++ ) {
         $pot_row[] = $col_soup.($soup_count_start_row + $j * 2); 
         $cup_row[] = $col_soup.($soup_count_start_row + $j * 2 + 1);
     }
     // totals
-    $sheet2->setCellValue("{$col_soup}{$r}",  "=SUM(".implode(',', $pot_row).")");
+    if ( !empty($pot_row) ) {
+        $sheet2->setCellValue("{$col_soup}{$r}",  "=SUM(".implode(',', $pot_row).")");
+    } else {
+        $sheet2->setCellValue("{$col_soup}{$r}", 0);
+    }
     $sheet2->getStyle("{$col_soup}{$r}")
         ->getFill()
         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
         ->getStartColor()->setARGB('FFFFA500');
     $r++;
-    $sheet2->setCellValue("{$col_soup}{$r}",  "=SUM(".implode(',', $cup_row).")");
-    $sheet2->getStyle("{$col_soup}{$r}")
-        ->getFill()
-        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        ->getStartColor()->setARGB('FFFFA500');
+    if ( !empty($cup_row) ) {
+        $sheet2->setCellValue("{$col_soup}{$r}",  "=SUM(".implode(',', $cup_row).")");
+    } else {
+        $sheet2->setCellValue("{$col_soup}{$r}", 0);
+    }
 
     $total_soup_end_row = $r;
 
@@ -566,6 +582,10 @@ foreach ( $records as $rec ) {
     $addr    = maybe_unserialize( $rec->address );
     $booking = new Booking( $rec->booking_id );
     $order_id = $booking->get_order_id();
+    
+    // Get the sequential order number if available, otherwise fallback to regular order ID
+    $order = wc_get_order($order_id);
+    $display_order_number = $order ? $order->get_order_number() : $order_id;
 
     $current_address = ($addr['city'] ?? '') . ' ' . ($addr['address'] ?? '');
     
@@ -578,24 +598,25 @@ foreach ( $records as $rec ) {
         $group_start_row = $row;
     }
 
-    $sheet2->setCellValue("B{$row}", $order_id );
+    $sheet2->setCellValue("B{$row}", $display_order_number );
     $sheet2->setCellValue("C{$row}", ($addr['first_name'] ?? '') . " " . ($addr['last_name'] ?? '') );
     $sheet2->setCellValue("D{$row}", ( $addr['phone_country']?? '' ) . ' ' . ($addr['phone'] ?? '') );
     $sheet2->setCellValue("E{$row}", $current_address );
 
     $WC_item = $booking->get_order_item();
-
+    
     if( isset($addr['delivery_note']) && !empty($addr['delivery_note']) ){
         $delivery_note[] = __('Delivery Note','catering-booking-and-scheduling' ) . ': '. $addr['delivery_note'];
     }
-
+    
     if ( ! empty( $WC_item->get_meta('cs_note', true) ) ) {
         $delivery_note[] = __('CS Note','catering-booking-and-scheduling' ) . ': '. $WC_item->get_meta('cs_note', true);
     }
     
     $health_status = maybe_unserialize( $booking->health_status );
-
-    if ( is_array( $health_status['allergy'] ) && ! empty( $health_status['allergy'] ) ) {
+    
+    if ( is_array( $health_status ) && is_array( $health_status['allergy'] ) && !empty( $health_status['allergy'] ) ) {
+        set_transient( 'debug', 'fired_', 30 ); // for debugging
         // Remove 'no_allergy' flag if present
         $health_status['allergy'] = array_diff( $health_status['allergy'], [ 'no_allergy' ] );
         if ( ! empty( $health_status['allergy'] ) ) {
@@ -620,7 +641,7 @@ foreach ( $records as $rec ) {
     $choiceArr = maybe_unserialize( $rec->choice );
     $prefArr   = maybe_unserialize( $rec->preference );
     $soupCell  = '';
-    if ( ! empty( $choiceArr[$soup_cat_id] ) && isset( $prefix_map_soup ) ) {
+    if ( ! empty( $choiceArr[$soup_cat_id] ) && !empty( $prefix_map_soup ) ) {
         $labels    = [];
         $container = $prefArr['soup_container'] ?? '';
         foreach ( (array) $choiceArr[$soup_cat_id] as $mid ) {
@@ -713,12 +734,16 @@ foreach ( $records as $rec ) {
     $prefArr  = maybe_unserialize( $rec->preference );
     $booking  = new Booking( $rec->booking_id );
     $order_id = $booking->get_order_id();
+    
+    // Get the sequential order number if available, otherwise fallback to regular order ID
+    $order = wc_get_order($order_id);
+    $display_order_number = $order ? $order->get_order_number() : $order_id;
 
     // A: 送貨日期 (leave blank)
     $sheet3->setCellValue("A{$row3}", $rec->date);
 
     // B: order id
-    $sheet3->setCellValue("B{$row3}", $order_id );
+    $sheet3->setCellValue("B{$row3}", $display_order_number );
     // C: name
     $sheet3->setCellValue("C{$row3}", trim(($addr['first_name'] ?? '') . ' ' . ($addr['last_name'] ?? '')) );
     // D: phone
@@ -777,7 +802,7 @@ foreach ( $records as $rec ) {
         $delivery_note[] = __('CS Note','catering-booking-and-scheduling') . ': ' . $WC_item->get_meta('cs_note', true);
     }
     $health_status = maybe_unserialize( $booking->health_status );
-    if ( is_array( $health_status['allergy'] ) && ! empty( $health_status['allergy'] ) ) {
+    if ( is_array( $health_status ) && is_array( $health_status['allergy'] ) && !empty( $health_status['allergy'] ) ) {
         $health_status['allergy'] = array_diff( $health_status['allergy'], ['no_allergy'] );
         if ( ! empty( $health_status['allergy'] ) ) {
             $allergy_titles = [];
@@ -790,6 +815,7 @@ foreach ( $records as $rec ) {
             $delivery_note[] = __('Food Allergy','catering-booking-and-scheduling') . ': ' . implode(', ', $allergy_titles);
         }
     }
+
     $sheet3->setCellValue("G{$row3}", implode("\n", $delivery_note));
     $sheet3->getStyle("G{$row3}")
             ->getAlignment()
@@ -798,12 +824,14 @@ foreach ( $records as $rec ) {
     // H: 湯壺 – list all category soup items with correct container suffix
     $soup_labels = [];
     $container   = $prefArr['soup_container'] ?? '';
-    foreach ( (array) $choiceArr[$soup_cat_id] as $mid ) {
-        $pref = $prefix_map_soup[ $mid ] ?? '';
-        if ( $container === 'pot' ) {
-            $soup_labels[] = $pref . '壺';
-        } elseif ( $container === 'cup' ) {
-            $soup_labels[] = '2' . $pref . '杯';
+    if ( !empty( $choiceArr[$soup_cat_id] ) && !empty( $prefix_map_soup ) ) {
+        foreach ( (array) $choiceArr[$soup_cat_id] as $mid ) {
+            $pref = $prefix_map_soup[ $mid ] ?? '';
+            if ( $container === 'pot' ) {
+                $soup_labels[] = $pref . '壺';
+            } elseif ( $container === 'cup' ) {
+                $soup_labels[] = '2' . $pref . '杯';
+            }
         }
     }
     $sheet3->setCellValue("H{$row3}", implode(' / ', $soup_labels));

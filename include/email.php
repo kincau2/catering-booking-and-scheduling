@@ -48,7 +48,7 @@ function catering_booking_order_email($order, $sent_to_admin, $plain_text, $emai
             $output .= '<br><br><a style="font-weight: normal;padding: 10px 30px 10px 30px;background: #25D366;text-decoration: unset;color: #FFF;font-weight: 500!important;"
                             href="https://web.whatsapp.com/send?phone=85267905786" class="button">
                         <img style="width: 20px;vertical-align: middle;" src="'. home_url().'/wp-content/plugins/kadence-woocommerce-email-designer/assets/images/white/whatsapp.png"> Whatsapp</a><br>';
-            $output .= '<br><br>' . __('Your order details are shown below for your reference:','catering-booking-and-scheduling');
+            $output .= '<br>';
             break;
 
         case 'customer_refunded_order': 
