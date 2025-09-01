@@ -9,14 +9,9 @@ add_shortcode('debug','display_debug_message');
 function display_debug_message(){
 
 
+    
     // echo "<pre>";
-    // echo print_r($booking->get_linked_product(),1);
-    // echo "</pre>";
-    // // is_min_day_requirement_met('2025-05-22');
-    // save_daily_catering_meal_count();
-    // $order = wc_get_order( 145 ); // replace with a valid order ID
-    // echo "<pre>";
-    // echo print_r(wp_next_scheduled('save_daily_catering_meal_count'),1);
+    // echo print_r( is_min_day_requirement_met('2025-09-02')? 'true' : 'false',1);
     // echo "</pre>";
 
     echo "<pre>";

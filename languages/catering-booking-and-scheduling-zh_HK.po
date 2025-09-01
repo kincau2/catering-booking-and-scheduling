@@ -57,6 +57,26 @@ msgstr "資料庫錯誤"
 msgid "There are unsuitable meal choices after the new due date on following dates: "
 msgstr "在新預產期後的以下日期有不適合的餐點選擇："
 
+#: include/ajax.php:1684
+msgid "Update fail: The new due date will make following date of your meal choices unsuitable: %s. We are not able to delete those meal choices as time constraint. Please contact our CS team as soon as possible for assistance with this change."
+msgstr "更新健康狀態失敗：新的預產期將導致以下日子餐點選擇不再適用：%s。因截單日期已過我們無法刪除這些餐點，請盡快聯繫我們的客服團隊，以協助處理此變更事宜。"
+
+#: include/ajax.php:1684
+msgid "Warning: The new due date will make some of your meal choices unsuitable. We must delete the following meal choices before amending your due date: %s. Do you want to continue?"
+msgstr "警告：新的預產期將導致部分餐點選擇不再適用。在修改您的預產期前，我們必須刪除以下日子的餐點選擇：%s。您是否要繼續？"
+
+#: include/ajax.php:1684
+msgid "%d unsuitable meal choices have been automatically deleted."
+msgstr "%d 項不適宜的餐點選擇已自動刪除。"
+
+#: include/ajax.php:1692
+msgid "Failed to update health status"
+msgstr "更新健康狀態失敗"
+
+#: include/ajax.php:1705
+msgid "Health status updated successfully."
+msgstr "健康狀態更新成功。"
+
 #: include/ajax.php:1600
 #: include/ajax.php:1629
 #: include/ajax.php:1680

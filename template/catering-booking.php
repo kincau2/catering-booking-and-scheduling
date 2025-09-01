@@ -25,7 +25,9 @@ if ($booking_ids) {
             continue;
         }
         // Get Order Number via order item function get_order_id()
-        $order_number = $order_item->get_order_id();
+        $order_id = $order_item->get_order_id();
+        $order = wc_get_order($order_id);
+        $order_number = $order ? $order->get_order_number() : $order_id;
         // Get Order Item Title (assumes get_name() method exists)
         $order_item_title = $order_item->get_name();
         $product_id       = $order_item->get_product_id();  // new
@@ -33,7 +35,7 @@ if ($booking_ids) {
         $day_left = $booking->get_remaining_days(); // new method to get remaining days
         $order_url = wc_get_endpoint_url(
             'view-order',
-            $order_number,
+            $order_id,
             wc_get_page_permalink('myaccount')
         );
         $status      = isset($booking->status) ? sanitize_text_field($booking->status) : '';

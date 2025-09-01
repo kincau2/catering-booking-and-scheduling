@@ -971,6 +971,7 @@ function catering_on_order_permanent_delete($order_id,$order) {
     }
 }
 
+// Handle custom sequential order numbers
 add_action('woocommerce_before_order_object_save', function (WC_Order $order) {
     if ($order->get_type() !== 'shop_order') return;
     if ($order->get_parent_id()) return;                 // avoid sub-orders
@@ -987,6 +988,62 @@ add_filter('woocommerce_order_number', function ($display, $order) {
     return $n ? $n : $display;
 }, 10, 2);
 
+// Make sequential order numbers searchable in admin order listing
+add_filter('woocommerce_shop_order_search_fields', 'add_seq_order_number_to_search');
+function add_seq_order_number_to_search($search_fields) {
+    $search_fields[] = '_seq_order_number';
+    return $search_fields;
+}
+
+// Add search support for HPOS (High-Performance Order Storage)
+add_filter('woocommerce_order_table_search_query_meta_keys', 'add_seq_order_number_to_hpos_search');
+function add_seq_order_number_to_hpos_search($meta_keys) {
+    $meta_keys[] = '_seq_order_number';
+    return $meta_keys;
+}
+
+// Convert sequential order number to actual order ID for search
+add_action('admin_init', 'convert_seq_number_to_order_id_in_search');
+function convert_seq_number_to_order_id_in_search() {
+    // Only apply on order listing pages
+    if (!is_admin() || empty($_GET['s']) || !is_numeric($_GET['s'])) {
+        return;
+    }
+    
+    // Check if we're on an order page
+    $screen = get_current_screen();
+    if (!$screen || !in_array($screen->id, ['edit-shop_order', 'woocommerce_page_wc-orders'])) {
+        return;
+    }
+    
+    $search_term = sanitize_text_field($_GET['s']);
+    
+    // Look up the actual order ID by sequential number
+    global $wpdb;
+    
+    // Try HPOS first
+    $order_id = $wpdb->get_var($wpdb->prepare(
+        "SELECT order_id FROM {$wpdb->prefix}wc_orders_meta 
+         WHERE meta_key = '_seq_order_number' AND meta_value = %s",
+        $search_term
+    ));
+    
+    // If not found in HPOS, try legacy postmeta
+    if (!$order_id) {
+        $order_id = $wpdb->get_var($wpdb->prepare(
+            "SELECT post_id FROM {$wpdb->postmeta} 
+             WHERE meta_key = '_seq_order_number' AND meta_value = %s",
+            $search_term
+        ));
+    }
+    
+    // If we found a matching order, replace the search term
+    if ($order_id) {
+        $_GET['s'] = $order_id;
+        $_REQUEST['s'] = $order_id;
+    }
+}
+
 // Atomic counter in wp_options
 function my_seq_next_number($option, $start_from) {
     global $wpdb;
@@ -999,3 +1056,67 @@ function my_seq_next_number($option, $start_from) {
     ));
     return (int) $wpdb->insert_id;
 }
+
+// Send email to admin when health status update would cause unsuitable meals
+function catering_send_unsuitable_meal_alert($booking_id, $customer_name, $order_number, $new_due_date, $unsuitable_dates) {
+    $admin_email = get_option('admin_email');
+    $site_name = get_bloginfo('name');
+    
+    $subject = sprintf(__('[%s] Customer Due Date Change Alert - Unsuitable Meals Detected', 'catering-booking-and-scheduling'), $site_name);
+    
+    $message = sprintf(
+        __('Dear Admin,
+
+A customer has attempted to update their due date, but this change would make some of their existing meal choices unsuitable.
+
+Customer Details:
+- Name: %s
+- Order Number: %s
+- Booking ID: %s
+- New Due Date: %s
+
+Unsuitable Meal Dates:
+%s
+
+The customer has been informed to contact the CS team for assistance with this change.
+
+Please review this case and contact the customer if necessary.
+
+Best regards,
+%s System', 'catering-booking-and-scheduling'),
+        $customer_name,
+        $order_number,
+        $booking_id,
+        $new_due_date,
+        '- ' . implode("\n- ", $unsuitable_dates),
+        $site_name
+    );
+    
+    $headers = array('Content-Type: text/plain; charset=UTF-8');
+    
+    wp_mail($admin_email, $subject, $message, $headers);
+}
+
+add_filter( 'user_has_cap', 'allow_shop_manager_pay_for_order', 10, 3 );
+
+function allow_shop_manager_pay_for_order( $allcaps, $caps, $args ) {
+    // Only apply to pay_for_order capability
+    if ( isset( $caps[0] ) && $caps[0] === 'pay_for_order' ) {
+        $user_id = intval( $args[1] );
+        
+        // Check if user is shop manager or administrator
+        if ( user_can( $user_id, 'manage_woocommerce' ) ) {
+            $allcaps['pay_for_order'] = true;
+        }
+    }
+    
+    return $allcaps;
+}
+
+add_filter('woocommerce_order_received_verify_known_shoppers', function($verify) {
+    // Allow shop managers and administrators to bypass verification
+    if (current_user_can('manage_woocommerce')) {
+        return false;
+    }
+    return $verify;
+});

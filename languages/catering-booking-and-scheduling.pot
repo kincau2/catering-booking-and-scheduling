@@ -675,3 +675,19 @@ msgstr ""
 #: template/wc-product-catering-options.php:934
 msgid "Changing due date type after customer purchase may prevent customers from selecting meals normally. Continue?"
 msgstr ""
+
+#: include/ajax.php:xxxx
+msgid "The new due date will make some meal choices unsuitable. These meals can be automatically deleted as they are outside the minimum advance order period."
+msgstr ""
+
+#: include/ajax.php:xxxx
+msgid "The following meal choices will be automatically deleted:\n\n%s\n\nDo you want to continue?"
+msgstr ""
+
+#: include/ajax.php:xxxx
+msgid "%d unsuitable meal choices have been automatically deleted."
+msgstr ""
+
+#: include/js/frontend-ajax.js:xxxx
+msgid "Update cancelled by user."
+msgstr ""

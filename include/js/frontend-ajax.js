@@ -136,7 +136,9 @@
         });
     };
 
-    window.updateHealthStatus = function(bookingId, healthStatus, success, error){
+    window.updateHealthStatus = function(bookingId, healthStatus, success, error, autoDeleteConfirmed){
+        autoDeleteConfirmed = autoDeleteConfirmed || false;
+        
         $.ajax({
             url: catering_frontend_ajax.ajaxurl,
             method: 'POST',
@@ -144,9 +146,32 @@
             data: {
                 action: 'update_health_status',
                 booking_id: bookingId,
-                health_status: healthStatus
+                health_status: healthStatus,
+                auto_delete_confirmed: autoDeleteConfirmed
             },
-            success: success,
+            success: function(response) {
+                // Check if server requires confirmation for meal deletion
+                if (response && !response.success && response.requires_confirmation) {
+                    // Show confirmation dialog
+                    if (confirm(response.confirmation_message)) {
+                        // User confirmed, retry the request with confirmation flag
+                        window.updateHealthStatus(bookingId, healthStatus, success, error, true);
+                    } else {
+                        // User cancelled, treat as error
+                        if (error) {
+                            error({
+                                responseJSON: {
+                                    success: false,
+                                    data: cateringi18n('Update cancelled by user.')
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    // Normal response, call original success handler
+                    if (success) success(response);
+                }
+            },
             error: error || function(){ alert(cateringi18n('Error updating health status.')); }
         });
     };

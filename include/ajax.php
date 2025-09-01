@@ -2,6 +2,102 @@
 
 use ICal\ICal; // from the library
 
+/**
+ * Helper function to process hybrid tags for type-specific meal schedules
+ * Converts tag format from "產前:產前湯|產後:產後湯" to JSON storage format
+ */
+function process_hybrid_tag($tag, $types = []) {
+    // If tag contains ":" it's type-specific format
+    if (strpos($tag, ':') !== false) {
+        $tag_parts = explode('|', $tag);
+        $type_tags = [];
+        
+        foreach ($tag_parts as $part) {
+            if (strpos($part, ':') !== false) {
+                list($type, $type_tag) = explode(':', $part, 2);
+                $type_tags[trim($type)] = trim($type_tag);
+            }
+        }
+        
+        // If we have type-specific tags, return JSON
+        if (!empty($type_tags)) {
+            return wp_json_encode($type_tags, JSON_UNESCAPED_UNICODE);
+        }
+    }
+    
+    // If it's a simple tag, return as-is for backward compatibility
+    return $tag;
+}
+
+/**
+ * Helper function to get display tag based on booking type and date
+ * Handles both simple tags and type-specific JSON tags
+ */
+function get_display_tag($stored_tag, $booking, $date) {
+    // Try to decode as JSON first
+    $decoded_tag = json_decode($stored_tag, true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_tag)) {
+        
+        // It's a type-specific tag array
+        if ($booking->type === 'hybird' && !empty($booking->health_status['due_date'])) {
+            $due_date = $booking->health_status['due_date'];
+            set_transient('debug', $date < $due_date ? 'true' : 'false',30);
+            if ($date < $due_date && isset($decoded_tag['產前'])) {
+                return $decoded_tag['產前'];
+            } elseif ($date >= $due_date && isset($decoded_tag['產後'])) {
+                return $decoded_tag['產後'];
+            } else{
+                return '';
+            }
+        }
+        
+        // For non-hybrid or if specific type not found, return first available
+        return reset($decoded_tag);
+    }
+    
+    // It's a simple tag, return as-is
+    return $stored_tag;
+}
+
+/**
+ * Helper function to format tag for admin display
+ * Shows type-specific tags in readable format for admin interfaces
+ */
+function format_tag_for_admin($stored_tag) {
+    $decoded_tag = json_decode($stored_tag, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_tag)) {
+        // Show as "產前:產前湯, 產後:產後湯" for admin
+        $parts = [];
+        foreach ($decoded_tag as $type => $tag) {
+            $parts[] = $type . ':' . $tag;
+        }
+        return implode(', ', $parts);
+    }
+    
+    return $stored_tag;
+}
+
+/**
+ * Helper function to format tag for CSV export
+ * Converts JSON storage back to CSV format "產前:產前湯|產後:產後湯"
+ */
+function format_tag_for_export($stored_tag) {
+    $decoded_tag = json_decode($stored_tag, true);
+    
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_tag)) {
+        // Convert back to CSV format: "產前:產前湯|產後:產後湯"
+        $tag_parts = [];
+        foreach ($decoded_tag as $type => $type_tag) {
+            $tag_parts[] = $type . ':' . $type_tag;
+        }
+        return implode('|', $tag_parts);
+    }
+    
+    // Simple tag
+    return $stored_tag;
+}
+
 add_action( 'wp_ajax_catering_search_categories', 'catering_search_categories' );
 function catering_search_categories() {
     global $wpdb;
@@ -612,6 +708,10 @@ function catering_ajax_process_catering_schedule_row(){
         $cat_ids = [];
     }
     $serialized_cats = maybe_serialize($cat_ids);
+    
+    // Process tag using helper function for hybrid type-specific tags
+    $processed_tag = process_hybrid_tag($tag, $types);
+    
     // insert into schedule
     $ok = $wpdb->insert(
         "{$wpdb->prefix}catering_schedule",
@@ -620,7 +720,7 @@ function catering_ajax_process_catering_schedule_row(){
           'product_id' => $post_id,
           'date'       => $date_str,
           'cat_id'     => $serialized_cats,
-          'tag'        => $tag,
+          'tag'        => $processed_tag,
           'type'       => $serialized_types
         ],
         ['%d','%d','%s','%s','%s','%s']
@@ -683,10 +783,14 @@ function catering_ajax_get_meal_schedule_week(){
         if(!is_array($cat_ids)) $cat_ids = $cat_ids ? [$cat_ids] : [];
         foreach($cat_ids as $cid){
             if(!isset($term_map[$cid])) continue;
+            
+            // For admin view, show formatted tags (type-specific tags visible)
+            $display_tag = format_tag_for_admin($r['tag']);
+            
             $data[$date][$cid][] = [
                 'id'    => (int)$r['meal_id'],
                 'title' => isset($meals[$r['meal_id']]) ? $meals[$r['meal_id']]->title : '',
-                'tag'   => $r['tag']
+                'tag'   => $display_tag
             ];
         }
     }
@@ -773,6 +877,10 @@ function export_catering_schedule(){
         }
         $type   = maybe_unserialize($r['type']);
         $meal = isset($meals[$r['meal_id']]) ? $meals[$r['meal_id']] : null;
+        
+        // Process tag for export using helper function
+        $tag_display = format_tag_for_export($r['tag']);
+        
         fputcsv($out, [
             $r['meal_id'],
             $meal ? $meal->sku : '',
@@ -780,7 +888,7 @@ function export_catering_schedule(){
             implode('|',$titles),
             is_array($type) ? implode('|',$type) : $type,
             $r['date'],
-            $r['tag']
+            $tag_display
         ]);
     }
     fclose($out);
@@ -989,7 +1097,9 @@ function catering_ajax_get_day_schedule(){
         if(!is_array($cats)) $cats = $cats?[$cats]:[];
         foreach($cats as $cid){
             $cat_map[$cid][]               = $r['meal_id'];
-            $tag_map[$cid][$r['meal_id']] = $r['tag'];
+            // Use helper function to get appropriate tag based on booking type and date
+            $display_tag = get_display_tag($r['tag'], $booking, $date);
+            $tag_map[$cid][$r['meal_id']] = $display_tag;
         }
     }
     $cat_ids  = array_keys($cat_map);
@@ -1615,158 +1725,179 @@ add_action('wp_ajax_update_health_status', 'catering_ajax_update_health_status')
 function catering_ajax_update_health_status(){
     $booking_id = isset($_POST['booking_id']) ? absint($_POST['booking_id']) : 0;
     $health_status = isset($_POST['health_status']) ? $_POST['health_status'] : '';
+    $auto_delete_confirmed = isset($_POST['auto_delete_confirmed']) ? filter_var($_POST['auto_delete_confirmed'], FILTER_VALIDATE_BOOLEAN) : false;
+    
     if(!$booking_id || empty($health_status)){
         wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
+    
     global $wpdb;
     $table = $wpdb->prefix . 'catering_booking';
-    // Update query now retrieves full booking info (including type)
+    
     $booking = new Booking($booking_id);
     if( !$booking || ( $booking->user_id != get_current_user_id() && !current_user_can('manage_catering') ) ){
         wp_send_json_error(__('Booking not found or permission denied', 'catering-booking-and-scheduling'));
     }
+    
+    // NEW: Enhanced unsuitable meal checking with min day requirements
+    if(isset($health_status['due_date']) && !empty($health_status['due_date'])){
+        $new_due_date = $health_status['due_date'];
+        $booking_type = strtolower($booking->type);
+        $unsuitable_dates = [];
+        
+        if($booking_type === 'prenatal'){
+            // Check meal choices with date after the new due date
+            $choices = $wpdb->get_results($wpdb->prepare("SELECT date FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND date >= %s", $booking_id, $new_due_date), ARRAY_A);
+            foreach($choices as $choice){
+                $unsuitable_dates[] = $choice['date'];
+            }
+        } elseif($booking_type === 'postpartum'){
+            // Check meal choices with date before the new due date
+            $choices = $wpdb->get_results($wpdb->prepare("SELECT date FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND date < %s", $booking_id, $new_due_date), ARRAY_A);
+            foreach($choices as $choice){
+                $unsuitable_dates[] = $choice['date'];
+            }
+        } elseif($booking_type === 'hybird'){
+            // Check prenatal meal choices after the new due date
+            $choices_prenatal = $wpdb->get_results($wpdb->prepare(
+                "SELECT date FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND type=%s AND date >= %s",
+                $booking_id, 'prenatal', $new_due_date
+            ), ARRAY_A);
+            foreach($choices_prenatal as $choice){
+                $unsuitable_dates[] = $choice['date'];
+            }
+            
+            // Check postpartum meal choices before the new due date
+            $choices_postpartum = $wpdb->get_results($wpdb->prepare(
+                "SELECT date FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND type=%s AND date < %s",
+                $booking_id, 'postpartum', $new_due_date
+            ), ARRAY_A);
+            foreach($choices_postpartum as $choice){
+                $unsuitable_dates[] = $choice['date'];
+            }
+        }
+        
+        // If there are unsuitable meals, check which ones can be auto-deleted
+        if(!empty($unsuitable_dates)){
+            $restricted_dates = [];
+            $deletable_dates = [];
+            
+            // Categorize unsuitable dates based on min day requirement
+            foreach($unsuitable_dates as $date){
+                $clean_date = str_replace([' (prenatal)', ' (postpartum)'], '', $date);
+                set_transient('debug', $clean_date, 30); // 5 minutes
+                if(!is_min_day_requirement_met($clean_date)){
+                    // Date is within restriction period, cannot be deleted
+                    $restricted_dates[] = $date;
+                } else {
+                    // Date is outside restriction period, can be deleted
+                    $deletable_dates[] = $date;
+                }
+            }
+            
+            // If there are restricted dates, prevent the update completely
+            if(!empty($restricted_dates)){
+                // Get customer and order info for email
+                $order_item = $booking->get_order_item();
+                $order = $order_item ? wc_get_order($order_item->get_order_id()) : null;
+                $customer_name = '';
+                $order_number = '';
+                
+                if($order){
+                    $customer_name = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+                    $order_number = $order->get_order_number();
+                }
+                
+                // Send email to admin
+                catering_send_unsuitable_meal_alert($booking_id, $customer_name, $order_number, $new_due_date, $restricted_dates);
+                
+                // Return error with specific message
+                wp_send_json_error(
+                    sprintf(
+                        __('Update fail: The new due date will make following date of your meal choices unsuitable: %s. We are not able to delete those meal choices as time constraint. Please contact our CS team as soon as possible for assistance with this change.', 'catering-booking-and-scheduling'),
+                        implode(' | ', $restricted_dates)
+                    )
+                );
+            }
+            
+            // If there are only deletable dates, ask for confirmation or proceed with deletion
+            if(!empty($deletable_dates)){
+                if(!$auto_delete_confirmed){
+                    // Return confirmation request with details
+                    wp_send_json([
+                        'success' => false,
+                        'requires_confirmation' => true,
+                        'message' => __('The new due date will make some meal choices unsuitable. These meals can be automatically deleted as they are outside the minimum advance order period.', 'catering-booking-and-scheduling'),
+                        'deletable_dates' => $deletable_dates,
+                        'confirmation_message' => sprintf(
+                            __('Warning: The new due date will make some of your meal choices unsuitable. We must delete the following meal choices before amending your due date: %s. Do you want to continue?', 'catering-booking-and-scheduling'),
+                            implode(' | ', $deletable_dates)
+                        )
+                    ]);
+                } else {
+                    // User confirmed, proceed with deletion
+                    $choice_table = $wpdb->prefix . 'catering_choice';
+                    $log_table = $wpdb->prefix . 'catering_log';
+                    
+                    foreach($deletable_dates as $date){
+                        $clean_date = str_replace([' (prenatal)', ' (postpartum)'], '', $date);
+                        
+                        // Get current choice for logging before deletion
+                        $current_choice = $wpdb->get_var($wpdb->prepare(
+                            "SELECT choice FROM $choice_table WHERE booking_id=%d AND user_id=%d AND date=%s",
+                            $booking_id, $booking->user_id, $clean_date
+                        ));
+                        
+                        // Delete the choice
+                        $deleted = $wpdb->delete($choice_table, [
+                            'booking_id' => $booking_id,
+                            'user_id'    => $booking->user_id,
+                            'date'       => $clean_date
+                        ], ['%d','%d','%s']);
+                        
+                        // Log the deletion
+                        if($deleted !== false && $deleted > 0) {
+                            $wpdb->insert($log_table, [
+                                'booking_id'           => $booking_id,
+                                'choice_date'          => $clean_date,
+                                'previous_choice'      => $current_choice ?: '',
+                                'new_choice'           => '',
+                                'changed_by_user_id'   => 0, // System user
+                                'changed_by_user_type' => 'system',
+                                'change_reason'        => 'unsuitable meal auto delete',
+                                'action_type'          => 'meal_choice_delete',
+                                'amended_time'         => current_time('mysql')
+                            ], ['%d','%s','%s','%s','%d','%s','%s','%s','%s']);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // If we reach here, either no unsuitable meals found or user confirmed deletion
+    // Proceed with health status update
     $serialized = maybe_serialize($health_status);
     $res = $booking->set('health_status', $serialized);
     if( !$res ){
         wp_send_json_error(__('Failed to update health status', 'catering-booking-and-scheduling'));
     }
-    $message = 'Health status updated.';
+    
+    // Update order item meta if due date is provided
     if(isset($health_status['due_date']) && !empty($health_status['due_date'])){
-        $new_due_date = $health_status['due_date'];
-        $booking_type = strtolower($booking->type);
-        // Fetch minimum days setting
-        $min_val = $wpdb->get_var($wpdb->prepare("SELECT option_value FROM {$wpdb->prefix}catering_options WHERE option_name=%s", 'catering_min_day_before_order'));
-        $min_days = is_numeric($min_val) ? intval($min_val) : 0;
-        $today = time();
-        $alert_dates = [];
-        if($booking_type === 'prenatal'){
-            // Flag meal choices with date after the new due date
-            $choices = $wpdb->get_results($wpdb->prepare("SELECT ID, date FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND date >= %s", $booking_id, $new_due_date), ARRAY_A);
-            foreach($choices as $choice){
-                $notice = maybe_serialize([
-                    'type' => 'warning',
-                    'Message' => 'This meal is for customer under prenatal status. It may not suitable for you anymore'
-                ]);
-                $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => $notice], ['ID' => $choice['ID']], ['%s'], ['%d']);
-                $choice_date = strtotime($choice['date']) + 60*60*8; // Adjust for timezone
-
-                $diff_days = ($choice_date - $today) / 86400;
-                if($diff_days < $min_days){
-                    $alert_dates[] = $choice['date'];
-                } else {
-                    $alert_dates[] = $choice['date'];
-                }
-            }
-            if(!empty($alert_dates)){
-                $alert_msg = __('There are unsuitable meal choices after the new due date on following dates: ','catering-booking-and-scheduling') .
-                             implode(", ", $alert_dates) .
-                             '. '. 
-                             __('Please delete unsuitable meal(s). Please contact CS Team if some of the meal(s) are not able to delete.','catering-booking-and-scheduling');
-                $message .= " " . $alert_msg;
-            }
-            // Clear notice on meal choices before due date if they have notice
-            $clear_choices = $wpdb->get_results($wpdb->prepare("SELECT ID FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND date < %s AND notice <> ''", $booking_id, $new_due_date), ARRAY_A);
-            foreach($clear_choices as $cc){
-                $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => ''], ['ID' => $cc['ID']], ['%s'], ['%d']);
-            }
-        } elseif($booking_type === 'postpartum'){
-            // Flag meal choices with date before the new due date
-            $choices = $wpdb->get_results($wpdb->prepare("SELECT ID, date FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND date < %s", $booking_id, $new_due_date), ARRAY_A);
-            foreach($choices as $choice){
-                $notice = maybe_serialize([
-                    'type' => 'warning',
-                    'Message' => 'This meal is for customer under postpartum status. It may not suitable for you anymore'
-                ]);
-                $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => $notice], ['ID' => $choice['ID']], ['%s'], ['%d']);
-                $choice_date = strtotime($choice['date'])  + 60*60*8; // Adjust for timezone
-                $diff_days = ($choice_date - $today) / 86400;
-                if($diff_days < $min_days){
-                    $alert_dates[] = $choice['date'];
-                } else {
-                    $alert_dates[] = $choice['date'];
-                }
-            }
-            if(!empty($alert_dates)){
-                $alert_msg = __('There are unsuitable meal choices after the new due date on following dates: ','catering-booking-and-scheduling') .
-                             implode(", ", $alert_dates) .
-                             '. '. 
-                             __('Please delete unsuitable meal(s). Please contact CS Team if some of the meal(s) are not able to delete.','catering-booking-and-scheduling');
-                $message .= " " . $alert_msg;
-            }
-            // Clear notice on meal choices after due date if they have notice
-            $clear_choices = $wpdb->get_results($wpdb->prepare("SELECT ID FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND date > %s AND notice <> ''", $booking_id, $new_due_date), ARRAY_A);
-            foreach($clear_choices as $cc){
-                $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => ''], ['ID' => $cc['ID']], ['%s'], ['%d']);
-            }
-        } elseif($booking_type === 'hybird'){
-            // For Hybird: check prenatal meal choices after the new due date
-            $choices_prenatal = $wpdb->get_results($wpdb->prepare(
-                "SELECT ID, date FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND type=%s AND date >= %s",
-                $booking_id, 'prenatal', $new_due_date
-            ), ARRAY_A);
-            foreach($choices_prenatal as $choice){
-                $notice = maybe_serialize([
-                    'type'    => 'warning',
-                    'Message' => 'This meal is marked as prenatal but its date is after the new due date. It may not be suitable.'
-                ]);
-                $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => $notice], ['ID' => $choice['ID']], ['%s'], ['%d']);
-                $choice_date = strtotime($choice['date'])  + 60*60*8; // Adjust for timezone
-                $diff_days = ($choice_date - $today) / 86400;
-                if($diff_days < $min_days){
-                    $alert_dates[] = $choice['date'] . " (unable to delete, please contact CS)";
-                } else {
-                    $alert_dates[] = $choice['date'];
-                }
-            }
-            // Then check postpartum meal choices before the new due date
-            $choices_postpartum = $wpdb->get_results($wpdb->prepare(
-                "SELECT ID, date FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND type=%s AND date < %s",
-                $booking_id, 'postpartum', $new_due_date
-            ), ARRAY_A);
-            foreach($choices_postpartum as $choice){
-                $notice = maybe_serialize([
-                    'type'    => 'warning',
-                    'Message' => 'This meal is marked as postpartum but its date is before the new due date. It may not be suitable.'
-                ]);
-                $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => $notice], ['ID' => $choice['ID']], ['%s'], ['%d']);
-                $choice_date = strtotime($choice['date'])  + 60*60*8; // Adjust for timezone
-                $diff_days = ($today - $choice_date) / 86400;
-                if($diff_days < $min_days){
-                    $alert_dates[] = $choice['date'] . " (unable to delete, please contact CS)";
-                } else {
-                    $alert_dates[] = $choice['date'];
-                }
-            }
-            if(!empty($alert_dates)){
-                $alert_msg = __('There are unsuitable meal choices after the new due date on following dates: ','catering-booking-and-scheduling') .
-                             implode(", ", $alert_dates) .
-                             '. '. 
-                             __('Please delete unsuitable meal(s). Please contact CS Team if some of the meal(s) are not able to delete.','catering-booking-and-scheduling');
-                $message .= " " . $alert_msg;
-            }
-            // NEW: Clear valid prenatal meal choices (those before new due date) that have an existing notice
-            $clear_prenatal = $wpdb->get_results($wpdb->prepare(
-                "SELECT ID FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND type=%s AND date < %s AND notice <> ''",
-                $booking_id, 'prenatal', $new_due_date
-            ), ARRAY_A);
-            foreach($clear_prenatal as $cc){
-                $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => ''], ['ID' => $cc['ID']], ['%s'], ['%d']);
-            }
-            // NEW: Clear valid postpartum meal choices (those on/after new due date) that have an existing notice
-            $clear_postpartum = $wpdb->get_results($wpdb->prepare(
-                "SELECT ID FROM {$wpdb->prefix}catering_choice WHERE booking_id=%d AND type=%s AND date >= %s AND notice <> ''",
-                $booking_id, 'postpartum', $new_due_date
-            ), ARRAY_A);
-            foreach($clear_postpartum as $cc){
-                $wpdb->update("{$wpdb->prefix}catering_choice", ['notice' => ''], ['ID' => $cc['ID']], ['%s'], ['%d']);
-            }
-        }
         $order_item = $booking->get_order_item();
-        $order_item->add_meta_data( 'due_date', $health_status['due_date'] , true );
-        $order_item->save();
+        if($order_item){
+            $order_item->add_meta_data( 'due_date', $health_status['due_date'] , true );
+            $order_item->save();
+        }
     }
+    
+    $message = __('Health status updated successfully.', 'catering-booking-and-scheduling');
+    if(isset($deletable_dates) && !empty($deletable_dates) && $auto_delete_confirmed){
+        $message .= ' ' . sprintf(__('%d unsuitable meal choices have been automatically deleted.', 'catering-booking-and-scheduling'), count($deletable_dates));
+    }
+    
     wp_send_json_success([
-        "alert"   => !empty($alert_dates),
         "message" => $message
     ]);
 }

@@ -400,7 +400,35 @@ if ( empty( $soup_container ) ) {
                 var missingCatRows  = [];
                 var invalidCatRows  = [];
                 var invalidTypeRows = [];
+                var invalidTagRows  = [];
                 var uniqueDates     = [];
+
+                // Helper function to validate hybrid tag format
+                function validateTagFormat(tagValue, typeValue) {
+                    // If tag contains ":", validate type-specific format
+                    if (tagValue.indexOf(':') !== -1) {
+                        var tagParts = tagValue.split('|');
+                        var types = typeValue.split('|').map(function(v){ return v.trim(); });
+                        var validTypes = ['產前', '產後'];
+                        
+                        for (var i = 0; i < tagParts.length; i++) {
+                            var part = tagParts[i].trim();
+                            if (part.indexOf(':') !== -1) {
+                                var typePart = part.split(':')[0].trim();
+                                if (validTypes.indexOf(typePart) === -1) {
+                                    return false; // Invalid type in tag
+                                }
+                                // Check if the type in tag matches one of the meal types
+                                if (types.indexOf(typePart) === -1) {
+                                    return false; // Tag type doesn't match meal type
+                                }
+                            } else {
+                                return false; // Invalid format - should contain ":"
+                            }
+                        }
+                    }
+                    return true;
+                }
 
                 // Check for duplicate IDs on the same date
                 var idCountsByDate = {}, dupRows = [];
@@ -465,6 +493,13 @@ if ( empty( $soup_container ) ) {
                             invalidTypeRows.push(i+1);
                         }
                     }
+                    
+                    // validate Tag format for hybrid meals
+                    var tagVal = cols[tagIndex].trim();
+                    if(tagVal && typeVal && !validateTagFormat(tagVal, typeVal)){
+                        invalidTagRows.push(i+1);
+                    }
+                    
                     if($.inArray(formattedDateVal, uniqueDates) === -1){
                         uniqueDates.push(formattedDateVal);
                     }
@@ -488,6 +523,12 @@ if ( empty( $soup_container ) ) {
                 // if any invalid Type entries found, halt import
                 if(invalidTypeRows.length){
                     alert('<?php _e("CSV contains invalid Type values at rows:","catering-booking-and-scheduling"); ?> ' + invalidTypeRows.join(', '));
+                    return;
+                }
+                
+                // if any invalid Tag format entries found, halt import
+                if(invalidTagRows.length){
+                    alert('<?php _e("CSV contains invalid Tag format at rows (use format: type:tag|type:tag):","catering-booking-and-scheduling"); ?> ' + invalidTagRows.join(', '));
                     return;
                 }
 
