@@ -15,7 +15,7 @@ function display_debug_message(){
     // echo "</pre>";
 
     echo "<pre>";
-    echo print_r(get_transient('debug'),1);
+    echo print_r(get_transient('debug').'test0001',1);
     echo "</pre>";
 
 }

@@ -256,8 +256,9 @@ jQuery(function($){
             var html = '';
             if(resp.data && resp.data.length){
                 $.each(resp.data, function(_, r){
+                    var linkOrderId = r.internal_order_id || r.order_id; // Use internal_order_id for admin links, fallback to order_id
                     html += `<tr>
-                        <td><a href="`+admin_base+`post.php?post=`+r.order_id+`&action=edit" target="_blank">`+r.order_id+`</a></td>
+                        <td><a href="`+admin_base+`post.php?post=`+linkOrderId+`&action=edit" target="_blank">`+r.order_id+`</a></td>
                         <td><a href="`+admin_base+`admin.php?page=wc-orders&_customer_user=`+r.user_id+`&status=all" target="_blank">`+r.customer+`</a> (`+r.user_id+`)</td>
                         <td>`+r.due_date+`</td>
                         <td>`+r.phone+`</td>
@@ -292,8 +293,9 @@ jQuery(function($){
       if(resp.success){
         var html = '';
         $.each(resp.data, function(_, r){
+          var linkOrderId = r.internal_order_id || r.order_id; // Use internal_order_id for admin links, fallback to order_id
           html += `<tr>
-            <td><a href="`+admin_base+`post.php?post=`+r.order_id+`&action=edit" target="_blank">`+r.order_id+`</a></td>
+            <td><a href="`+admin_base+`post.php?post=`+linkOrderId+`&action=edit" target="_blank">`+r.order_id+`</a></td>
             <td><a href="`+admin_base+`admin.php?page=wc-orders&_customer_user=`+r.user_id+`&status=all" target="_blank">`+r.customer+`</a> (`+r.user_id+`)</td>
             <td></td>
             <td>`+r.phone+`</td>

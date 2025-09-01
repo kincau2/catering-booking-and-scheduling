@@ -2170,8 +2170,14 @@ function catering_ajax_get_badge_booking_info(){
                 }
             }
         }
+        
+        // Get sequential order number
+        $seq_order_number = $order->get_meta('_seq_order_number', true);
+        $display_order_id = $seq_order_number ? $seq_order_number : $order_id;
+        
         $out[] = [
-            'order_id'  => $order_id,
+            'order_id'  => $display_order_id,
+            'internal_order_id' => $order_id, // For admin links
             'user_id'   => $booking->user_id,
             'customer'  => $cust,
             'due_date'  => $due,
@@ -2303,8 +2309,14 @@ function catering_ajax_get_badge_delivery_info(){
         $phone        = $order->get_shipping_phone();
         $phone_country = $order->get_meta('_shipping_phone_country') ?: '+852';
         $full_phone   = $phone_country . ' ' . $phone;
+        
+        // Get sequential order number
+        $seq_order_number = $order->get_meta('_seq_order_number', true);
+        $display_order_id = $seq_order_number ? $seq_order_number : $order_id;
+        
         $results[] = [
-            'order_id' => $order_id,
+            'order_id' => $display_order_id,
+            'internal_order_id' => $order_id, // For admin links
             'user_id'  => $order->get_user_id(),
             'customer' => $customer,
             'phone'    => $full_phone,

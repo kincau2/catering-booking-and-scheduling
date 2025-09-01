@@ -518,20 +518,57 @@ $sheet2->getStyle("E{$setmeal_count_start_row}:F{$setmeal_count_end_row}")
         ->getOutline()
         ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
-// grouping rules
-$groups = [
-    '港島區' => ['灣仔區','東區','中西區','南區','北區'],
-    '九龍區' => ['觀塘區','油尖旺區','黃大仙區','深水埗區','九龍城區'],
-    '新界區' => ['荃灣區','離島區','葵青區','西貢區','沙田區','元朗區','屯門區','大埔區'],
+// Define city order for sorting
+$city_order = [
+    '東區' => 1,
+    '灣仔區' => 2,
+    '中西區' => 3,
+    '南區' => 4,
+    '離島區' => 5,
+    '葵青區' => 6,
+    '荃灣區' => 7,
+    '屯門區' => 8,
+    '元朗區' => 9,
+    '沙田區' => 10,
+    '大埔區' => 11,
+    '北區' => 12,
+    '深水埗區' => 13,
+    '油尖旺區' => 14,
+    '九龍城區' => 15,
+    '黃大仙區' => 16,
+    '觀塘區' => 17,
+    '西頁區' => 18
 ];
 
-// sort subset by complete delivery address
-usort($records, function($a, $b){
+// Sort records by city order first, then by order number within each city
+usort($records, function($a, $b) use ($city_order){
     $addrA = maybe_unserialize($a->address);
     $addrB = maybe_unserialize($b->address);
-    $fullAddrA = trim(($addrA['city'] ?? '') . ' ' . ($addrA['address'] ?? ''));
-    $fullAddrB = trim(($addrB['city'] ?? '') . ' ' . ($addrB['address'] ?? ''));
-    return strcmp($fullAddrA, $fullAddrB);
+    $cityA = $addrA['city'] ?? '';
+    $cityB = $addrB['city'] ?? '';
+    
+    // Get city order (default to 999 for unknown cities)
+    $orderA = $city_order[$cityA] ?? 999;
+    $orderB = $city_order[$cityB] ?? 999;
+    
+    // First sort by city order
+    if ($orderA !== $orderB) {
+        return $orderA - $orderB;
+    }
+    
+    // If same city, sort by order number
+    $bookingA = new Booking($a->booking_id);
+    $bookingB = new Booking($b->booking_id);
+    $orderIdA = $bookingA->get_order_id();
+    $orderIdB = $bookingB->get_order_id();
+    
+    // Get sequential order numbers if available
+    $orderA = wc_get_order($orderIdA);
+    $orderB = wc_get_order($orderIdB);
+    $orderNumA = $orderA ? $orderA->get_order_number() : $orderIdA;
+    $orderNumB = $orderB ? $orderB->get_order_number() : $orderIdB;
+    
+    return strcmp($orderNumA, $orderNumB);
 });
 // title row: merge A:F, bold
 $sheet2->mergeCells("A{$row}:F{$row}");
