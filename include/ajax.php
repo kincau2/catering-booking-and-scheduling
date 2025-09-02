@@ -738,6 +738,9 @@ function catering_ajax_get_meal_schedule_week(){
     $end   = isset($_POST['end_date'])   ? sanitize_text_field($_POST['end_date'])   : '';
     // NEW: obtain booking_id to calculate day remaining
     $booking_id = isset($_POST['booking_id']) ? absint($_POST['booking_id']) : 0;
+    // NEW: check if this is a schedule preview request
+    $is_preview = isset($_POST['is_preview']) && $_POST['is_preview'];
+    
     if(!$product_id || !preg_match('/^\d{4}-\d{2}-\d{2}$/',$start) || !preg_match('/^\d{4}-\d{2}-\d{2}$/',$end)){
         wp_send_json_error(__('Invalid parameters', 'catering-booking-and-scheduling'));
     }
@@ -758,9 +761,16 @@ function catering_ajax_get_meal_schedule_week(){
             'ordering' => (int)$t['ordering']
         ];
     }
-    // 2) fetch schedule rows
+    
+    // NEW: Get product type to determine if filtering is needed
+    $product_type = '';
+    if($is_preview) {
+        $product_type = get_post_meta($product_id, 'catering_type', true);
+    }
+    
+    // 2) fetch schedule rows - include type field for filtering
     $rows = $wpdb->get_results($wpdb->prepare("
-        SELECT date, meal_id, cat_id, tag
+        SELECT date, meal_id, cat_id, tag, type
         FROM {$wpdb->prefix}catering_schedule
         WHERE product_id=%d AND date BETWEEN %s AND %s
         ORDER BY date ASC
@@ -781,11 +791,37 @@ function catering_ajax_get_meal_schedule_week(){
         $date = $r['date'];
         $cat_ids = maybe_unserialize($r['cat_id']);
         if(!is_array($cat_ids)) $cat_ids = $cat_ids ? [$cat_ids] : [];
+        
+        // NEW: Filter meals by type for hybrid plan preview
+        if($is_preview && $product_type === 'hybird') {
+            $meal_types = maybe_unserialize($r['type']);
+            if(!is_array($meal_types)) $meal_types = $meal_types ? [$meal_types] : [];
+            
+            // Only show meals marked as '產前' (prenatal) for hybrid plan preview
+            // Also include meals with no type specified (universal meals)
+            if(!empty($meal_types) && !in_array('產前', $meal_types)) {
+                continue; // Skip this meal if it's not marked as prenatal
+            }
+        }
+        
         foreach($cat_ids as $cid){
             if(!isset($term_map[$cid])) continue;
             
             // For admin view, show formatted tags (type-specific tags visible)
-            $display_tag = format_tag_for_admin($r['tag']);
+            // For preview, show appropriate tag based on context
+            if($is_preview && $product_type === 'hybird') {
+                // For hybrid preview, show prenatal-specific tag if available
+                $decoded_tag = json_decode($r['tag'], true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_tag) && isset($decoded_tag['產前'])) {
+                    $display_tag = $decoded_tag['產前'];
+                } else {
+                    $display_tag = $r['tag']; // Fallback to original tag
+                }
+            } elseif($is_preview) {
+                $display_tag = $r['tag']; // Use simple tag for other previews
+            } else {
+                $display_tag = format_tag_for_admin($r['tag']); // Use formatted tag for admin
+            }
             
             $data[$date][$cid][] = [
                 'id'    => (int)$r['meal_id'],
@@ -1524,9 +1560,9 @@ function catering_ajax_get_user_meal_choices_range(){
     }
     $user_id = $booking->user_id;
     
-    // fetch date, choice, type, notice, locked AND address
+    // fetch date, choice, type, notice, locked, address AND preference
     $rows = $wpdb->get_results($wpdb->prepare(
-      "SELECT date, choice, type, notice, locked, address
+      "SELECT date, choice, type, notice, locked, address, preference
        FROM $table_choice
        WHERE booking_id=%d AND user_id=%d AND date BETWEEN %s AND %s",
       $booking_id, $user_id, $start, $end
@@ -1536,11 +1572,12 @@ function catering_ajax_get_user_meal_choices_range(){
     foreach($rows as $r){
         $dt = $r['date'];
         $choicesByDate[$dt] = [
-            'choice'  => maybe_unserialize($r['choice']),
-            'type'    => $r['type'],
-            'notice'  => maybe_unserialize($r['notice']),
-            'locked'  => $r['locked'],
-            'address' => maybe_unserialize($r['address'])
+            'choice'     => maybe_unserialize($r['choice']),
+            'type'       => $r['type'],
+            'notice'     => maybe_unserialize($r['notice']),
+            'locked'     => $r['locked'],
+            'address'    => maybe_unserialize($r['address']),
+            'preference' => maybe_unserialize($r['preference'])
         ];
     }
     
@@ -1625,11 +1662,12 @@ function catering_ajax_get_user_meal_choices_range(){
            ];
        }
        $result[$dt] = [
-           'choices' => $catArr,
-           'type'    => isset($data['type'])    ? $data['type']    : '',
-           'notice'  => isset($data['notice'])  ? $data['notice']  : '',
-           'locked'  => isset($data['locked'])  ? $data['locked']  : '',
-           'address' => isset($data['address']) ? $data['address'] : []
+           'choices'    => $catArr,
+           'type'       => isset($data['type'])       ? $data['type']       : '',
+           'notice'     => isset($data['notice'])     ? $data['notice']     : '',
+           'locked'     => isset($data['locked'])     ? $data['locked']     : '',
+           'address'    => isset($data['address'])    ? $data['address']    : [],
+           'preference' => isset($data['preference']) ? $data['preference'] : []
        ];
     }
     wp_send_json_success($result);

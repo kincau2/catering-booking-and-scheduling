@@ -209,7 +209,8 @@ jQuery(function($){
                 action:   'get_meal_schedule_week',
                 product_id: product_id,
                 start_date: start,
-                end_date:   end
+                end_date:   end,
+                is_preview: true  // Add flag to identify schedule preview requests
             }, null, 'json');
         },
         getHolidayData: function(year, month){

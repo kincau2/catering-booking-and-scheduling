@@ -597,6 +597,16 @@ jQuery(function($){
                      $('#catering-selection-display').html(disp).show();
                 }
             });
+            
+            // NEW: Pre-select soup container preference if available
+            if(userChoices[date] && userChoices[date].preference && userChoices[date].preference.soup_container) {
+                var savedPreference = userChoices[date].preference.soup_container;
+                var $soupSelect = $('select[name="preference[soup_container]"]');
+                if($soupSelect.length) {
+                    $soupSelect.val(savedPreference);
+                }
+            }
+            
             // AFTER the loop, trigger once to populate display
             $('#catering-popup-left').find('#catering-meal-form input:checked').trigger('change');
         } else{
