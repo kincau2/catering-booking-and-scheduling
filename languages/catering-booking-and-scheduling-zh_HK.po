@@ -412,6 +412,10 @@ msgstr "客服備註"
 msgid "Open booking"
 msgstr "開啟預訂"
 
+#: include/delivery-report.php:XXX
+msgid "Order Note"
+msgstr "訂單備註"
+
 #: include/wc-product-catering-plan.php:10
 msgid "Catering plan"
 msgstr "餐飲方案"

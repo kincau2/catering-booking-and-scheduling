@@ -47,7 +47,7 @@ $ct = $wpdb->prefix . 'catering_choice';
 $ot = $wpdb->prefix . 'catering_options';
 $cb = $wpdb->prefix . 'catering_booking';
 
-// fetch dynamic "soup" category ID
+// fetch dynamic “soup” category ID
 $soup_cat_id = (int) $wpdb->get_var(
     $wpdb->prepare(
         "SELECT option_value FROM {$ot} WHERE option_name=%s",
@@ -158,70 +158,97 @@ $sheet1->setCellValue('C4',__('Count', 'catering-booking-and-scheduling') );
 
 $rowNum = 5;
 
-// Initialize prefix map for use later
-$prefix_map = [];
-
-// Display each category separately instead of grouping them  
-// First, get all categories except soup and sort them (prefix categories first)
-$prefix_cids = array_filter($prefix_ids, fn($id)=> $id !== $soup_cat_id);
-$other_cids = [];
+// Split into prefix‐IDs (excluding soup) and “others”:
+$group3       = $by_cat[ $soup_cat_id ] ?? [];
+$prefix_cids  = array_filter($prefix_ids, fn($id)=> $id !== $soup_cat_id);
+$group2       = [];
 foreach ( $by_cat as $cid => $items ) {
-    if ( $cid !== $soup_cat_id && !in_array($cid, $prefix_cids, true) ) {
-        $other_cids[] = $cid;
+    if ( $cid=== $soup_cat_id ) {
+        continue;
+    } elseif ( !in_array($cid, $prefix_cids, true) ) {
+        $group2[$cid] = $items;
     }
 }
 
-// Combine prefix categories first, then other categories
-$ordered_categories = array_merge($prefix_cids, $other_cids);
-
-// For prefix categories, we need to maintain the letter mapping
-$global_letter_index = 0;
-
-// Process each category individually
-foreach ( $ordered_categories as $cat_id ) {
-    if ( empty( $by_cat[$cat_id] ) ) {
-        continue;
-    }
-    
-    $cat_title = $term_map[$cat_id] ?? "Cat {$cat_id}";
-    $category_items = $by_cat[$cat_id];
-    
-    // Merge category column for this category's items
-    $item_count = count($category_items);
-    if ( $item_count > 1 ) {
-        $sheet1->mergeCells("A{$rowNum}:A".($rowNum + $item_count - 1));
-    }
-    $sheet1->setCellValue("A{$rowNum}", $cat_title);
-    
-    // List meals for this category
-    foreach ( $category_items as $item ) {
-        $mid = $item['meal_id'];
-        $title = $meal_map[$mid] ?? "Meal {$mid}";
-        
-        // Apply prefix letter only for prefix categories
-        if ( in_array($cat_id, $prefix_cids, true) ) {
-            $letter = chr(65 + $global_letter_index++);
-            $prefix_map[$mid] = $letter;
-            $display_title = "{$letter}. {$title}";
-        } else {
-            $display_title = $title;
-            // Highlight gift soup items in other categories
-            if( str_contains($title, '[贈送]') && str_contains($title, '湯') ) {
-                $sheet1->getStyle("B{$rowNum}:B{$rowNum}")
-                    ->getFill()
-                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('FFFFA500');
-            }
+// Build combined list of meals across all prefix categories
+// 1) Render combined prefix block
+$prefix_items = [];
+foreach ( $prefix_cids as $cid ) {
+    foreach ( $by_cat[$cid] ?? [] as $itm ) {
+        $mid = $itm['meal_id'];
+        if ( ! isset( $prefix_items[$mid] ) ) {
+            $prefix_items[$mid] = [ 'qty'=>0, 'cats'=>[] ];
         }
-        
-        $sheet1->setCellValue("B{$rowNum}", $display_title);
-        $sheet1->setCellValue("C{$rowNum}", $item['qty']);
+        $prefix_items[$mid]['qty']  += $itm['qty'];
+        $prefix_items[$mid]['cats'][$cid] = true;
+    }
+}
+if ( $prefix_items ) {
+    $prefix_map = [];
+    // merge category‐column over entire block
+    $count   = count($prefix_items);
+    $sheet1->mergeCells("A{$rowNum}:A".($rowNum+$count-1));
+    // collect all used category names
+    $used_cids = [];
+    foreach ( $prefix_items as $info ) {
+        $used_cids = array_merge($used_cids, array_keys($info['cats']));
+    }
+    $used_cids   = array_unique($used_cids);
+    $cat_labels  = array_map(fn($c)=> $term_map[$c] ?? "Cat {$c}", $used_cids);
+    $sheet1->setCellValue("A{$rowNum}", implode(' / ', $cat_labels) );
+    // list meals with continuous A, B, C… prefix
+    $letterIndex = 0;
+    foreach ( $prefix_items as $mid => $info ) {
+        $letter = chr(65 + $letterIndex++);
+        $title  = $meal_map[$mid] ?? "Meal {$mid}";
+        // record mapping for labels
+        $prefix_map[ $mid ] = $letter;
+        $sheet1->setCellValue("B{$rowNum}", "{$letter}. {$title}" );
+        $sheet1->setCellValue("C{$rowNum}", $info['qty'] );
         $rowNum++;
     }
 }
 
-// Handle soup category separately with container breakdown
-$group3 = $by_cat[ $soup_cat_id ] ?? [];
+// 2) Other categories (combined across those IDs)
+$other_items = [];
+foreach ( $group2 as $cid => $items ) {
+    foreach ( $items as $itm ) {
+        $mid = $itm['meal_id'];
+        if ( ! isset( $other_items[ $mid ] ) ) {
+            $other_items[ $mid ] = [ 'qty' => 0, 'cats' => [] ];
+        }
+        $other_items[ $mid ]['qty']   += $itm['qty'];
+        $other_items[ $mid ]['cats'][$cid] = true;
+    }
+}
+if ( $other_items ) {
+    // merge category column
+    $count = count( $other_items );
+    $sheet1->mergeCells("A{$rowNum}:A".($rowNum + $count - 1));
+    // build combined category label
+    $all_cids = [];
+    foreach ( $other_items as $info ) {
+        $all_cids = array_merge( $all_cids, array_keys($info['cats']) );
+    }
+    $all_cids    = array_unique( $all_cids );
+    $labels      = array_map( fn($c) => $term_map[$c] ?? "Cat {$c}", $all_cids );
+    $sheet1->setCellValue("A{$rowNum}", implode(' / ', $labels) );
+    // list meals
+    foreach ( $other_items as $mid => $info ) {
+        $title = $meal_map[$mid] ?? "Meal {$mid}";
+        $sheet1->setCellValue("B{$rowNum}", $title );
+        if( str_contains($title, '[贈送]') && str_contains($title, '湯') ) {
+            $sheet1->getStyle("B{$rowNum}:B{$rowNum}")
+                ->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('FFFFA500');
+        }
+        $sheet1->setCellValue("C{$rowNum}", $info['qty'] );
+        $rowNum++;
+    }
+}
+
+// 3) Soup‐water category with container breakdown
 // Initialize variables to prevent fatal errors when no soup items exist
 $total_pot = 0;
 $total_cup = 0;
@@ -323,7 +350,7 @@ $sheet1
     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
-// 8) Build "Delivery Report" sheet
+// 8) Build “Delivery Report” sheet
 $sheet2 = $spreadsheet->createSheet();
 $sheet2->setTitle('Delivery Report');
 // Header rows
@@ -592,6 +619,7 @@ foreach ( $records as $rec ) {
     $addr    = maybe_unserialize( $rec->address );
     $booking = new Booking( $rec->booking_id );
     $order_id = $booking->get_order_id();
+    $WC_item = $booking->get_order_item();
     
     // Get the sequential order number if available, otherwise fallback to regular order ID
     $order = wc_get_order($order_id);
@@ -612,8 +640,6 @@ foreach ( $records as $rec ) {
     $sheet2->setCellValue("C{$row}", ($addr['first_name'] ?? '') . " " . ($addr['last_name'] ?? '') );
     $sheet2->setCellValue("D{$row}", ( $addr['phone_country']?? '' ) . ' ' . ($addr['phone'] ?? '') );
     $sheet2->setCellValue("E{$row}", $current_address );
-
-    $WC_item = $booking->get_order_item();
     
     if( isset($addr['delivery_note']) && !empty($addr['delivery_note']) ){
         $delivery_note[] = __('Delivery Note','catering-booking-and-scheduling' ) . ': '. $addr['delivery_note'];
@@ -622,7 +648,11 @@ foreach ( $records as $rec ) {
     if ( ! empty( $WC_item->get_meta('cs_note', true) ) ) {
         $delivery_note[] = __('CS Note','catering-booking-and-scheduling' ) . ': '. $WC_item->get_meta('cs_note', true);
     }
-    
+
+    if ( !empty( $order->get_customer_note() ) ) {
+        $delivery_note[] = __('Order Note','catering-booking-and-scheduling' ) . ': '. $order->get_customer_note();
+    }
+
     $health_status = maybe_unserialize( $booking->health_status );
     
     if ( is_array( $health_status ) && is_array( $health_status['allergy'] ) && !empty( $health_status['allergy'] ) ) {
@@ -720,7 +750,7 @@ $sheet2->getStyle("A1:{$col_meal}{$lastRow}")
 // setAutoFilter
 $sheet2->setAutoFilter("E{$delivery_table_start_row}:E{$lastRow}");
 
-// 9) Build "Delivery Label" sheet
+// 9) Build “Delivery Label” sheet
 $sheet3 = $spreadsheet->createSheet();
 $sheet3->setTitle('Delivery Label');
 // Header rows
@@ -729,7 +759,7 @@ $sheet3->setCellValue('A2','Date Range: '. $start .' – '. $end );
 $sheet3->mergeCells('A1:H1');
 $sheet3->mergeCells('A2:H2');
 
-// Column titles with blank "送貨日期" at A
+// Column titles with blank “送貨日期” at A
 $headers = ['餐點日期','訂購編號','稱呼','聯絡電話','送貨地點','餐點','備註','湯壺','餐'];
 foreach ( $headers as $i => $title ) {
     $col = chr(65 + $i); // A…H
@@ -744,6 +774,7 @@ foreach ( $records as $rec ) {
     $prefArr  = maybe_unserialize( $rec->preference );
     $booking  = new Booking( $rec->booking_id );
     $order_id = $booking->get_order_id();
+    $WC_item = $booking->get_order_item();
     
     // Get the sequential order number if available, otherwise fallback to regular order ID
     $order = wc_get_order($order_id);
@@ -805,12 +836,19 @@ foreach ( $records as $rec ) {
 
     // G: 備註 – combine delivery note, CS note, and allergy
     $delivery_note = [];
-    if ( ! empty( $addr['delivery_note'] ) ) {
-        $delivery_note[] = __('Delivery Note','catering-booking-and-scheduling') . ': ' . $addr['delivery_note'];
+
+    if( isset($addr['delivery_note']) && !empty($addr['delivery_note']) ){
+        $delivery_note[] = __('Delivery Note','catering-booking-and-scheduling' ) . ': '. $addr['delivery_note'];
     }
+    
     if ( ! empty( $WC_item->get_meta('cs_note', true) ) ) {
-        $delivery_note[] = __('CS Note','catering-booking-and-scheduling') . ': ' . $WC_item->get_meta('cs_note', true);
+        $delivery_note[] = __('CS Note','catering-booking-and-scheduling' ) . ': '. $WC_item->get_meta('cs_note', true);
     }
+
+    if ( !empty( $order->get_customer_note() ) ) {
+        $delivery_note[] = __('Order Note','catering-booking-and-scheduling' ) . ': '. $order->get_customer_note();
+    }
+    
     $health_status = maybe_unserialize( $booking->health_status );
     if ( is_array( $health_status ) && is_array( $health_status['allergy'] ) && !empty( $health_status['allergy'] ) ) {
         $health_status['allergy'] = array_diff( $health_status['allergy'], ['no_allergy'] );
