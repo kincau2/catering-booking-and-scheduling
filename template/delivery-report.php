@@ -112,18 +112,20 @@ foreach ( $choice_rows as $r ) {
 
 
 
-// NEW: Load category titles from catering_terms
+// NEW: Load category titles and ordering from catering_terms
 global $wpdb;
 $term_ids = array_keys( $by_cat );
 $term_map = [];
+$term_ordering = [];
 if ( $term_ids ) {
     $ph = implode( ',', array_fill(0, count($term_ids), '%d') );
     $rows = $wpdb->get_results( $wpdb->prepare(
-        "SELECT ID, title FROM {$wpdb->prefix}catering_terms WHERE ID IN ($ph)",
+        "SELECT ID, title, ordering FROM {$wpdb->prefix}catering_terms WHERE ID IN ($ph)",
         $term_ids
     ), ARRAY_A );
     foreach ( $rows as $row ) {
         $term_map[ $row['ID'] ] = $row['title'];
+        $term_ordering[ $row['ID'] ] = (int) $row['ordering'];
     }
 }
 
@@ -164,12 +166,33 @@ $prefix_map = [];
 // Display each category separately instead of grouping them  
 // First, get all categories except soup and sort them (prefix categories first)
 $prefix_cids = array_filter($prefix_ids, fn($id)=> $id !== $soup_cat_id);
+
+// Sort prefix categories by ordering field
+usort($prefix_cids, function($a, $b) use ($term_ordering) {
+    $orderA = $term_ordering[$a] ?? 999999;
+    $orderB = $term_ordering[$b] ?? 999999;
+    if ($orderA === $orderB) {
+        return $a - $b; // fallback to ID if ordering is the same
+    }
+    return $orderA - $orderB;
+});
+
 $other_cids = [];
 foreach ( $by_cat as $cid => $items ) {
     if ( $cid !== $soup_cat_id && !in_array($cid, $prefix_cids, true) ) {
         $other_cids[] = $cid;
     }
 }
+
+// Sort other categories by ordering field as well
+usort($other_cids, function($a, $b) use ($term_ordering) {
+    $orderA = $term_ordering[$a] ?? 999999;
+    $orderB = $term_ordering[$b] ?? 999999;
+    if ($orderA === $orderB) {
+        return $a - $b; // fallback to ID if ordering is the same
+    }
+    return $orderA - $orderB;
+});
 
 // Combine prefix categories first, then other categories
 $ordered_categories = array_merge($prefix_cids, $other_cids);

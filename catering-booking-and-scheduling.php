@@ -7,7 +7,7 @@
  * Plugin Name:       Catering Booking and Scheduling
  * Description:       Customized plugin for ms. lo soups website revamp requirement.
  * Author:            Louis Au
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author URI:
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
