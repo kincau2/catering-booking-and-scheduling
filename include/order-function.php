@@ -901,7 +901,6 @@ function catering_on_wc_order_trash($order_id) {
 }
 
 // Handle booking status when order being restored from trash
-
 add_action('woocommerce_untrash_order', 'catering_on_wc_order_untrash', 10, 1);
 function catering_on_wc_order_untrash($order_id) {
     $order = wc_get_order($order_id);
@@ -970,6 +969,8 @@ function catering_on_order_permanent_delete($order_id,$order) {
         }
     }
 }
+
+
 
 // Handle custom sequential order numbers
 add_action('woocommerce_before_order_object_save', function (WC_Order $order) {
@@ -1120,3 +1121,29 @@ add_filter('woocommerce_order_received_verify_known_shoppers', function($verify)
     }
     return $verify;
 });
+
+// Handle catering booking cleanup when order items are deleted via admin order edit
+add_action( 'woocommerce_ajax_order_items_removed', 'catering_handle_order_item_deletion', 10, 4 );
+function catering_handle_order_item_deletion( $item_id, $item, $changed_stock, $order ) {
+    // Check if the deleted item was a catering product
+    if ( $item && $item->get_product() ) {
+        $product = $item->get_product();
+        if ( is_catering_product( $product ) ) {
+            error_log("Catering order item deleted: ID = $item_id, Order = " . $order->get_id());
+            
+            // Get and cleanup associated booking
+            $booking = get_booking_by_order_item_id( $item_id );
+            if ( $booking ) {
+                try {
+                    // Delete associated meal choices and booking
+                    $booking->delete_meal_choices();
+                    $booking->delete();
+                    error_log("Deleted booking ID: " . $booking->id . " for order item ID: " . $item_id);
+                } catch ( Exception $e ) {
+                    error_log("Error deleting booking for order item $item_id: " . $e->getMessage());
+                }
+            }
+        }
+    }
+}
+

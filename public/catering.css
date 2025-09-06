@@ -2312,10 +2312,8 @@ button#place_order {
 }
 
 #catering-pick-meal-popup #catering-meal-form input[type="checkbox"] {
-  box-shadow: unset !important;
-  border: unset !important;
-  margin: unset !important;
-  background: #ffffff00;
+  visibility: hidden;
+  margin-right: -17px !important;
 }
 
 #catering-pick-meal-popup #catering-meal-form input[type=checkbox]:checked::before {
@@ -2328,6 +2326,7 @@ button#place_order {
   top: 0px;
   left: 0px;
   margin: unset !important;
+  visibility: visible !important;
   z-index: 0;
 }
 
@@ -2379,6 +2378,13 @@ button#place_order {
   padding: 5px 10px !important;
   background: #3498db;
   color: #FFF;
+}
+
+#catering-pick-meal-popup span.meal-tag {
+    z-index: 9;
+    position: relative;
+    margin-left: 5px;
+    line-height: 23px;
 }
 
 /* Mobile responsiveness */

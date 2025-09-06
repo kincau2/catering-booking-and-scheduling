@@ -213,7 +213,7 @@ function maybe_install_plugin_table() {
       previous_choice varchar(2000),
       new_choice varchar(2000),
       changed_by_user_id INT NOT NULL,
-      changed_by_user_type varchar(50) NOT NULL,
+      changed_by_user_type varchar(200) NOT NULL,
       change_reason varchar(255),
       action_type varchar(50) NOT NULL DEFAULT 'meal_choice_update',
       amended_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

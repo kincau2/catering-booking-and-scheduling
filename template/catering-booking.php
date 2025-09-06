@@ -20,10 +20,12 @@ if ($booking_ids) {
     foreach ($booking_ids as $booking_id) {
         $booking = new Booking($booking_id->ID);
         // Assuming wc_get_order_item() returns a WC_Order_Item instance
-        $order_item = new WC_Order_Item_Product($booking->order_item_id);
-        if (!$order_item) {
+        $order_id = wc_get_order_id_by_order_item_id($booking->order_item_id);
+        // Skip if order_id is not found
+        if (!$order_id) {
             continue;
         }
+        $order_item = new WC_Order_Item_Product($booking->order_item_id);
         // Get Order Number via order item function get_order_id()
         $order_id = $order_item->get_order_id();
         $order = wc_get_order($order_id);

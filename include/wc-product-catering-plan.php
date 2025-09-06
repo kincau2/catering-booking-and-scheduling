@@ -16,12 +16,11 @@ add_action( 'init', 'create_catering_plan_product_type' );
 
 function create_catering_plan_product_type(){
     class WC_Product_Catering_Plan extends WC_Product_Variable {
+
+        protected $product_type = 'catering_plan';
+        
         public function __construct( $product ) {
-
-            $this->product_type = 'catering_plan';
-            // $this->supports[]   = 'ajax_add_to_cart';
             parent::__construct( $product );
-
         }
 
         public function get_type() {

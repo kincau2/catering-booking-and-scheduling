@@ -15,7 +15,7 @@ function display_debug_message(){
     // echo "</pre>";
 
     echo "<pre>";
-    echo print_r(get_transient('debug').'test01',1);
+    echo print_r(get_transient('debug'),1);
     echo "</pre>";
 
 }
@@ -128,8 +128,24 @@ function log_meal_choice_change($booking_id, $choice_date, $previous_choice, $ne
     
     // Get user role for changed_by_user_type
     $user = get_user_by('ID', $changed_by_user_id);
-    $user_type = $user ? implode(',', $user->roles) : 'unknown';
     
+    // Define role hierarchy (most significant first)
+    $role_hierarchy = ['administrator', 'shop_manager', 'shop_assistant', 'marketing', 'customer'];
+    
+    $user_type = 'unknown';
+    if ($user && !empty($user->roles)) {
+        // Find the most significant role
+        foreach ($role_hierarchy as $role) {
+            if (in_array($role, $user->roles)) {
+                $user_type = $role;
+                break;
+            }
+        }
+        // If no predefined role found, use the first role
+        if ($user_type === 'unknown') {
+            $user_type = $user->roles[0];
+        }
+    }
     // Insert into catering_log
     $result = $wpdb->insert(
         $wpdb->prefix . 'catering_log',
