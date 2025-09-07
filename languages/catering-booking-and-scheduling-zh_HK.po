@@ -358,15 +358,15 @@ msgstr "不適用"
 
 #: include/order-function.php:XXX
 msgid "Delivery Date:"
-msgstr "配送日期："
+msgstr "配送日期:"
 
 #: include/order-function.php:XXX
 msgid "Tracking Number:"
-msgstr "追蹤號碼："
+msgstr "追蹤號碼:"
 
 #: include/order-function.php:XXX
 msgid "CS Note:"
-msgstr "客服備註："
+msgstr "客服備註:"
 
 #: include/order-function.php:XXX
 msgid "Delivery date updated"
@@ -1756,3 +1756,15 @@ msgstr "無效的訂單項目ID"
 #: include/ajax.php:2136
 msgid "WooCommerce function missing"
 msgstr "缺少WooCommerce功能"
+
+#: include/order-function.php:429
+msgid "Are you sure you want to delete this delivery date?"
+msgstr "您確定要刪除此配送日期嗎？"
+
+#: include/order-function.php:515
+msgid "Are you sure you want to delete this tracking number?"
+msgstr "您確定要刪除此追蹤號碼嗎？"
+
+#: include/order-function.php:621
+msgid "Are you sure you want to delete this CS note?"
+msgstr "您確定要刪除此客服備註嗎？"

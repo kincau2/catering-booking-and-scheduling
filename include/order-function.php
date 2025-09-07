@@ -386,25 +386,38 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                 $.post(ajaxurl, { action: "update_item_delivery_date", order_item_id: orderItemId, delivery_date: newDate }, function(resp){
                     if(resp.success){
                         container.find(".delivery-date-field").slideUp();
+                        
+                        // Update hidden form fields to prevent WooCommerce from overwriting
+                        var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="delivery_date"]');
+                        if (metaKeyField.length > 0) {
+                            // Find the corresponding meta_value field by extracting the meta ID from the name attribute
+                            var metaKeyName = metaKeyField.attr('name');
+                            var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
+                            $('textarea[name="' + metaValueName + '"]').val(newDate);
+                        } else if (newDate) {
+                            // Add new hidden fields if they don't exist - WooCommerce will assign a new meta ID
+                            $('#woocommerce-order-items').append(
+                                '<input type="hidden" name="meta_key[' + orderItemId + '][]" value="delivery_date">' +
+                                '<input type="hidden" name="meta_value[' + orderItemId + '][]" value="' + newDate + '">'
+                            );
+                        }
+                        
                         var viewDiv = container.find('.view');
                         if(viewDiv.length === 0){
-                            container.append('<div class="view"></div>');
+                            container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
                             viewDiv = container.find('.view');
                         }
-                        // Retrieve the tracking number row; now matching capitalized text
-                        var currentTN = viewDiv.find('tr').filter(function(){
-                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?>';
-                        }).find('td p').text();
-                        var html = '<table cellspacing="0" class="display_meta"><tbody>';
+                        if (!viewDiv.find('table.display_meta').length) {
+                            viewDiv.html('<table class="display_meta"><tbody></tbody></table>');
+                        }
+                        // remove previous Delivery Date row, then append updated
+                        viewDiv.find('tr').filter(function(){
+                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?>';
+                        }).remove();
                         if(newDate){
-                            // Changed header text: 
-                            html += '<tr><th><?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?></th><td><p>' + newDate + '</p></td></tr>';
+                            viewDiv.find('tbody')
+                                    .append('<tr><th><?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?></th><td><p>' + newDate + '</p></td></tr>');
                         }
-                        if(currentTN){
-                            html += '<tr><th><?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?></th><td><p>' + currentTN + '</p></td></tr>';
-                        }
-                        html += '</tbody></table>';
-                        viewDiv.html(html);
                         alert("<?php echo esc_js(__('Delivery date updated', 'catering-booking-and-scheduling')); ?>");
                     } else {
                         alert(resp.data);
@@ -412,25 +425,36 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                 });
             });
             container.on("click", ".delete-delivery-date", function(){
+                if (!confirm('<?php esc_html_e('Are you sure you want to delete this delivery date?', 'catering-booking-and-scheduling'); ?>')) {
+                    return;
+                }
                 var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
                 $.post(ajaxurl, { action: "delete_item_delivery_date", order_item_id: orderItemId }, function(resp){
                     if(resp.success){
                         container.find(".delivery-date-field").slideUp();
+                        
+                        // Update hidden form fields to prevent WooCommerce from overwriting
+                        var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="delivery_date"]');
+                        if (metaKeyField.length > 0) {
+                            // Find the corresponding meta_value field and remove both
+                            var metaKeyName = metaKeyField.attr('name');
+                            var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
+                            metaKeyField.remove();
+                            $('textarea[name="' + metaValueName + '"]').remove();
+                        }
+                        
                         var viewDiv = container.find('.view');
                         if(viewDiv.length === 0){
-                            container.append('<div class="view"></div>');
+                            container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
                             viewDiv = container.find('.view');
                         }
-                        // Retrieve the tracking number row; now matching capitalized text
-                        var currentTN = viewDiv.find('tr').filter(function(){
-                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?>';
-                        }).find('td p').text();
-                        var html = '<table cellspacing="0" class="display_meta"><tbody>';
-                        if(currentTN){
-                            html += '<tr><th><?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?></th><td><p>' + currentTN + '</p></td></tr>';
+                        if (!viewDiv.find('table.display_meta').length) {
+                            viewDiv.html('<table class="display_meta"><tbody></tbody></table>');
                         }
-                        html += '</tbody></table>';
-                        viewDiv.html(html);
+                        // remove previous Delivery Date row
+                        viewDiv.find('tr').filter(function(){
+                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?>';
+                        }).remove();
                         alert("<?php echo esc_js(__('Delivery date deleted', 'catering-booking-and-scheduling')); ?>");
                     } else {
                         alert(resp.data);
@@ -450,24 +474,38 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                 $.post(ajaxurl, { action: "update_item_tracking_number", order_item_id: orderItemId, tracking_number: newTracking }, function(resp){
                     if(resp.success){
                         container.find(".tracking-number-field").slideUp();
+                        
+                        // Update hidden form fields to prevent WooCommerce from overwriting
+                        var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="tracking_number"]');
+                        if (metaKeyField.length > 0) {
+                            // Find the corresponding meta_value field by extracting the meta ID from the name attribute
+                            var metaKeyName = metaKeyField.attr('name');
+                            var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
+                            $('textarea[name="' + metaValueName + '"]').val(newTracking);
+                        } else if (newTracking) {
+                            // Add new hidden fields if they don't exist - WooCommerce will assign a new meta ID
+                            $('#woocommerce-order-items').append(
+                                '<input type="hidden" name="meta_key[' + orderItemId + '][]" value="tracking_number">' +
+                                '<input type="hidden" name="meta_value[' + orderItemId + '][]" value="' + newTracking + '">'
+                            );
+                        }
+                        
                         var viewDiv = container.find('.view');
                         if(viewDiv.length === 0){
-                            container.append('<div class="view"></div>');
+                            container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
                             viewDiv = container.find('.view');
                         }
-                        // Retrieve the delivery date row; now matching capitalized text
-                        var currentDD = viewDiv.find('tr').filter(function(){
-                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?>';
-                        }).find('td p').text();
-                        var html = '<table cellspacing="0" class="display_meta"><tbody>';
-                        if(currentDD){
-                            html += '<tr><th><?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?></th><td><p>' + currentDD + '</p></td></tr>';
+                        if (!viewDiv.find('table.display_meta').length) {
+                            viewDiv.html('<table class="display_meta"><tbody></tbody></table>');
                         }
+                        // remove previous Tracking Number row, then append updated
+                        viewDiv.find('tr').filter(function(){
+                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?>';
+                        }).remove();
                         if(newTracking){
-                            html += '<tr><th><?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?></th><td><p>' + newTracking + '</p></td></tr>';
+                            viewDiv.find('tbody')
+                                    .append('<tr><th><?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?></th><td><p>' + newTracking + '</p></td></tr>');
                         }
-                        html += '</tbody></table>';
-                        viewDiv.html(html);
                         alert("<?php echo esc_js(__('Tracking number updated', 'catering-booking-and-scheduling')); ?>");
                     } else {
                         alert(resp.data);
@@ -475,25 +513,36 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                 });
             });
             container.on("click", ".delete-tracking-number", function(){
+                if (!confirm('<?php esc_html_e('Are you sure you want to delete this tracking number?', 'catering-booking-and-scheduling'); ?>')) {
+                    return;
+                }
                 var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
                 $.post(ajaxurl, { action: "delete_item_tracking_number", order_item_id: orderItemId }, function(resp){
                     if(resp.success){
                         container.find(".tracking-number-field").slideUp();
+                        
+                        // Update hidden form fields to prevent WooCommerce from overwriting
+                        var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="tracking_number"]');
+                        if (metaKeyField.length > 0) {
+                            // Find the corresponding meta_value field and remove both
+                            var metaKeyName = metaKeyField.attr('name');
+                            var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
+                            metaKeyField.remove();
+                            $('textarea[name="' + metaValueName + '"]').remove();
+                        }
+                        
                         var viewDiv = container.find('.view');
                         if(viewDiv.length === 0){
-                            container.append('<div class="view"></div>');
+                            container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
                             viewDiv = container.find('.view');
                         }
-                        // Retrieve the delivery date row; now matching capitalized text
-                        var currentDD = viewDiv.find('tr').filter(function(){
-                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?>';
-                        }).find('td p').text();
-                        var html = '<table cellspacing="0" class="display_meta"><tbody>';
-                        if(currentDD){
-                            html += '<tr><th><?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?></th><td><p>' + currentDD + '</p></td></tr>';
+                        if (!viewDiv.find('table.display_meta').length) {
+                            viewDiv.html('<table class="display_meta"><tbody></tbody></table>');
                         }
-                        html += '</tbody></table>';
-                        viewDiv.html(html);
+                        // remove previous Tracking Number row
+                        viewDiv.find('tr').filter(function(){
+                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?>';
+                        }).remove();
                         alert("<?php echo esc_js(__('Tracking number deleted', 'catering-booking-and-scheduling')); ?>");
                     } else {
                         alert(resp.data);
@@ -533,6 +582,24 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
             }, function(resp){
                 if (resp.success) {
                     container.find(".cs-note-field").slideUp();
+                    
+                    // Update hidden form fields to prevent WooCommerce from overwriting
+                    var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="cs_note"]');
+
+                    console.log(metaKeyField);
+                    if (metaKeyField.length > 0) {
+                        // Find the corresponding meta_value field by extracting the meta ID from the name attribute
+                        var metaKeyName = metaKeyField.attr('name');
+                        var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
+                        $('textarea[name="' + metaValueName + '"]').val(newNote);
+                    } else if (newNote) {
+                        // Add new hidden fields if they don't exist - WooCommerce will assign a new meta ID
+                        $('#woocommerce-order-items').append(
+                            '<input type="hidden" name="meta_key[' + orderItemId + '][]" value="cs_note">' +
+                            '<input type="hidden" name="meta_value[' + orderItemId + '][]" value="' + newNote + '">'
+                        );
+                    }
+                    
                     // ensure viewDiv/table exists
                     var viewDiv = container.find('.view');
                     if (!viewDiv.length) {
@@ -544,10 +611,10 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                     }
                     // remove previous CS Note row, then append updated
                     viewDiv.find('tr').filter(function(){
-                        return $(this).find('th').text().trim() === '<?php echo esc_js(__('CS Note:', 'catering-booking-and-scheduling')); ?>';
+                        return $(this).find('th').text().trim() === '<?php echo esc_js(__('CS Note', 'catering-booking-and-scheduling')).':'; ?>';
                     }).remove();
                     viewDiv.find('tbody')
-                            .append('<tr><th><?php echo esc_js(__('CS Note:', 'catering-booking-and-scheduling')); ?></th><td><p>'+ newNote +'</p></td></tr>');
+                            .append('<tr><th><?php echo esc_js(__('CS Note', 'catering-booking-and-scheduling')).':'; ?></th><td><p>'+ newNote +'</p></td></tr>');
                     alert("<?php echo esc_js(__('CS note saved', 'catering-booking-and-scheduling')); ?>");
                 } else {
                     alert(resp.data);
@@ -555,6 +622,9 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
             });
         });
         container.on("click", ".delete-cs-note", function(){
+            if (!confirm('<?php esc_html_e('Are you sure you want to delete this CS note?', 'catering-booking-and-scheduling'); ?>')) {
+                return;
+            }
             var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
             $.post(ajaxurl, {
                 action:        "delete_item_cs_note",
@@ -562,6 +632,18 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
             }, function(resp){
                 if (resp.success) {
                     container.find(".cs-note-field").slideUp();
+                    
+                    // Update hidden form fields to prevent WooCommerce from overwriting
+                    var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="cs_note"]');
+                    console.log(metaKeyField);
+                    if (metaKeyField.length > 0) {
+                        // Find the corresponding meta_value field and remove both
+                        var metaKeyName = metaKeyField.attr('name');
+                        var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
+                        metaKeyField.remove();
+                        $('textarea[name="' + metaValueName + '"]').remove();
+                    }
+                    
                     var viewDiv = container.find('.view');
                     if (!viewDiv.length) {
                         container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
@@ -569,7 +651,7 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                     }
                     // remove CS Note row
                     viewDiv.find('tr').filter(function(){
-                        return $(this).find('th').text().trim() === '<?php echo esc_js(__('CS Note:', 'catering-booking-and-scheduling')); ?>';
+                        return $(this).find('th').text().trim() === '<?php echo esc_js(__('CS Note', 'catering-booking-and-scheduling')).':'; ?>';
                     }).remove();
                     alert("<?php echo esc_js(__('CS note deleted', 'catering-booking-and-scheduling')); ?>");
                 } else {
