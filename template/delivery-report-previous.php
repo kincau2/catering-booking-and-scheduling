@@ -679,7 +679,6 @@ foreach ( $records as $rec ) {
     $health_status = maybe_unserialize( $booking->health_status );
     
     if ( is_array( $health_status ) && is_array( $health_status['allergy'] ) && !empty( $health_status['allergy'] ) ) {
-        set_transient( 'debug', 'fired_', 30 ); // for debugging
         // Remove 'no_allergy' flag if present
         $health_status['allergy'] = array_diff( $health_status['allergy'], [ 'no_allergy' ] );
         if ( ! empty( $health_status['allergy'] ) ) {

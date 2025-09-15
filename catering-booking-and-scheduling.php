@@ -80,7 +80,6 @@ function save_daily_catering_meal_count() {
             }
         }
     }
-    set_transient('debug', $counts);
     // upsert daily counts, avoid duplicate date+meal_id
     foreach ($counts as $meal_id => $meal_count) {
         // check if a record already exists for this date & meal_id

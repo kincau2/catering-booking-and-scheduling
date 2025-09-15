@@ -1030,7 +1030,6 @@ function catering_on_order_permanent_delete($order_id,$order) {
                 $order_item_id = $item->get_id();
                 // Get booking ID for this order item
                 $booking = get_booking_by_order_item_id($order_item_id);
-                set_transient('debug',$booking, 60);
                 if ($booking) {
                     try {
 

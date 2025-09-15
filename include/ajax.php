@@ -41,7 +41,6 @@ function get_display_tag($stored_tag, $booking, $date) {
         // It's a type-specific tag array
         if ($booking->type === 'hybird' && !empty($booking->health_status['due_date'])) {
             $due_date = $booking->health_status['due_date'];
-            set_transient('debug', $date < $due_date ? 'true' : 'false',30);
             if ($date < $due_date && isset($decoded_tag['產前'])) {
                 return $decoded_tag['產前'];
             } elseif ($date >= $due_date && isset($decoded_tag['產後'])) {
@@ -1823,7 +1822,6 @@ function catering_ajax_update_health_status(){
             // Categorize unsuitable dates based on min day requirement
             foreach($unsuitable_dates as $date){
                 $clean_date = str_replace([' (prenatal)', ' (postpartum)'], '', $date);
-                set_transient('debug', $clean_date, 30); // 5 minutes
                 if(!is_min_day_requirement_met($clean_date)){
                     // Date is within restriction period, cannot be deleted
                     $restricted_dates[] = $date;

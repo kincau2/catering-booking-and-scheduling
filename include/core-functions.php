@@ -8,12 +8,6 @@ add_shortcode('debug','display_debug_message');
 
 function display_debug_message(){
 
-
-    
-    // echo "<pre>";
-    // echo print_r( is_min_day_requirement_met('2025-09-02')? 'true' : 'false',1);
-    // echo "</pre>";
-
     echo "<pre>";
     echo print_r(get_transient('debug'),1);
     echo "</pre>";
