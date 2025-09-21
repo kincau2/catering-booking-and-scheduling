@@ -846,6 +846,208 @@ function catering_render_delivery_status_column( $column, $order ) {
     }
 }
 
+// Make Delivery Status column sortable for legacy orders table
+add_filter('manage_edit-shop_order_sortable_columns', 'add_delivery_status_sortable_column');
+function add_delivery_status_sortable_column($columns) {
+    $columns['delivery_status'] = '_delivery_status';
+    return $columns;
+}
+
+// Make Delivery Status column sortable for HPOS orders table
+add_filter('manage_woocommerce_page_wc-orders_sortable_columns', 'catering_add_delivery_status_sortable_column');
+function catering_add_delivery_status_sortable_column($columns) {
+    $columns['delivery_status'] = '_delivery_status';
+    return $columns;
+}
+
+// Handle sorting for legacy orders table
+add_action('pre_get_posts', 'catering_delivery_status_orderby');
+function catering_delivery_status_orderby($query) {
+    if (!is_admin() || !$query->is_main_query()) {
+        return;
+    }
+    
+    if ($query->get('orderby') === '_delivery_status') {
+        $query->set('meta_key', '_delivery_status');
+        $query->set('orderby', 'meta_value');
+    }
+}
+
+// Handle sorting for HPOS orders table
+add_filter('woocommerce_orders_table_query_clauses', 'catering_delivery_status_hpos_orderby', 10, 2);
+function catering_delivery_status_hpos_orderby($clauses, $query) {
+    global $wpdb;
+    
+    if (isset($_GET['orderby']) && $_GET['orderby'] === '_delivery_status') {
+        $order = isset($_GET['order']) && $_GET['order'] === 'desc' ? 'DESC' : 'ASC';
+        
+        // Join with orders meta table
+        $clauses['join'] .= " LEFT JOIN {$wpdb->prefix}wc_orders_meta AS delivery_meta ON {$wpdb->prefix}wc_orders.id = delivery_meta.order_id AND delivery_meta.meta_key = '_delivery_status'";
+        
+        // Order by delivery status
+        $clauses['orderby'] = "delivery_meta.meta_value {$order}";
+    }
+    
+    return $clauses;
+}
+
+// Add delivery status filtering for HPOS orders table using the correct action hook
+add_action('woocommerce_order_list_table_restrict_manage_orders', 'add_delivery_status_filter_dropdown', 20, 2);
+function add_delivery_status_filter_dropdown($order_type, $which) {
+    // Only show on top and for shop_order type
+    if ('top' !== $which || 'shop_order' !== $order_type) {
+        return;
+    }
+    
+    global $wpdb;
+    
+    // Get current delivery status filter
+    $current_delivery_status = isset($_GET['delivery_status']) ? sanitize_text_field($_GET['delivery_status']) : '';
+    
+    // Count orders by delivery status
+    $delivery_statuses = array(
+        'pending' => __('Pending', 'catering-booking-and-scheduling'),
+        'partially_delivered' => __('Partially delivered', 'catering-booking-and-scheduling'),
+        'awaiting_fulfillment' => __('Awaiting fulfillment', 'catering-booking-and-scheduling'),
+        'completed' => __('Completed', 'catering-booking-and-scheduling'),
+        'not_applicable' => __('Not applicable', 'catering-booking-and-scheduling'),
+    );
+    
+    $delivery_counts = array();
+    foreach (array_keys($delivery_statuses) as $status) {
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(o.id) FROM {$wpdb->prefix}wc_orders o 
+             LEFT JOIN {$wpdb->prefix}wc_orders_meta om ON o.id = om.order_id AND om.meta_key = '_delivery_status'
+             WHERE o.type = 'shop_order' 
+             AND o.status != 'trash'
+             AND (om.meta_value = %s OR (om.meta_value IS NULL AND %s = 'pending'))",
+            $status, $status
+        ));
+        if ($count > 0) {
+            $delivery_counts[$status] = $count;
+        }
+    }
+    
+    // Only show dropdown if there are orders with delivery statuses
+    if (!empty($delivery_counts)) {
+        echo '<select name="delivery_status" id="filter-by-delivery-status">';
+        echo '<option value="">' . esc_html__('All delivery statuses', 'catering-booking-and-scheduling') . '</option>';
+        
+        foreach ($delivery_counts as $status => $count) {
+            $selected = ($status === $current_delivery_status) ? 'selected="selected"' : '';
+            echo '<option value="' . esc_attr($status) . '" ' . $selected . '>';
+            echo esc_html($delivery_statuses[$status]) . ' (' . number_format_i18n($count) . ')';
+            echo '</option>';
+        }
+        
+        echo '</select>';
+    }
+}
+
+// Add delivery status filtering for legacy orders table
+add_action('restrict_manage_posts', 'add_delivery_status_filter_dropdown_legacy');
+function add_delivery_status_filter_dropdown_legacy() {
+    global $typenow;
+    
+    // Only show on shop_order post type
+    if ('shop_order' !== $typenow) {
+        return;
+    }
+    
+    global $wpdb;
+    
+    // Get current delivery status filter
+    $current_delivery_status = isset($_GET['delivery_status']) ? sanitize_text_field($_GET['delivery_status']) : '';
+    
+    // Count orders by delivery status
+    $delivery_statuses = array(
+        'pending' => __('Pending', 'catering-booking-and-scheduling'),
+        'partially_delivered' => __('Partially delivered', 'catering-booking-and-scheduling'),
+        'awaiting_fulfillment' => __('Awaiting fulfillment', 'catering-booking-and-scheduling'),
+        'completed' => __('Completed', 'catering-booking-and-scheduling'),
+        'not_applicable' => __('Not applicable', 'catering-booking-and-scheduling'),
+    );
+    
+    $delivery_counts = array();
+    foreach (array_keys($delivery_statuses) as $status) {
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(p.ID) FROM {$wpdb->posts} p 
+             LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_delivery_status'
+             WHERE p.post_type = 'shop_order' 
+             AND p.post_status != 'trash'
+             AND (pm.meta_value = %s OR (pm.meta_value IS NULL AND %s = 'pending'))",
+            $status, $status
+        ));
+        if ($count > 0) {
+            $delivery_counts[$status] = $count;
+        }
+    }
+    
+    // Only show dropdown if there are orders with delivery statuses
+    if (!empty($delivery_counts)) {
+        echo '<select name="delivery_status" id="filter-by-delivery-status">';
+        echo '<option value="">' . esc_html__('All delivery statuses', 'catering-booking-and-scheduling') . '</option>';
+        
+        foreach ($delivery_counts as $status => $count) {
+            $selected = ($status === $current_delivery_status) ? 'selected="selected"' : '';
+            echo '<option value="' . esc_attr($status) . '" ' . $selected . '>';
+            echo esc_html($delivery_statuses[$status]) . ' (' . number_format_i18n($count) . ')';
+            echo '</option>';
+        }
+        
+        echo '</select>';
+    }
+}
+
+// Filter orders by delivery status for legacy orders table
+add_filter('pre_get_posts', 'filter_orders_by_delivery_status');
+function filter_orders_by_delivery_status($query) {
+    global $pagenow, $typenow;
+    
+    if (!is_admin() || $pagenow !== 'edit.php' || $typenow !== 'shop_order') {
+        return;
+    }
+    
+    if (!$query->is_main_query()) {
+        return;
+    }
+    
+    if (isset($_GET['delivery_status']) && !empty($_GET['delivery_status'])) {
+        $delivery_status = sanitize_text_field($_GET['delivery_status']);
+        
+        $meta_query = $query->get('meta_query');
+        if (!is_array($meta_query)) {
+            $meta_query = array();
+        }
+        
+        $meta_query[] = array(
+            'key'     => '_delivery_status',
+            'value'   => $delivery_status,
+            'compare' => '='
+        );
+        
+        $query->set('meta_query', $meta_query);
+    }
+}
+
+// Filter orders by delivery status for HPOS orders table
+add_filter('woocommerce_orders_table_query_clauses', 'filter_hpos_orders_by_delivery_status', 10, 2);
+function filter_hpos_orders_by_delivery_status($clauses, $query) {
+    global $wpdb;
+    
+    if (isset($_GET['delivery_status']) && !empty($_GET['delivery_status'])) {
+        $delivery_status = sanitize_text_field($_GET['delivery_status']);
+        
+        // Join with orders meta table for delivery status filtering
+        $clauses['join'] .= " LEFT JOIN {$wpdb->prefix}wc_orders_meta AS delivery_filter_meta ON {$wpdb->prefix}wc_orders.id = delivery_filter_meta.order_id AND delivery_filter_meta.meta_key = '_delivery_status'";
+        
+        // Add WHERE clause for delivery status
+        $clauses['where'] .= $wpdb->prepare(" AND delivery_filter_meta.meta_value = %s", $delivery_status);
+    }
+    
+    return $clauses;
+}
+
 // Customize admin billing fields
 add_filter('woocommerce_admin_billing_fields', 'catering_admin_address_fields');
 add_filter('woocommerce_admin_shipping_fields', 'catering_admin_address_fields');
@@ -1071,6 +1273,93 @@ function my_seq_next_number($option, $start_from) {
         $option, (string) $start_from
     ));
     return (int) $wpdb->insert_id;
+}
+
+// Change minimum input length for product search in order edit page from 3 to 1 character
+add_action('admin_footer', 'change_product_search_minimum_input_length');
+function change_product_search_minimum_input_length() {
+    global $pagenow, $post;
+    
+    // Only on order edit pages
+    if (($pagenow === 'post.php' && isset($post->post_type) && $post->post_type === 'shop_order') || 
+        ($pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders' && isset($_GET['action']) && $_GET['action'] === 'edit')) {
+        ?>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            // Listen for the backbone modal loading event for add products modal
+            $(document.body).on('wc_backbone_modal_loaded', function(e, target) {
+                if (target === 'wc-modal-add-products') {
+                    // Find all product search elements in the modal and configure them
+                    $('.wc-product-search').each(function() {
+                        var $productSearch = $(this);
+                        
+                        // Remove existing SelectWoo if present
+                        if ($productSearch.hasClass('select2-hidden-accessible')) {
+                            $productSearch.selectWoo('destroy');
+                        }
+                        
+                        // Configure the select with minimum input length of 1
+                        var select2_args = {
+                            allowClear: $productSearch.data('allow_clear') ? true : false,
+                            placeholder: $productSearch.data('placeholder') || 'Search for a product…',
+                            minimumInputLength: 1, // Changed from default 3 to 1
+                            escapeMarkup: function(m) {
+                                return m;
+                            },
+                            ajax: {
+                                url: wc_enhanced_select_params.ajax_url,
+                                dataType: 'json',
+                                delay: 250,
+                                data: function(params) {
+                                    return {
+                                        term: params.term,
+                                        action: 'woocommerce_json_search_products',
+                                        security: wc_enhanced_select_params.search_products_nonce,
+                                        exclude: $productSearch.data('exclude'),
+                                        exclude_type: $productSearch.data('exclude_type'),
+                                        include: $productSearch.data('include'),
+                                        limit: $productSearch.data('limit'),
+                                        display_stock: $productSearch.data('display_stock')
+                                    };
+                                },
+                                processResults: function(data) {
+                                    var terms = [];
+                                    if (data) {
+                                        $.each(data, function(id, text) {
+                                            terms.push({
+                                                id: id,
+                                                text: text
+                                            });
+                                        });
+                                    }
+                                    return {
+                                        results: terms
+                                    };
+                                },
+                                cache: true
+                            },
+                            language: {
+                                inputTooShort: function(args) {
+                                    return 'Please enter 1 or more characters';
+                                },
+                                searching: function() {
+                                    return 'Searching…';
+                                },
+                                noResults: function() {
+                                    return 'No matches found';
+                                }
+                            }
+                        };
+                        
+                        // Initialize the enhanced select
+                        $productSearch.selectWoo(select2_args).addClass('enhanced');
+                    });
+                }
+            });
+        });
+        </script>
+        <?php
+    }
 }
 
 // Send email to admin when health status update would cause unsuitable meals
