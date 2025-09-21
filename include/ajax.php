@@ -1988,6 +1988,26 @@ function catering_ajax_update_item_delivery_date(){
     wp_send_json_error(__('Failed to update', 'catering-booking-and-scheduling'));
 }
 
+// NEW: Endpoint to update order item's due date
+add_action('wp_ajax_update_item_due_date', 'catering_ajax_update_item_due_date');
+function catering_ajax_update_item_due_date(){
+    if ( ! current_user_can( 'manage_catering' ) ) {
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
+    }
+    $order_item_id = isset($_POST['order_item_id']) ? absint($_POST['order_item_id']) : 0;
+    $due_date = isset($_POST['due_date']) ? sanitize_text_field($_POST['due_date']) : '';
+    if(!$order_item_id || !$due_date){
+        wp_send_json_error(__('Missing parameters', 'catering-booking-and-scheduling'));
+    }
+    // Update order item meta (using WooCommerce function)
+    if( function_exists('wc_update_order_item_meta') ){
+        wc_update_order_item_meta($order_item_id, 'due_date', $due_date);
+        wc_delete_order_item_meta($order_item_id, '_alg_wc_pif_local'); 
+        wp_send_json_success();
+    }
+    wp_send_json_error(__('Failed to update', 'catering-booking-and-scheduling'));
+}
+
 // NEW: Endpoint to update order item's tracking number
 add_action('wp_ajax_update_item_tracking_number', 'catering_ajax_update_item_tracking_number');
 function catering_ajax_update_item_tracking_number(){
@@ -2039,6 +2059,24 @@ function catering_ajax_delete_item_delivery_date(){
         wp_send_json_success();
     }
     wp_send_json_error(__('Failed to delete delivery date', 'catering-booking-and-scheduling'));
+}
+
+// NEW: Endpoint to delete order item's due date
+add_action('wp_ajax_delete_item_due_date', 'catering_ajax_delete_item_due_date');
+function catering_ajax_delete_item_due_date(){
+    if( ! current_user_can('manage_catering') ){
+        wp_send_json_error(__('No permission', 'catering-booking-and-scheduling'));
+    }
+    $order_item_id = isset($_POST['order_item_id']) ? absint($_POST['order_item_id']) : 0;
+    if(!$order_item_id){
+        wp_send_json_error(__('Missing order item id', 'catering-booking-and-scheduling'));
+    }
+    if(function_exists('wc_update_order_item_meta')){
+        wc_update_order_item_meta($order_item_id, 'due_date', '');
+        wc_delete_order_item_meta($order_item_id, '_alg_wc_pif_local'); 
+        wp_send_json_success();
+    }
+    wp_send_json_error(__('Failed to delete due date', 'catering-booking-and-scheduling'));
 }
 
 // NEW: Endpoint to delete order item's tracking number
@@ -2513,4 +2551,48 @@ function catering_ajax_get_meal_choice_history() {
     }
     
     wp_send_json_success($formatted_history);
+}
+
+// NEW: Endpoint to get user saved address data
+add_action('wp_ajax_get_user_address', 'catering_ajax_get_user_address');
+function catering_ajax_get_user_address(){
+    // Check if user is logged in
+    if (!is_user_logged_in()) {
+        wp_send_json_error(__('User not logged in', 'catering-booking-and-scheduling'));
+        return;
+    }
+    
+    $address_type = isset($_POST['address_type']) ? sanitize_text_field($_POST['address_type']) : '';
+    
+    if (!in_array($address_type, ['shipping', 'shipping_2'])) {
+        wp_send_json_error(__('Invalid address type', 'catering-booking-and-scheduling'));
+        return;
+    }
+    
+    $user_id = get_current_user_id();
+    
+    // Get address data based on address type
+    $address_data = array(
+        'first_name'    => get_user_meta($user_id, $address_type . '_first_name', true),
+        'last_name'     => get_user_meta($user_id, $address_type . '_last_name', true),
+        'company'       => get_user_meta($user_id, $address_type . '_company', true),
+        'address'       => get_user_meta($user_id, $address_type . '_address_1', true),
+        'city'          => get_user_meta($user_id, $address_type . '_city', true),
+        'phone'         => get_user_meta($user_id, $address_type . '_phone', true),
+        'phone_country' => get_user_meta($user_id, $address_type . '_phone_country', true),
+        'remarks'       => get_user_meta($user_id, $address_type . '_remarks', true)
+    );
+    
+    // Set defaults for empty values
+    if (empty($address_data['phone_country'])) {
+        $address_data['phone_country'] = '+852';
+    }
+    
+    // Check if address exists (at least first_name and address should be present)
+    if (empty($address_data['first_name']) && empty($address_data['address'])) {
+        wp_send_json_error(__('No saved address found', 'catering-booking-and-scheduling'));
+        return;
+    }
+    
+    wp_send_json_success($address_data);
 }

@@ -358,7 +358,14 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
             <button type="button" class="cancel-delivery-date button" style="background:#f0f0f1;border-color:#c3c4c7;color:#2c3338;"><?php esc_html_e('Cancel', 'catering-booking-and-scheduling'); ?></button>
             <button type="button" class="delete-delivery-date button" style="background:#d63638;border-color:#d63638;color:#fff;"><?php esc_html_e('Delete', 'catering-booking-and-scheduling'); ?></button>
         </div>
-        <div class="tracking-number-field" style="display:none;margin: 10px 0;">
+        <div class="due-date-field" style="display:none;margin: 10px 0;">
+            <input type="date" class="new-due-date"
+                   value="<?php echo esc_attr( $item->get_meta('due_date') ); ?>" />
+            <button type="button" class="save-due-date button button-primary" style="background:#2271b1;border-color:#135e96;"><?php esc_html_e('Save', 'catering-booking-and-scheduling'); ?></button>
+            <button type="button" class="cancel-due-date button" style="background:#f0f0f1;border-color:#c3c4c7;color:#2c3338;"><?php esc_html_e('Cancel', 'catering-booking-and-scheduling'); ?></button>
+            <button type="button" class="delete-due-date button" style="background:#d63638;border-color:#d63638;color:#fff;"><?php esc_html_e('Delete', 'catering-booking-and-scheduling'); ?></button>
+        </div>
+        <div class="tracking-number-field" style="display:none;margin: 10px 0;".>
             <input type="text" class="new-tracking-number"
                    value="<?php echo esc_attr( $item->get_meta('tracking_number') ); ?>"
                    placeholder="<?php esc_attr_e('Enter tracking number', 'catering-booking-and-scheduling'); ?>" />
@@ -367,6 +374,7 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
             <button type="button" class="delete-tracking-number button" style="background:#d63638;border-color:#d63638;color:#fff;"><?php esc_html_e('Delete', 'catering-booking-and-scheduling'); ?></button>
         </div>
         <button type="button" class="button update-delivery-date-btn" style="margin-top:5px;" data-order-item-id="<?php echo esc_attr($item->get_id()); ?>"><?php esc_html_e('Update Delivery Date', 'catering-booking-and-scheduling'); ?></button>
+        <button type="button" class="button update-due-date-btn" style="margin-top:5px; margin-left:5px;" data-order-item-id="<?php echo esc_attr($item->get_id()); ?>"><?php esc_html_e('Update Due Date', 'catering-booking-and-scheduling'); ?></button>
         <button type="button" class="button update-tracking-number-btn" style="margin-top:5px; margin-left:5px;" data-order-item-id="<?php echo esc_attr($item->get_id()); ?>"><?php esc_html_e('Update Tracking Number', 'catering-booking-and-scheduling'); ?></button>
 
         <script>
@@ -385,40 +393,8 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                 var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
                 $.post(ajaxurl, { action: "update_item_delivery_date", order_item_id: orderItemId, delivery_date: newDate }, function(resp){
                     if(resp.success){
-                        container.find(".delivery-date-field").slideUp();
-                        
-                        // Update hidden form fields to prevent WooCommerce from overwriting
-                        var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="delivery_date"]');
-                        if (metaKeyField.length > 0) {
-                            // Find the corresponding meta_value field by extracting the meta ID from the name attribute
-                            var metaKeyName = metaKeyField.attr('name');
-                            var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
-                            $('textarea[name="' + metaValueName + '"]').val(newDate);
-                        } else if (newDate) {
-                            // Add new hidden fields if they don't exist - WooCommerce will assign a new meta ID
-                            $('#woocommerce-order-items').append(
-                                '<input type="hidden" name="meta_key[' + orderItemId + '][]" value="delivery_date">' +
-                                '<input type="hidden" name="meta_value[' + orderItemId + '][]" value="' + newDate + '">'
-                            );
-                        }
-                        
-                        var viewDiv = container.find('.view');
-                        if(viewDiv.length === 0){
-                            container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
-                            viewDiv = container.find('.view');
-                        }
-                        if (!viewDiv.find('table.display_meta').length) {
-                            viewDiv.html('<table class="display_meta"><tbody></tbody></table>');
-                        }
-                        // remove previous Delivery Date row, then append updated
-                        viewDiv.find('tr').filter(function(){
-                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?>';
-                        }).remove();
-                        if(newDate){
-                            viewDiv.find('tbody')
-                                    .append('<tr><th><?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?></th><td><p>' + newDate + '</p></td></tr>');
-                        }
                         alert("<?php echo esc_js(__('Delivery date updated', 'catering-booking-and-scheduling')); ?>");
+                        location.reload();
                     } else {
                         alert(resp.data);
                     }
@@ -431,31 +407,42 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                 var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
                 $.post(ajaxurl, { action: "delete_item_delivery_date", order_item_id: orderItemId }, function(resp){
                     if(resp.success){
-                        container.find(".delivery-date-field").slideUp();
-                        
-                        // Update hidden form fields to prevent WooCommerce from overwriting
-                        var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="delivery_date"]');
-                        if (metaKeyField.length > 0) {
-                            // Find the corresponding meta_value field and remove both
-                            var metaKeyName = metaKeyField.attr('name');
-                            var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
-                            metaKeyField.remove();
-                            $('textarea[name="' + metaValueName + '"]').remove();
-                        }
-                        
-                        var viewDiv = container.find('.view');
-                        if(viewDiv.length === 0){
-                            container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
-                            viewDiv = container.find('.view');
-                        }
-                        if (!viewDiv.find('table.display_meta').length) {
-                            viewDiv.html('<table class="display_meta"><tbody></tbody></table>');
-                        }
-                        // remove previous Delivery Date row
-                        viewDiv.find('tr').filter(function(){
-                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Delivery Date:', 'catering-booking-and-scheduling')); ?>';
-                        }).remove();
                         alert("<?php echo esc_js(__('Delivery date deleted', 'catering-booking-and-scheduling')); ?>");
+                        location.reload();
+                    } else {
+                        alert(resp.data);
+                    }
+                });
+            });
+            
+            container.on("click", ".update-due-date-btn", function(){
+                container.find(".due-date-field").slideDown();
+            });
+            container.on("click", ".cancel-due-date", function(){
+                container.find(".due-date-field").slideUp();
+            });
+            container.on("click", ".save-due-date", function(){
+                var newDate = container.find(".new-due-date").val();
+                // using parent().siblings() retrieval remains unchanged
+                var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
+                $.post(ajaxurl, { action: "update_item_due_date", order_item_id: orderItemId, due_date: newDate }, function(resp){
+                    if(resp.success){
+                        alert("<?php echo esc_js(__('Due date updated', 'catering-booking-and-scheduling')); ?>");
+                        location.reload();
+                    } else {
+                        alert(resp.data);
+                    }
+                });
+            });
+            container.on("click", ".delete-due-date", function(){
+                if (!confirm('<?php esc_html_e('Are you sure you want to delete this due date?', 'catering-booking-and-scheduling'); ?>')) {
+                    return;
+                }
+                var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
+                $.post(ajaxurl, { action: "delete_item_due_date", order_item_id: orderItemId }, function(resp){
+                    if(resp.success){
+                        alert("<?php echo esc_js(__('Due date deleted', 'catering-booking-and-scheduling')); ?>");
+                        location.reload();
                     } else {
                         alert(resp.data);
                     }
@@ -473,40 +460,8 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                 var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
                 $.post(ajaxurl, { action: "update_item_tracking_number", order_item_id: orderItemId, tracking_number: newTracking }, function(resp){
                     if(resp.success){
-                        container.find(".tracking-number-field").slideUp();
-                        
-                        // Update hidden form fields to prevent WooCommerce from overwriting
-                        var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="tracking_number"]');
-                        if (metaKeyField.length > 0) {
-                            // Find the corresponding meta_value field by extracting the meta ID from the name attribute
-                            var metaKeyName = metaKeyField.attr('name');
-                            var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
-                            $('textarea[name="' + metaValueName + '"]').val(newTracking);
-                        } else if (newTracking) {
-                            // Add new hidden fields if they don't exist - WooCommerce will assign a new meta ID
-                            $('#woocommerce-order-items').append(
-                                '<input type="hidden" name="meta_key[' + orderItemId + '][]" value="tracking_number">' +
-                                '<input type="hidden" name="meta_value[' + orderItemId + '][]" value="' + newTracking + '">'
-                            );
-                        }
-                        
-                        var viewDiv = container.find('.view');
-                        if(viewDiv.length === 0){
-                            container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
-                            viewDiv = container.find('.view');
-                        }
-                        if (!viewDiv.find('table.display_meta').length) {
-                            viewDiv.html('<table class="display_meta"><tbody></tbody></table>');
-                        }
-                        // remove previous Tracking Number row, then append updated
-                        viewDiv.find('tr').filter(function(){
-                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?>';
-                        }).remove();
-                        if(newTracking){
-                            viewDiv.find('tbody')
-                                    .append('<tr><th><?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?></th><td><p>' + newTracking + '</p></td></tr>');
-                        }
                         alert("<?php echo esc_js(__('Tracking number updated', 'catering-booking-and-scheduling')); ?>");
+                        location.reload();
                     } else {
                         alert(resp.data);
                     }
@@ -519,31 +474,8 @@ function add_custom_button_after_order_itemmeta($item_id, $item, $product) {
                 var orderItemId = $(this).parent().siblings("[data-order-item-id]").data("order-item-id");
                 $.post(ajaxurl, { action: "delete_item_tracking_number", order_item_id: orderItemId }, function(resp){
                     if(resp.success){
-                        container.find(".tracking-number-field").slideUp();
-                        
-                        // Update hidden form fields to prevent WooCommerce from overwriting
-                        var metaKeyField = $('input[name^="meta_key[' + orderItemId + ']["][value="tracking_number"]');
-                        if (metaKeyField.length > 0) {
-                            // Find the corresponding meta_value field and remove both
-                            var metaKeyName = metaKeyField.attr('name');
-                            var metaValueName = metaKeyName.replace('meta_key', 'meta_value');
-                            metaKeyField.remove();
-                            $('textarea[name="' + metaValueName + '"]').remove();
-                        }
-                        
-                        var viewDiv = container.find('.view');
-                        if(viewDiv.length === 0){
-                            container.append('<div class="view"><table class="display_meta"><tbody></tbody></table></div>');
-                            viewDiv = container.find('.view');
-                        }
-                        if (!viewDiv.find('table.display_meta').length) {
-                            viewDiv.html('<table class="display_meta"><tbody></tbody></table>');
-                        }
-                        // remove previous Tracking Number row
-                        viewDiv.find('tr').filter(function(){
-                            return $(this).find('th').text().trim() === '<?php echo esc_js(__('Tracking Number:', 'catering-booking-and-scheduling')); ?>';
-                        }).remove();
                         alert("<?php echo esc_js(__('Tracking number deleted', 'catering-booking-and-scheduling')); ?>");
+                        location.reload();
                     } else {
                         alert(resp.data);
                     }
@@ -672,6 +604,8 @@ function catering_modify_formatted_meta_labels($formatted_meta, $item) {
     foreach ($formatted_meta as $meta_id => $meta) {
         if ($meta->key === 'delivery_date') {
             $meta->display_key = __('Delivery Date', 'catering-booking-and-scheduling');
+        } elseif ($meta->key === 'due_date') {
+            $meta->display_key = __('Due Date', 'catering-booking-and-scheduling');
         } elseif ($meta->key === 'tracking_number') {
             $meta->display_key = __('Tracking Number', 'catering-booking-and-scheduling');
         }

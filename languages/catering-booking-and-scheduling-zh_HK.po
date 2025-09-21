@@ -1768,3 +1768,71 @@ msgstr "您確定要刪除此追蹤號碼嗎？"
 #: include/order-function.php:621
 msgid "Are you sure you want to delete this CS note?"
 msgstr "您確定要刪除此客服備註嗎？"
+
+#: template/catering-booking-popup.php:454
+msgid "Select Address 1"
+msgstr "選擇地址 1"
+
+#: template/catering-booking-popup.php:455
+msgid "Select Address 2"
+msgstr "選擇地址 2"
+
+#: template/catering-booking-popup.php:1372
+msgid "Loading..."
+msgstr "載入中..."
+
+#: template/catering-booking-popup.php:1393
+msgid "Address 1 loaded successfully!"
+msgstr "地址 1 載入成功！"
+
+#: template/catering-booking-popup.php:1395
+msgid "Address 2 loaded successfully!"
+msgstr "地址 2 載入成功！"
+
+#: template/catering-booking-popup.php:1400
+msgid "No saved Address 1 found. Please enter your address manually."
+msgstr "找不到已儲存的地址 1。請手動輸入您的地址。"
+
+#: template/catering-booking-popup.php:1402
+msgid "No saved Address 2 found. Please enter your address manually."
+msgstr "找不到已儲存的地址 2。請手動輸入您的地址。"
+
+#: template/catering-booking-popup.php:1409
+msgid "Failed to load address. Please try again."
+msgstr "載入地址失敗。請重試。"
+
+#: include/ajax.php:2523
+msgid "User not logged in"
+msgstr "用戶未登入"
+
+#: include/ajax.php:2529
+msgid "Invalid address type"
+msgstr "無效的地址類型"
+
+#: include/ajax.php:2555
+msgid "No saved address found"
+msgstr "找不到已儲存的地址"
+
+#: include/order-function.php:XXX
+msgid "Update Due Date"
+msgstr "更新預產期"
+
+#: include/order-function.php:XXX
+msgid "Due Date:"
+msgstr "預產期:"
+
+#: include/order-function.php:XXX
+msgid "Due date updated"
+msgstr "預產期已更新"
+
+#: include/order-function.php:XXX
+msgid "Are you sure you want to delete this due date?"
+msgstr "您確定要刪除此預產期嗎？"
+
+#: include/order-function.php:XXX
+msgid "Due date deleted"
+msgstr "預產期已刪除"
+
+#: include/ajax.php:XXX
+msgid "Failed to delete due date"
+msgstr "刪除預產期失敗"

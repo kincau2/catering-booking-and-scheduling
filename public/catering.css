@@ -2387,6 +2387,13 @@ button#place_order {
     line-height: 23px;
 }
 
+
+#catering-pick-meal-popup .address-button-wrapper{
+    display: flex;
+    margin: 0 0 20px 0;
+    gap:15px;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   #catering-pick-meal-popup #catering-popup-left {

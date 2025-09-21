@@ -397,7 +397,7 @@ jQuery(function($){
     });
     // New helper to render the meal/address form for both Add and Edit
     function renderMealForm(date, respData, isEdit){
-
+        console.log(respData);
         currentCats = respData.categories;
         <?php if(current_user_can('manage_catering')): ?>
         currentCats.push({ cat_id: othersCatId, cat_title: "其他", max_qty: 10, meals: [] });
@@ -450,6 +450,10 @@ jQuery(function($){
         }
         // Append new step for delivery address
         html += '<div class="step" data-step="'+currentCats.length+'" style="margin-bottom:20px;">'
+             +  '<div class="address-button-wrapper">'
+             +  '<button type="button" class="cb-btn cb-btn--primary select-address-1" data-booking-id="'+currentBookingId+'" data-address-type="shipping"><?php _e("Select Address 1","catering-booking-and-scheduling");?></button>'
+             +  '<button type="button" class="cb-btn cb-btn--primary select-address-2" data-booking-id="'+currentBookingId+'" data-address-type="shipping_2"><?php _e("Select Address 2","catering-booking-and-scheduling");?></button>'
+             +  '</div>' 
              +  '<h5 style="margin-bottom:8px;"><?php _e("Please confirm you delivery address","catering-booking-and-scheduling");?></h5>'
              +  '<label><?php _e("First name","catering-booking-and-scheduling");?>:<input type="text" name="delivery[first_name]" value="'+addr.first_name+'" required /></label>'
              +  '<label><?php _e("Last name","catering-booking-and-scheduling");?>:<input type="text" name="delivery[last_name]"  value="'+addr.last_name+'"  required /></label>'
@@ -1354,6 +1358,57 @@ jQuery(function($){
     // Close meal history overlay
     $(document).on('click', '#close-meal-history', function() {
         $('#meal-history-overlay').remove();
+    });
+
+    // NEW: Event handlers for Select Address buttons
+    $(document).on('click', '.select-address-1, .select-address-2', function(e) {
+        e.preventDefault();
+        
+        var $btn = $(this);
+        var addressType = $btn.data('address-type');
+        var originalText = $btn.text();
+        
+        // Show loading state
+        $btn.text('<?php _e("Loading...", "catering-booking-and-scheduling"); ?>').prop('disabled', true);
+        
+        getUserAddress(addressType, function(response) {
+            // Reset button state
+            $btn.text(originalText).prop('disabled', false);
+            
+            if (response.success && response.data) {
+                var addressData = response.data;
+                
+                // Fill in the form fields
+                var $step = $btn.closest('.step');
+                $step.find('input[name="delivery[first_name]"]').val(addressData.first_name || '');
+                $step.find('input[name="delivery[last_name]"]').val(addressData.last_name || '');
+                $step.find('input[name="delivery[address]"]').val(addressData.address || '');
+                $step.find('select[name="delivery[city]"]').val(addressData.city || '');
+                $step.find('select[name="delivery[phone_country]"]').val(addressData.phone_country || '+852');
+                $step.find('input[name="delivery[phone]"]').val(addressData.phone || '');
+                $step.find('textarea[name="delivery[delivery_note]"]').val(addressData.remarks || '');
+                
+                // Show success message
+                if (addressType === 'shipping') {
+                    alert('<?php _e("Address 1 loaded successfully!", "catering-booking-and-scheduling"); ?>');
+                } else {
+                    alert('<?php _e("Address 2 loaded successfully!", "catering-booking-and-scheduling"); ?>');
+                }
+            } else {
+                // Show error message
+                if (addressType === 'shipping') {
+                    alert('<?php _e("No saved Address 1 found. Please enter your address manually.", "catering-booking-and-scheduling"); ?>');
+                } else {
+                    alert('<?php _e("No saved Address 2 found. Please enter your address manually.", "catering-booking-and-scheduling"); ?>');
+                }
+            }
+        }, function(xhr) {
+            // Reset button state
+            $btn.text(originalText).prop('disabled', false);
+            
+            // Show error message
+            alert('<?php _e("Failed to load address. Please try again.", "catering-booking-and-scheduling"); ?>');
+        });
     });
 
 });

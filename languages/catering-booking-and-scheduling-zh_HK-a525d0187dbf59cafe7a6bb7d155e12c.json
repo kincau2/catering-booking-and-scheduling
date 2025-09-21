@@ -34,6 +34,7 @@
       "Error fetching health status.": ["獲取健康狀態時出錯。"],
       "Error updating health status.": ["更新健康狀態時出錯。"],
       "Error searching meals.": ["搜索餐食時出錯。"],
+      "Error fetching user address.": ["獲取用戶地址時出錯。"],
       "SKU required": ["需要SKU"],
       "Title required": ["需要標題"],
       "Image fetch failed": ["圖片獲取失敗"],

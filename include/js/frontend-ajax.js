@@ -200,6 +200,20 @@
     window.getSchedulePreview = function(productId, startDate, endDate, success, error){
         window.getMealScheduleWeek(productId, startDate, endDate, 0, success, error);
     };
+
+    window.getUserAddress = function(addressType, success, error){
+        $.ajax({
+            url: catering_frontend_ajax.ajaxurl,
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'get_user_address',
+                address_type: addressType
+            },
+            success: success,
+            error: error || function(){ alert(cateringi18n('Error fetching user address.')); }
+        });
+    };
 })(jQuery);
 
 jQuery(function($){
