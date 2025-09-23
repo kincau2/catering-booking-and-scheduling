@@ -140,6 +140,7 @@ jQuery(function($){
             day.setHours(0,0,0,0);
             day.setDate(day.getDate()+i);
             var dateStr  = ymd(day);
+            var is_holiday = 0;
             var diff     = Math.floor((day - today0)/(1000*60*60*24));
             var disabled = ( diff <= minDayBefore )? true : false; // disable past minDayBefore     
 
@@ -150,6 +151,9 @@ jQuery(function($){
                 if(!disabled && userChoices[dateStr] ){
                     disabled = ( userChoices[dateStr].locked === 'true' );
                 }
+            <?php else: ?>
+                // Admin can always edit
+                disabled = false;
             <?php endif; ?>
             
             var html = '<div class="popup-week-days">';
@@ -179,6 +183,7 @@ jQuery(function($){
             html += '</div>';
             html += '<div class="day-grid-second"><div class="holiday-wrap">';
             if( holidayMap[dateStr] || i === 0 ){
+                is_holiday = 1;
                 html += '<div class="holiday">';
                 if( userChoices[dateStr] ){
                     html += `<i class="fa-solid fa-triangle-exclamation" 
@@ -216,7 +221,7 @@ jQuery(function($){
             
             if ( userChoices[dateStr] && userChoices[dateStr].choices.length ) {
                 if ( ! disabled ) {
-                    html += '<button class="catering-edit-meal" data-date="'+dateStr+'"><?php _e("Edit Meal","catering-booking-and-scheduling") ?></button>';
+                    html += '<button class="catering-edit-meal" data-holiday="'+is_holiday+'" data-date="'+dateStr+'"><?php _e("Edit Meal","catering-booking-and-scheduling") ?></button>';
                 }
                 html += '<div class="user-choice">';
                 
@@ -238,11 +243,9 @@ jQuery(function($){
                             + '<?php _e("Delete","catering-booking-and-scheduling") ?></button>';
                 }
             } else if(!disabled && scheduledDates.indexOf(dateStr)!==-1 && window.remainingDays > 0){
-                    html += '<button class="catering-add-meal" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
+                    html += '<button class="catering-add-meal" data-holiday="'+is_holiday+'" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
             } else if(!disabled){
-                <?php if(current_user_can('manage_catering')): ?>
-                    html += '<button class="catering-add-meal" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
-                <?php endif ;?>
+                    html += '<button class="catering-add-meal" data-holiday="'+is_holiday+'" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
             }
             
             // Add meal history button for all days (only show if user can manage catering)
@@ -396,8 +399,7 @@ jQuery(function($){
         location.reload();
     });
     // New helper to render the meal/address form for both Add and Edit
-    function renderMealForm(date, respData, isEdit){
-        console.log(respData);
+    function renderMealForm(date, respData, isEdit = false, isHoliday = false ){
         currentCats = respData.categories;
         <?php if(current_user_can('manage_catering')): ?>
         currentCats.push({ cat_id: othersCatId, cat_title: "其他", max_qty: 10, meals: [] });
@@ -437,7 +439,7 @@ jQuery(function($){
                  + '<h5><?php _e("Which container would you like for the soup?","catering-booking-and-scheduling");?></h5>'
                  + '<p style="color:red;"><b><?php _e("Please note that during holidays, all soups will be served in soup cups.","catering-booking-and-scheduling");?></b></p>'
                  + '<label><select name="preference[soup_container]" required>';
-            if ( setting === 'pot_only' ) {
+            if ( setting === 'pot_only' || respData.proportion.current_day / respData.proportion.plan_day < 1 || isHoliday) {
                 html += '<option value="pot" selected><?php _e("Pot","catering-booking-and-scheduling");?></option>';
             } else if ( setting === 'cup_only' ) {
                 html += '<option value="cup" selected><?php _e("Cup","catering-booking-and-scheduling");?></option>';
@@ -620,6 +622,13 @@ jQuery(function($){
 
     // Refactored Add‐Meal handler
     $(document).on('click','.catering-add-meal',function(){
+        var isEdit = false;
+        var isHoliday = ($(this).data('holiday') == 1) ? true : false;
+        if( isHoliday ){
+            if( !confirm('<?php _e("Holiday Meal will be delivered on the previous working day, please refer to our catering delivery policy on public holiday.","catering-booking-and-scheduling")?>') ){
+                return;
+            }
+        }
         var date = $(this).data('date'),
             $left = $('#catering-popup-left');
         $left.html('<div class="loading-overlay"><div class="spinner"></div></div>');
@@ -632,12 +641,19 @@ jQuery(function($){
                 loadWeekData();
                 return;
             }
-            renderMealForm(date, resp.data, false);
+            renderMealForm(date, resp.data, isEdit, isHoliday );
         });
     });
 
     // Refactored Edit‐Meal handler
     $(document).on('click','.catering-edit-meal',function(){
+        var isEdit = true;
+        var isHoliday = ($(this).data('holiday') == 1) ? true : false;
+        if( isHoliday ){
+            if( !confirm('<?php _e("Holiday Meal will be delivered on the previous working day, please refer to our catering delivery policy on public holiday.","catering-booking-and-scheduling")?>') ){
+                return;
+            }
+        }
         var date = $(this).data('date'),
             $left = $('#catering-popup-left');
         $left.html('<div class="loading-overlay"><div class="spinner"></div></div>');
@@ -658,7 +674,7 @@ jQuery(function($){
                 }
                 return;
             }
-            renderMealForm(date, resp.data, true);
+            renderMealForm(date, resp.data, isEdit, isHoliday);
         });
     });
 

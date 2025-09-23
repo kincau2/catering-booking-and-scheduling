@@ -27,6 +27,12 @@ if ( empty( $soup_container ) ) {
     $soup_container = ''; 
 }
 
+// Retrieve if current catering plan is a set menu
+$is_set_menu = get_post_meta( $post->ID, 'catering_is_set_menu', true );
+if ( empty( $is_set_menu ) ) { 
+    $is_set_menu = ''; 
+}
+
 ?>
 <div id="catering_option_product_data" class="panel woocommerce_options_panel hidden">
 
@@ -99,6 +105,14 @@ if ( empty( $soup_container ) ) {
             </select>
             <span class="description"><?php _e('Select soup container option','catering-booking-and-scheduling'); ?></span>
         </p>
+
+        <p class="form-field catering_is_set_menu_field show_if_catering_plan">
+            <label for="catering_is_set_menu"><?php _e('Is set menu', 'catering-booking-and-scheduling'); ?></label>
+            <select id="catering_is_set_menu" name="catering_is_set_menu" class="short">
+                <option value="no" <?php selected( $is_set_menu, 'no' ); ?>><?php _e('No', 'catering-booking-and-scheduling'); ?></option>
+                <option value="yes" <?php selected( $is_set_menu, 'yes' ); ?>><?php _e('Yes', 'catering-booking-and-scheduling'); ?></option>
+            </select>
+            <span class="description"><?php _e('This setting will only affect data shown in delivery report.','catering-booking-and-scheduling'); ?></span>
     </div>
 
     <div class="options_group show_if_catering_plan" style=" padding: 10px; ">

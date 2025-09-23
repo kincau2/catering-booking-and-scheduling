@@ -450,8 +450,9 @@ for ($i = 0; $i < $day_count; $i++) {
     $current_date = date('Y-m-d', strtotime($start . " +{$i} days"));
     $pot_row = [];
     $cup_row = [];
-    $col_soup = chr(72 + $i*2); // Start from column H (72 is ASCII for 'H')
-    $col_meal = chr(73 + $i*2); // Start from column I (73 is ASCII for 'I')
+    $col_soup = chr(72 + $i*3); // Start from column H (72 is ASCII for 'H')
+    $col_meal = chr(73 + $i*3); // Start from column I (73 is ASCII for 'I')
+    $col_day_left = chr(74 + $i*3); // Start from column J (74 is ASCII for 'J')
 
     // Set Date Header
     $sheet2->setCellValue( $col_soup.$header_row, $current_date );
@@ -520,7 +521,7 @@ for ($i = 0; $i < $day_count; $i++) {
 
 }
 
-$sheet2_last_col = $col_meal;
+$sheet2_last_col = $col_day_left;
 
 $sheet2->getStyle("E{$soup_count_start_row}:F{$total_soup_end_row}")
         ->getBorders()
@@ -593,15 +594,15 @@ $sheet2->getStyle("A{$row}:{$sheet2_last_col}{$row}")->getFont()->setBold(true);
 for ($i = 0; $i < $day_count; $i++) {
     $header_row = $row;
     $current_date = date('Y-m-d', strtotime($start . " +{$i} days"));
-    $col_soup = chr(72 + $i*2); // Start from column H (72 is ASCII for 'H')
-    $col_meal = chr(73 + $i*2); // Start from column I (73 is ASCII for 'I')
+    $col_soup = chr(72 + $i*3); // Start from column H (72 is ASCII for 'H')
+    $col_meal = chr(73 + $i*3); // Start from column I (73 is ASCII for 'I')
     $sheet2->setCellValue( $col_soup.$header_row, $current_date );
     $sheet2->mergeCells("{$col_soup}{$header_row}:{$col_meal}{$header_row}");
 }
 
 $row++;
 // column headers start at B (add '湯水' as last header)
-$headers = ['訂購編號','稱呼','聯絡電話','送貨地點','備註','','湯壺','餐'];
+$headers = ['訂購編號','稱呼','聯絡電話','送貨地點','備註',''];
 // capture header row
 $headerRow = $row;
 foreach ( $headers as $i => $title ) {
@@ -609,11 +610,13 @@ foreach ( $headers as $i => $title ) {
     $sheet2->setCellValue("{$col}{$row}", $title );
 }
 
-for ($i = 1; $i < $day_count; $i++) {
-    $col_soup = chr(72 + $i*2); // Start from column H (72 is ASCII for 'H')
-    $col_meal = chr(73 + $i*2); // Start from column I (73 is ASCII for 'I')
+for ($i = 0; $i < $day_count; $i++) {
+    $col_soup = chr(72 + $i*3); // Start from column H (72 is ASCII for 'H')
+    $col_meal = chr(73 + $i*3); // Start from column I (73 is ASCII for 'I')
+    $col_day_left = chr(74 + $i*3); // Start from column J (74 is ASCII for 'J')
     $sheet2->setCellValue( $col_soup.$row, '湯壺' );
     $sheet2->setCellValue( $col_meal.$row, '餐' );
+    $sheet2->setCellValue( $col_day_left.$row, '使用日數' );
 }
 
 // set row height to 25 (points ≈ pixels)
@@ -709,19 +712,36 @@ foreach ( $records as $rec ) {
     }
     $date_index = $date_map[$rec->date] ?? 0;
 
-    $col_soup = chr(72 + $date_index * 2); // H, J, L, etc.
-    $col_meal = chr(73 + $date_index * 2); // I, K, M, etc.
+    $col_soup = chr(72 + $date_index * 3); // H, K, N, etc.
+    $col_meal = chr(73 + $date_index * 3); // I, L, O, etc.
+    $col_day_left = chr(74 + $date_index * 3); // J, M, P, etc.
 
     $sheet2->setCellValue("{$col_soup}{$row}", $soupCell );
 
-    if( COUNT($choiceArr) === 1 && isset($choiceArr[$soup_cat_id]) ) {
+    if( !empty($booking->is_set_menu)) {
+        switch ( $booking->is_set_menu ) {
+            case 'yes':
+                $sheet2->setCellValue("{$col_meal}{$row}", 'Y' );
+                break;
+            case 'no':
+                $sheet2->setCellValue("{$col_meal}{$row}", 'N' );
+                break;
+        }
+    } elseif( COUNT($choiceArr) === 1 && isset($choiceArr[$soup_cat_id]) ) {
+        // Fallback for bookings without set_menu meta
         // only soup, no meal
         $sheet2->setCellValue("{$col_meal}{$row}", 'N' );
     } else {
-        // has meal(s)
+        // no soup, no meal (should not happen)
         $sheet2->setCellValue("{$col_meal}{$row}", 'Y' );
+
     }
-    
+
+    // 使用日數 column
+    $days_left = $booking->get_current_day_compare_to_plan_days( $rec->date );
+    $sheet2->setCellValue("{$col_day_left}{$row}", $days_left.'/'.$booking->plan_days);
+    $sheet2->getColumnDimension($col_day_left)->setAutoSize(true);
+
     $previous_address = $current_address;
     $row++;
 }
@@ -750,12 +770,12 @@ $sheet2->getStyle('A1:F2')
     ->setSize(16)
     ->setBold(true);
 // All other cells (from row 3 onward): size 13
-$sheet2->getStyle("A3:{$col_meal}{$lastRow}")
+$sheet2->getStyle("A3:{$sheet2_last_col}{$lastRow}")
         ->getFont()
         ->setSize(13);
 
 // 1) Left-align all cells in Delivery Report
-$sheet2->getStyle("A1:{$col_meal}{$lastRow}")
+$sheet2->getStyle("A1:{$sheet2_last_col}{$lastRow}")
         ->getAlignment()
         ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT)
         ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
@@ -775,7 +795,7 @@ $sheet3->mergeCells('A2:H2');
 // Column titles with blank "送貨日期" at A
 $headers = ['餐點日期','訂購編號','稱呼','聯絡電話','送貨地點','餐點','備註','湯壺','餐'];
 foreach ( $headers as $i => $title ) {
-    $col = chr(65 + $i); // A…H
+    $col = chr(65 + $i); // A … J
     $sheet3->setCellValue("{$col}4", $title );
 }
 
@@ -878,6 +898,8 @@ foreach ( $records as $rec ) {
         }
     }
 
+    $delivery_note[] = '使用日數: ' . $booking->get_current_day_compare_to_plan_days( $rec->date ) . '/' . $booking->plan_days;
+
     $sheet3->setCellValue("G{$row3}", implode("\n", $delivery_note));
     $sheet3->getStyle("G{$row3}")
             ->getAlignment()
@@ -898,11 +920,24 @@ foreach ( $records as $rec ) {
     }
     $sheet3->setCellValue("H{$row3}", implode(' / ', $soup_labels));
 
-    // I: 餐 – mark 'N' when only soup, otherwise 'Y'
-    if ( count($choiceArr) === 1 && isset($choiceArr[$soup_cat_id]) ) {
-        $sheet3->setCellValue("I{$row3}", 'N');
+    // I: 餐 – mark 'N' when booking is not set_menu, 'Y' when set_menu
+    if( !empty($booking->is_set_menu) ) {
+        switch ( $booking->is_set_menu ) {
+            case 'yes':
+                $sheet3->setCellValue("I{$row3}", 'Y' );
+                break;
+            case 'no':
+                $sheet3->setCellValue("I{$row3}", 'N' );
+                break;
+        }
+    } elseif( COUNT($choiceArr) === 1 && isset($choiceArr[$soup_cat_id]) ) {
+        // Fallback for bookings without set_menu meta
+        // only soup, no meal
+        $sheet3->setCellValue("I{$row3}", 'N' );
     } else {
-        $sheet3->setCellValue("I{$row3}", 'Y');
+        // no soup, no meal (should not happen)
+        $sheet3->setCellValue("I{$row3}", 'Y' );
+
     }
 
     $row3++;
@@ -918,7 +953,7 @@ foreach ( range('A','I') as $col ) {
 }
 // Header font
 $sheet3->getStyle("A1:G2")->getFont()->setSize(16)->setBold(true);
-$sheet3->getStyle("A4:G4")->getFont()->setBold(true);
+$sheet3->getStyle("A4:I4")->getFont()->setBold(true);
 // Body font & left-align
 $sheet3->getStyle("A3:I{$last3}")
         ->getFont()->setSize(14);

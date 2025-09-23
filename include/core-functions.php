@@ -9,12 +9,12 @@ add_shortcode('debug','display_debug_message');
 function display_debug_message(){
 
     echo "<pre>";
-    echo print_r(get_transient('debug'),1);
+    echo print_r(get_transient('debug').CATERING_PLUGIN_DIR . '/template/catering-booking-popup.php',1);
     echo "</pre>";
 
 }
 
-function create_booking($user_id, $order_item_id, $plan_days, $expiry, $cat_qty, $health_status,$type = null) {
+function create_booking($user_id, $order_item_id, $plan_days, $expiry, $cat_qty, $health_status,$type = null, $is_set_menu = null) {
     global $wpdb;
     $table = $wpdb->prefix . 'catering_booking';
 
@@ -38,9 +38,10 @@ function create_booking($user_id, $order_item_id, $plan_days, $expiry, $cat_qty,
         'date_created_gmt'  => current_time('mysql', true),    // new GMT timestamp
         'cat_qty'           => maybe_serialize($cat_qty),
         'type'              => $type,
+        'is_set_menu'       => $is_set_menu,
         'health_status'     => maybe_serialize($health_status),
     ];
-    $format = ['%s', '%d', '%d', '%d', '%d' , '%s', '%s','%s', '%s'];  // status, user_id, order_item_id, plan_days, date_amended_gmt, cat_qty, health_status
+    $format = ['%s', '%d', '%d', '%d', '%d' , '%s', '%s','%s', '%s', '%s'];  // status, user_id, order_item_id, plan_days, date_amended_gmt, cat_qty, health_status
     $inserted = $wpdb->insert($table, $data, $format);
     if (false === $inserted) {
         throw new Exception(__('Failed to create booking', 'catering-booking-and-scheduling'));

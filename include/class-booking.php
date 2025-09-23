@@ -11,6 +11,7 @@ class Booking {
     public $status;
     public $health_status;
     public $type;
+    public $is_set_menu;
     public $date_amended;
 
     public function __construct($id = null) {
@@ -34,6 +35,7 @@ class Booking {
             $this->status        = $booking->status;
             $this->health_status = maybe_unserialize($booking->health_status);
             $this->type          = $booking->type;
+            $this->is_set_menu   = $booking->is_set_menu;
             $this->date_amended  = $booking->date_amended_gmt;
         }
     }
@@ -256,6 +258,21 @@ class Booking {
         $table = $wpdb->prefix . 'catering_choice';
         $count = $this->get_choice_count();
         return max(0, (int)$this->plan_days - (int)$count);
+    }
+
+    public function get_current_day_compare_to_plan_days($date) {
+        global $wpdb;
+        $plan_day = (int)$this->plan_days;
+        $table_choice = $wpdb->prefix.'catering_choice';
+        $choice_dates = $wpdb->get_col($wpdb->prepare("SELECT date FROM $table_choice WHERE booking_id=%d AND user_id=%d ORDER BY date ASC", $this->id, $this->user_id));
+        $current_day = 1;
+        foreach($choice_dates as $d){
+            if($d < $date){
+                $current_day++;
+            }
+        }
+        return $current_day;
+
     }
 
 }

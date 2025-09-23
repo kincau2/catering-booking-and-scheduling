@@ -1452,6 +1452,18 @@ msgstr "刪除此日期的所有排程餐點？"
 msgid "Failed to delete schedule"
 msgstr "刪除排程失敗"
 
+#: template/wc-product-catering-options.php:XXX
+msgid "This setting will only affect data shown in delivery report."
+msgstr "此設定僅影響送餐報告中顯示的資料。"
+
+#: template/wc-product-catering-options.php:XXX
+msgid "Yes"
+msgstr "是"
+
+#: template/wc-product-catering-options.php:XXX
+msgid "No"
+msgstr "否"
+
 #: template/wc-product-catering-options.php:934
 msgid "Changing due date type after customer purchase may prevent customers from selecting meals normally. Continue?"
 msgstr "客戶購買後更改預產期類型可能會阻止客戶正常選擇餐點。確定繼續？"

@@ -186,6 +186,7 @@ function maybe_install_plugin_table() {
       cat_qty varchar(255) NOT NULL,
       health_status varchar(255),
       type varchar(255),
+      is_set_menu varchar(10),
       date_created_gmt date,
       PRIMARY KEY (ID),
       INDEX idx_booking_user_id (user_id),

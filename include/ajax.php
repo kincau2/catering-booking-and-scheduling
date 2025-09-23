@@ -97,6 +97,22 @@ function format_tag_for_export($stored_tag) {
     return $stored_tag;
 }
 
+add_action('wp_ajax_catering_load_address',     'catering_load_address');
+add_action('wp_ajax_nopriv_catering_load_address','catering_load_address');
+function catering_load_address() {
+    $addr = sanitize_text_field($_POST['addr'] ?? '');
+    $uid  = get_current_user_id();
+    $fields = [ 'first_name','last_name','company','address_1','address_2','city','state','postcode','country','phone','remarks' ];
+    $out = [];
+    foreach ($fields as $f) {
+        $meta = get_user_meta($uid, $addr . '_' . $f, true);
+        if ($meta) {
+            $out[ $f ] = $meta;
+        }
+    }
+    wp_send_json_success($out);
+}
+
 add_action( 'wp_ajax_catering_search_categories', 'catering_search_categories' );
 function catering_search_categories() {
     global $wpdb;
@@ -331,6 +347,7 @@ function my_parse_ical_file($filePath) {
 }
 
 add_action('wp_ajax_get_holiday_data', 'catering_ajax_get_holiday_data');
+add_action('wp_ajax_nopriv_get_holiday_data', 'catering_ajax_get_holiday_data');
 function catering_ajax_get_holiday_data(){
 
     $year  = isset($_POST['year']) ? absint($_POST['year']) : 0;
@@ -731,6 +748,7 @@ function catering_ajax_process_catering_schedule_row(){
 }
 
 add_action('wp_ajax_get_meal_schedule_week','catering_ajax_get_meal_schedule_week');
+add_action('wp_ajax_nopriv_get_meal_schedule_week','catering_ajax_get_meal_schedule_week');
 function catering_ajax_get_meal_schedule_week(){
     $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
     $start = isset($_POST['start_date']) ? sanitize_text_field($_POST['start_date']) : '';
@@ -1106,18 +1124,12 @@ function catering_ajax_get_day_schedule(){
         // Even if there is no schedule row, we still need to output proportion.
         $proportion = [];
         $plan_day = (int)$booking->plan_days;
-                $table_choice = $wpdb->prefix.'catering_choice';
-                $choice_dates = $wpdb->get_col($wpdb->prepare("SELECT date FROM $table_choice WHERE booking_id=%d AND user_id=%d ORDER BY date ASC", $booking_id, $booking->user_id));
-                $current_day = 1;
-                foreach($choice_dates as $d){
-                    if($d < $date){
-                        $current_day++;
-                    }
-                }
-                $proportion = [
-                   'current_day' => $current_day,
-                   'plan_day'    => $plan_day
-                ];
+        $current_day = $booking->get_current_day_compare_to_plan_days($date);
+
+        $proportion = [
+            'current_day' => $current_day,
+            'plan_day'    => $plan_day
+        ];
         wp_send_json_success([
             'categories' => [],
             'address'    => [],

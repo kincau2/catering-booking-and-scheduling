@@ -178,6 +178,16 @@ function my_save_catering_plan_meta( $post_id ) {
         }
     }
 
+    // Save is_set_menu setting
+    if ( isset( $_POST['catering_is_set_menu'] ) ) {
+        $is_set_menu = sanitize_text_field( $_POST['catering_is_set_menu'] );
+        if ( $is_set_menu === '' ) {
+            delete_post_meta( $post_id, 'catering_is_set_menu' );
+        } else {
+            update_post_meta( $post_id, 'catering_is_set_menu', $is_set_menu );
+        }
+    }
+
 }
 
 // 6) Add to cart for catering plan product =
