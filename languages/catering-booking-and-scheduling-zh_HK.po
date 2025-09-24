@@ -1468,6 +1468,10 @@ msgstr "否"
 msgid "Changing due date type after customer purchase may prevent customers from selecting meals normally. Continue?"
 msgstr "客戶購買後更改預產期類型可能會阻止客戶正常選擇餐點。確定繼續？"
 
+#: template/wc-product-catering-options.php:XXX
+msgid "Is set menu"
+msgstr "套餐設定"
+
 #: template/schedule-preview.php:4
 msgid "Preview Schedule"
 msgstr "預覽排程"

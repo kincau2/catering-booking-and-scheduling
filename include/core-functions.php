@@ -8,8 +8,14 @@ add_shortcode('debug','display_debug_message');
 
 function display_debug_message(){
 
+    // $total_files = get_post_meta( 3994 , '_alg_checkout_files_upload_1', true );
+    // echo "<pre>";
+    // echo print_r($total_files,1);
+    // echo "</pre>";
+
+
     echo "<pre>";
-    echo print_r(get_transient('debug').CATERING_PLUGIN_DIR . '/template/catering-booking-popup.php',1);
+    echo print_r(get_transient('debug'),1);
     echo "</pre>";
 
 }
