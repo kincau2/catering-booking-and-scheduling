@@ -12,7 +12,7 @@ function display_debug_message(){
     // echo "<pre>";
     // echo print_r($total_files,1);
     // echo "</pre>";
-
+    // catering_create_booking_on_order_status(4427);
 
     echo "<pre>";
     echo print_r(get_transient('debug'),1);
@@ -47,7 +47,7 @@ function create_booking($user_id, $order_item_id, $plan_days, $expiry, $cat_qty,
         'is_set_menu'       => $is_set_menu,
         'health_status'     => maybe_serialize($health_status),
     ];
-    $format = ['%s', '%d', '%d', '%d', '%d' , '%s', '%s','%s', '%s', '%s'];  // status, user_id, order_item_id, plan_days, date_amended_gmt, cat_qty, health_status
+    $format = ['%s', '%d', '%d', '%d', '%d' , '%s', '%s','%s', '%s', '%s']; 
     $inserted = $wpdb->insert($table, $data, $format);
     if (false === $inserted) {
         throw new Exception(__('Failed to create booking', 'catering-booking-and-scheduling'));

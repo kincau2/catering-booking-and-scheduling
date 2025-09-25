@@ -439,10 +439,10 @@ jQuery(function($){
                  + '<h5><?php _e("Which container would you like for the soup?","catering-booking-and-scheduling");?></h5>'
                  + '<p style="color:red;"><b><?php _e("Please note that during holidays, all soups will be served in soup cups.","catering-booking-and-scheduling");?></b></p>'
                  + '<label><select name="preference[soup_container]" required>';
-            if ( setting === 'pot_only' || respData.proportion.current_day / respData.proportion.plan_day >= 1 || isHoliday) {
-                html += '<option value="pot" selected><?php _e("Pot","catering-booking-and-scheduling");?></option>';
-            } else if ( setting === 'cup_only' ) {
+            if ( setting === 'cup_only' || respData.proportion.current_day / respData.proportion.plan_day >= 1 || isHoliday) {
                 html += '<option value="cup" selected><?php _e("Cup","catering-booking-and-scheduling");?></option>';
+            } else if ( setting === 'pot_only' ) {
+                html += '<option value="pot" selected><?php _e("Pot","catering-booking-and-scheduling");?></option>';
             } else {
                 html += '<option value="pot" selected><?php _e("Pot","catering-booking-and-scheduling");?></option>'
                      + '<option value="cup"><?php _e("Cup","catering-booking-and-scheduling");?></option>';

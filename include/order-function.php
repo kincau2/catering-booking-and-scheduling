@@ -154,6 +154,7 @@ function catering_create_booking_on_order_status($order_id, $order = null) {
                 $item->add_meta_data( 'due_date', ($health_status['due_date']) ?? '' , true );
                 $item->save();
             } catch (Exception $e) {
+                
                 error_log($e->getMessage());
 
             }
@@ -997,78 +998,42 @@ function change_product_search_minimum_input_length() {
     
     // Only on order edit pages
     if (($pagenow === 'post.php' && isset($post->post_type) && $post->post_type === 'shop_order') || 
-        ($pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders' && isset($_GET['action']) && $_GET['action'] === 'edit')) {
+        ($pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders' && isset($_GET['action']) && $_GET['action'] === 'edit') || 
+        ($pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders' && isset($_GET['action']) && $_GET['action'] === 'new')) {
         ?>
         <script type="text/javascript">
         jQuery(document).ready(function($) {
             // Listen for the backbone modal loading event for add products modal
             $(document.body).on('wc_backbone_modal_loaded', function(e, target) {
                 if (target === 'wc-modal-add-products') {
-                    // Find all product search elements in the modal and configure them
-                    $('.wc-product-search').each(function() {
-                        var $productSearch = $(this);
-                        
-                        // Remove existing SelectWoo if present
-                        if ($productSearch.hasClass('select2-hidden-accessible')) {
-                            $productSearch.selectWoo('destroy');
-                        }
-                        
-                        // Configure the select with minimum input length of 1
-                        var select2_args = {
-                            allowClear: $productSearch.data('allow_clear') ? true : false,
-                            placeholder: $productSearch.data('placeholder') || 'Search for a product…',
-                            minimumInputLength: 1, // Changed from default 3 to 1
-                            escapeMarkup: function(m) {
-                                return m;
-                            },
-                            ajax: {
-                                url: wc_enhanced_select_params.ajax_url,
-                                dataType: 'json',
-                                delay: 250,
-                                data: function(params) {
-                                    return {
-                                        term: params.term,
-                                        action: 'woocommerce_json_search_products',
-                                        security: wc_enhanced_select_params.search_products_nonce,
-                                        exclude: $productSearch.data('exclude'),
-                                        exclude_type: $productSearch.data('exclude_type'),
-                                        include: $productSearch.data('include'),
-                                        limit: $productSearch.data('limit'),
-                                        display_stock: $productSearch.data('display_stock')
-                                    };
-                                },
-                                processResults: function(data) {
-                                    var terms = [];
-                                    if (data) {
-                                        $.each(data, function(id, text) {
-                                            terms.push({
-                                                id: id,
-                                                text: text
-                                            });
-                                        });
-                                    }
-                                    return {
-                                        results: terms
-                                    };
-                                },
-                                cache: true
-                            },
-                            language: {
-                                inputTooShort: function(args) {
-                                    return 'Please enter 1 or more characters';
-                                },
-                                searching: function() {
-                                    return 'Searching…';
-                                },
-                                noResults: function() {
-                                    return 'No matches found';
+                    // Wait for WooCommerce to initialize its product search, then modify it
+                    setTimeout(function() {
+                        $('.wc-product-search').each(function() {
+                            var $productSearch = $(this);
+                            
+                            // Check if SelectWoo is already initialized
+                            if ($productSearch.hasClass('select2-hidden-accessible')) {
+                                // Get the existing options
+                                var existingOptions = $productSearch.data('select2').options.options;
+                                
+                                // Modify only the minimumInputLength
+                                if (existingOptions.ajax) {
+                                    existingOptions.minimumInputLength = 1;
                                 }
+                                
+                                // Update the language settings
+                                if (existingOptions.language) {
+                                    existingOptions.language.inputTooShort = function(args) {
+                                        return 'Please enter 1 or more characters';
+                                    };
+                                }
+                                
+                                // Reinitialize with modified options
+                                $productSearch.selectWoo('destroy');
+                                $productSearch.selectWoo(existingOptions);
                             }
-                        };
-                        
-                        // Initialize the enhanced select
-                        $productSearch.selectWoo(select2_args).addClass('enhanced');
-                    });
+                        });
+                    }, 100); // Small delay to ensure WooCommerce has initialized first
                 }
             });
         });
