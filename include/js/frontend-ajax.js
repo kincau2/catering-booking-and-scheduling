@@ -201,14 +201,15 @@
         window.getMealScheduleWeek(productId, startDate, endDate, 0, success, error);
     };
 
-    window.getUserAddress = function(addressType, success, error){
+    window.getUserAddress = function(addressType, bookingId, success, error){
         $.ajax({
             url: catering_frontend_ajax.ajaxurl,
             method: 'POST',
             dataType: 'json',
             data: {
                 action: 'get_user_address',
-                address_type: addressType
+                address_type: addressType,
+                booking_id: bookingId
             },
             success: success,
             error: error || function(){ alert(cateringi18n('Error fetching user address.')); }

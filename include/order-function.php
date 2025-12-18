@@ -992,7 +992,7 @@ function my_seq_next_number($option, $start_from) {
 }
 
 // Change minimum input length for product search in order edit page from 3 to 1 character
-add_action('admin_footer', 'change_product_search_minimum_input_length');
+// add_action('admin_footer', 'change_product_search_minimum_input_length');
 function change_product_search_minimum_input_length() {
     global $pagenow, $post;
     
@@ -1130,4 +1130,33 @@ function catering_handle_order_item_deletion( $item_id, $item, $changed_stock, $
         }
     }
 }
+
+// get user rewards points
+function get_user_rewards_points($user_id) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'lws_wr_historic';
+    
+    // Sanitize user_id
+    $user_id = absint($user_id);
+    
+    if (!$user_id) {
+        return 0;
+    }
+    
+    // Get the most recent record for this user based on the latest mvt_date
+    $current_points = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT new_total 
+             FROM {$table} 
+             WHERE user_id = %d 
+             ORDER BY mvt_date DESC
+             LIMIT 1",
+            $user_id
+        )
+    );
+    
+    // Return the current points or 0 if no records found
+    return $current_points !== null ? intval($current_points) : 0;
+}
+
 

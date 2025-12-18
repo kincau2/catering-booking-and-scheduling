@@ -2575,13 +2575,26 @@ function catering_ajax_get_user_address(){
     }
     
     $address_type = isset($_POST['address_type']) ? sanitize_text_field($_POST['address_type']) : '';
-    
+    $booking_id = isset($_POST['booking_id']) ? intval($_POST['booking_id']) : 0;
+
+    if(!$booking_id){
+        wp_send_json_error(__('Missing booking ID', 'catering-booking-and-scheduling'));
+        return;
+    }
+
     if (!in_array($address_type, ['shipping', 'shipping_2'])) {
         wp_send_json_error(__('Invalid address type', 'catering-booking-and-scheduling'));
         return;
     }
+
+    $booking = new Booking($booking_id);
     
-    $user_id = get_current_user_id();
+    $user_id = $booking->user_id;
+
+    if (!$user_id) {
+        wp_send_json_error(__('Booking has no associated user', 'catering-booking-and-scheduling'));
+        return;
+    }
     
     // Get address data based on address type
     $address_data = array(

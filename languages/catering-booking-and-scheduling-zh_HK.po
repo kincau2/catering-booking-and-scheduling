@@ -17,6 +17,10 @@ msgstr ""
 msgid "We understand the importance of a proper diet for maintaining good health. In order to provide you with soups and meal plans that are best suited to your body, we would like to know your physical condition. When ordering soups or monthly meal plans, please update your physical condition so that we can select meal plans that are best suited to you."
 msgstr "我們明⽩合適的飲食對調養⾝體的重要性，為了給您的⾝體帶來更適合的湯⽔及餐單，我們希望了解您的⾝體狀況。如訂購湯⽔或⽉⼦餐時，請更新您的⾝體狀況，以便選擇更適合您的餐單。"
 
+#: include/wc-checkout-allergy.php:XX
+msgid "There is an error with one of the items in your cart. We have removed it from your cart, please try to add it again. We apologize for the inconvenience."
+msgstr "您的購物車中有某項商品出現錯誤。我們已將其移除，請嘗試重新加入。造成不便，我們深表歉意。"
+
 #: include/ajax.php:799
 msgid "No permission"
 msgstr "沒有權限"

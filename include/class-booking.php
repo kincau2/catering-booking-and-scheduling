@@ -36,7 +36,7 @@ class Booking {
             $this->health_status = maybe_unserialize($booking->health_status);
             $this->type          = $booking->type;
             $this->is_set_menu   = $booking->is_set_menu;
-            $this->date_amended  = $booking->date_amended_gmt;
+            $this->date_amended  = $booking->date_created_gmt;
         }
     }
 

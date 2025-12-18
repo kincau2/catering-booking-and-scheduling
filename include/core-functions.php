@@ -8,14 +8,8 @@ add_shortcode('debug','display_debug_message');
 
 function display_debug_message(){
 
-    // $total_files = get_post_meta( 3994 , '_alg_checkout_files_upload_1', true );
-    // echo "<pre>";
-    // echo print_r($total_files,1);
-    // echo "</pre>";
-    // catering_create_booking_on_order_status(4427);
-
     echo "<pre>";
-    echo print_r(get_transient('debug'),1);
+    echo print_r(get_transient('debug').'2',1);
     echo "</pre>";
 
 }

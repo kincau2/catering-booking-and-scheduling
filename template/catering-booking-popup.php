@@ -1382,12 +1382,13 @@ jQuery(function($){
         
         var $btn = $(this);
         var addressType = $btn.data('address-type');
+        var bookingId = $btn.data('booking-id');
         var originalText = $btn.text();
         
         // Show loading state
         $btn.text('<?php _e("Loading...", "catering-booking-and-scheduling"); ?>').prop('disabled', true);
         
-        getUserAddress(addressType, function(response) {
+        getUserAddress(addressType, bookingId, function(response) {
             // Reset button state
             $btn.text(originalText).prop('disabled', false);
             

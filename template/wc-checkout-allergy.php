@@ -10,6 +10,16 @@
                   && wc_get_product( $product->get_parent_id() )->get_type() === 'catering_plan' ) ) {
             $display = true;
             $parent = wc_get_product( $product->get_parent_id() );
+            // if $parent not found, remove it from cart, add woocommerce notice in frontend
+            if ( ! $parent ) {
+                set_transient( 'debug', 'parent not found', 30 ); // 30 seconds
+                WC()->cart->remove_cart_item( $cart_item['key'] );
+                wc_add_notice( __( 'There is an error with one of the items in your cart. We have removed it from your cart, please try to add it again. We apologize for the inconvenience.', 'catering-booking-and-scheduling' ), 'error' );
+                // refresh current page
+                global $wp;
+                wp_safe_redirect( home_url( $wp->request ) );
+                exit;
+            }
             $due_date_type = $parent->get_meta('catering_type');
             if ( in_array( $due_date_type, array('prenatal','postpartum','hybird'), true ) ) {
                 $due_date_required = true;

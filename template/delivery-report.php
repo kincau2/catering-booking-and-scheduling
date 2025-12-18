@@ -637,7 +637,12 @@ foreach ( $records as $rec ) {
     $booking = new Booking( $rec->booking_id );
     $order_id = $booking->get_order_id();
     $WC_item = $booking->get_order_item();
-    
+    if ( ! $order_id || ! $WC_item ) {
+        echo 'debug mode:'.'<br>' ;
+        echo 'This record may be invalid: ' . esc_html($booking->order_item_id) . '<br>';
+        echo 'Order ID:' . esc_html(wc_get_order_id_by_order_item_id( $booking->order_item_id )) . '<br>';
+        die();
+    }
     // Get the sequential order number if available, otherwise fallback to regular order ID
     $order = wc_get_order($order_id);
     $display_order_number = $order ? $order->get_order_number() : $order_id;

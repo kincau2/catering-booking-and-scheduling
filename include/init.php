@@ -83,7 +83,6 @@ function init_plugin(){
   maybe_install_plugin_table();
   init_plugin_data();
   add_manage_catering_capability();
-  register_catering_custom_roles();
 }
 
 
@@ -289,29 +288,8 @@ function init_plugin_data(){
 
 }
 
-/**
- * Create 'marketing' and 'shop_assistant' roles with manage_catering cap.
- */
-function register_catering_custom_roles() {
-    add_role(
-        'marketing',
-        'Marketing',
-        [
-            'read'              => true,
-        ]
-    );
-    add_role(
-        'shop_assistant',
-        'Shop Assistant',
-        [
-            'read'              => true,
-            'manage_catering'   => true,
-        ]
-    );
-}
-
 function add_manage_catering_capability() {
-    $roles = [ 'administrator', 'shop_manager', 'shop_assistant' ];
+    $roles = [ 'administrator', 'shop_manager'];
     foreach ( $roles as $role_name ) {
         $role = get_role( $role_name );
         if ( $role && ! $role->has_cap( 'manage_catering' ) ) {

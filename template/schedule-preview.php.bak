@@ -204,7 +204,7 @@ div#schedule-preview-modal{
   font-weight: bold;
 }
 
-#week-2-container, #week-3-container {
+#week-2-container {
   display: none; /* Hidden by default */
 }
 
@@ -413,7 +413,7 @@ div#schedule-preview-modal{
   font-weight: bold;
 }
 
-#week-2-container, #week-3-container {
+#week-2-container {
   display: none; /* Hidden by default */
 }
 
@@ -468,10 +468,6 @@ div#schedule-preview-modal{
   padding: 15px;
   background-color: #f8f8f8;
   border-radius: 8px;
-}
-
-#schedule-preview-close{
-  color: #A23C4A!important;
 }
 
 /* Mobile styles */
@@ -576,7 +572,7 @@ jQuery(function($){
     $('#prev-day-btn').prop('disabled', currentDay === 0);
     
     // Disable/enable next button based on if we're on the last day
-    $('#next-day-btn').prop('disabled', currentDay === 20);
+    $('#next-day-btn').prop('disabled', currentDay === 13);
     
     // Update day container
     var dayDate = formatISO(allDays[currentDay]);
@@ -656,12 +652,9 @@ jQuery(function($){
     if (weekNum === 1) {
       weekStart = allDays[0];
       weekEnd = allDays[6];
-    } else if (weekNum === 2) {
+    } else {
       weekStart = allDays[7];
       weekEnd = allDays[13];
-    } else {
-      weekStart = allDays[14];
-      weekEnd = allDays[20];
     }
     
     $('#week-indicator').text(formatDateRange(weekStart, weekEnd));
@@ -669,8 +662,8 @@ jQuery(function($){
     // Disable previous button on first week
     $('#prev-week-btn').prop('disabled', weekNum === 1);
     
-    // Disable next button on third week
-    $('#next-week-btn').prop('disabled', weekNum === 3);
+    // Disable next button on second week
+    $('#next-week-btn').prop('disabled', weekNum === 2);
     
     // Hide all week containers
     $('.week-container').hide();
@@ -687,8 +680,8 @@ jQuery(function($){
     // Handle wrapping around the ends (but now we'll enforce limits)
     if (newDay < 0) {
       newDay = 0; // Limit to first day
-    } else if (newDay > 20) {
-      newDay = 20; // Limit to last day
+    } else if (newDay > 13) {
+      newDay = 13; // Limit to last day
     }
     
     currentDay = newDay;
@@ -702,11 +695,11 @@ jQuery(function($){
     var mon = new Date(today);
     mon.setDate(mon.getDate() - today.getDay()); // Start from Sunday
     var start = mon, end = new Date(mon);
-    end.setDate(end.getDate() + 20); // Three weeks
+    end.setDate(end.getDate() + 13); // Two weeks
     
     // Initialize allDays array for day navigation
     allDays = [];
-    for (var i = 0; i < 21; i++) {
+    for (var i = 0; i < 14; i++) {
       var d = new Date(start);
       d.setDate(d.getDate() + i);
       allDays.push(d);
@@ -732,19 +725,18 @@ jQuery(function($){
     switchWeek(1);
     
     // Clear existing content
-    $('#schedule-week1, #schedule-week2, #schedule-week3').empty();
+    $('#schedule-week1, #schedule-week2').empty();
     $('#day-container').empty();
     
     // Create week rows
     var week1Row = $('<tr>');
     var week2Row = $('<tr>');
-    var week3Row = $('<tr>');
     
     // Initialize weekData.holidays
     weekData.holidays = {};
     
     // Add cells for each day
-    for (var i = 0; i < 21; i++) {
+    for (var i = 0; i < 14; i++) {
       var d = new Date(start);
       d.setDate(d.getDate() + i);
       var date = formatISO(d);
@@ -773,16 +765,13 @@ jQuery(function($){
       // Add to appropriate week
       if (i < 7) {
         week1Row.append(cell);
-      } else if (i < 14) {
-        week2Row.append(cell);
       } else {
-        week3Row.append(cell);
+        week2Row.append(cell);
       }
     }
     
     $('#schedule-week1').append(week1Row);
     $('#schedule-week2').append(week2Row);
-    $('#schedule-week3').append(week3Row);
     
     // Update day navigation
     updateDayNavigation();
@@ -875,16 +864,12 @@ jQuery(function($){
   // Navigation button handlers
   $('#prev-week-btn').on('click', function() {
     if ($(this).prop('disabled')) return;
-    if (currentWeek > 1) {
-      switchWeek(currentWeek - 1);
-    }
+    switchWeek(currentWeek === 1 ? 2 : 1);
   });
   
   $('#next-week-btn').on('click', function() {
     if ($(this).prop('disabled')) return;
-    if (currentWeek < 3) {
-      switchWeek(currentWeek + 1);
-    }
+    switchWeek(currentWeek === 1 ? 2 : 1);
   });
   
   $('#prev-day-btn').on('click', function() {

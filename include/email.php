@@ -117,9 +117,10 @@ function add_point_summary_after_order_details( $order, $sent_to_admin ){
     if(shortcode_exists('wr_points_balance') === false){
         return; // if the points balance shortcode is not available, do not show the summary
     }
+    $order_id = $order->get_id();
     $output  = '<h2>' . __('Ms. Lo soup Points Summary', 'catering-booking-and-scheduling') . '</h2>';
-    $output .=  '<p>' . __('Here is your current Ms. Lo soup points balance:', 'catering-booking-and-scheduling') ." ". do_shortcode('[wr_points_balance user_id="' . $order->get_user_id() . '"]') .  '</p>';
-    $output .= '<p>' . __('You current points is equal to value: ','catering-booking-and-scheduling') . do_shortcode('[wr_points_value]') . '</p>';
+    $output .=  '<p>' . __('Here is your current Ms. Lo soup points balance:', 'catering-booking-and-scheduling') ." ". get_user_rewards_points($order->get_user_id()) .  '</p>';
+    $output .= '<p>' . __('You current points is equal to value: ','catering-booking-and-scheduling') . '$' . get_user_rewards_points($order->get_user_id()) . '</p>';
     $output .= '<p>' . __('You can use your points to redeem rewards or discounts on future orders.','catering-booking-and-scheduling') . '</p>';
     $output .= '<p>' . __('You can view your points balance and usage history in your account.','catering-booking-and-scheduling') . '</p>';
     $output .= '<a style="font-weight: normal;color: #FFF;padding: 8px 30px;background: #932331;text-decoration: unset;font-weight: 500!important;"

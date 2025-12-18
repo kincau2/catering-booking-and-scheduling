@@ -45,7 +45,7 @@ if ($booking_ids) {
         echo '<tr>';
         echo '<td><a href="' . esc_url($order_url) . '">' . esc_html($order_number) . '</a></td>';
         echo '<td>' . __(esc_html(ucfirst($status)),'catering-booking-and-scheduling') . '</td>';  // output status
-        echo '<td>' . esc_html($order_item_title) ." ". __('days','catering-booking-and-scheduling') . '</td>';
+        echo '<td>' . $order_item_title ." ". __('days','catering-booking-and-scheduling') . '</td>';
         echo '<td>' . esc_html($day_left)." ".__('days','catering-booking-and-scheduling') . '</td>';
         // calculate plan expiry date based on first choice
         $first_choice_date = $wpdb->get_var(
