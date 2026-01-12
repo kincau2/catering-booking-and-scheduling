@@ -1235,7 +1235,6 @@ jQuery(function($){
             choice_date: date
         }, function(response) {
             if (response.success) {
-                console.log(response.data);
                 displayMealHistory(response.data);
             } else {
                 $('#meal-history-content').html('<p><?php _e("No history found or error loading data.","catering-booking-and-scheduling") ?></p>');

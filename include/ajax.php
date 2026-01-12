@@ -1150,12 +1150,12 @@ function catering_ajax_get_day_schedule(){
         }
     }
     $cat_ids  = array_keys($cat_map);
-    // get category titles
+    // get category titles with proper ordering
     $ph = implode(',', array_fill(0,count($cat_ids),'%d'));
     $terms = $wpdb->get_results($wpdb->prepare(
-        "SELECT ID,title FROM {$wpdb->prefix}catering_terms WHERE ID IN ($ph)",
+        "SELECT ID,title FROM {$wpdb->prefix}catering_terms WHERE ID IN ($ph) ORDER BY ordering ASC, ID ASC",
         $cat_ids
-    ), OBJECT_K);
+    ), ARRAY_A);
     // fetch per-category qty limit from booking’s order_item meta
     $qty_map = [];
     
@@ -1173,14 +1173,18 @@ function catering_ajax_get_day_schedule(){
         ), OBJECT_K);
         foreach($meals as $m) $meal_map[$m->ID] = $m->title;
     }
-    // build response categories array
+    // build response categories array in ordered sequence
     $categories = [];
-    foreach($cat_map as $cid => $mids){
+    foreach($terms as $term){
+        $cid = absint($term['ID']);
+        if(!isset($cat_map[$cid])) continue;
+        
+        $mids = $cat_map[$cid];
         $options = [];
         foreach(array_unique($mids) as $mid){
             if(isset($meal_map[$mid])){
                 $options[] = [
-                    'id'    => $mid,
+                    'id'    => absint($mid),
                     'title' => $meal_map[$mid],
                     'tag'   => isset($tag_map[$cid][$mid]) ? $tag_map[$cid][$mid] : ''
                 ];
@@ -1188,7 +1192,7 @@ function catering_ajax_get_day_schedule(){
         }
         $categories[] = [
             'cat_id'    => $cid,
-            'cat_title' => isset($terms[$cid]) ? $terms[$cid]->title : '',
+            'cat_title' => $term['title'],
             'max_qty'   => isset($qty_map[$cid]) ? absint($qty_map[$cid]) : 0,
             'meals'     => $options
         ];
