@@ -3,41 +3,332 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: 香港中文\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2025-06-13T19:05:42+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-01-21 10:36+0000\n"
 "Language: zh_HK\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"X-Generator: Loco https://localise.biz/\n"
 "X-Domain: catering-booking-and-scheduling\n"
+"Plural-Forms: nplurals=1; plural=0;"
 
-#: include/wc-checkout-allergy.php:XX
-msgid "We understand the importance of a proper diet for maintaining good health. In order to provide you with soups and meal plans that are best suited to your body, we would like to know your physical condition. When ordering soups or monthly meal plans, please update your physical condition so that we can select meal plans that are best suited to you."
-msgstr "我們明⽩合適的飲食對調養⾝體的重要性，為了給您的⾝體帶來更適合的湯⽔及餐單，我們希望了解您的⾝體狀況。如訂購湯⽔或⽉⼦餐時，請更新您的⾝體狀況，以便選擇更適合您的餐單。"
+#: include/ajax.php:xxxx
+msgid "%d unsuitable meal choices have been automatically deleted."
+msgstr "%d 項不適宜的餐點選擇已自動刪除。"
 
-#: include/wc-checkout-allergy.php:XX
-msgid "There is an error with one of the items in your cart. We have removed it from your cart, please try to add it again. We apologize for the inconvenience."
-msgstr "您的購物車中有某項商品出現錯誤。我們已將其移除，請嘗試重新加入。造成不便，我們深表歉意。"
+#: template/wc-product-catering-options.php:65
+#, php-format
+msgid "%s max picks"
+msgstr "%s 最多可選"
 
-#: include/ajax.php:799
-msgid "No permission"
-msgstr "沒有權限"
+#: template/wc-product-catering-options.php:84
+msgid ""
+"* In hybird catering plan, you must update the meal schedule with column "
+"type to differentiate meal suitable for prenatal or postpartum status."
+msgstr "* 在混合餐飲方案中，您必須在餐單排程中標註類型以區分適合產前或產後的餐點。"
 
-#: include/ajax.php:821
-#: include/ajax.php:830
+#: template/wc-product-catering-options.php:539
+msgid ". Do you want to clear the existing data for these dates?"
+msgstr "。您想要清除這些日期的現有資料嗎？"
+
+#: template/catering-booking.php:17
+msgid "Action"
+msgstr "操作"
+
+#: template/catering-booking-popup.php:1030
+msgid "Add New"
+msgstr "新增"
+
+#: template/catering-booking-popup.php:1081
+msgid "Address"
+msgstr "地址"
+
+#: template/catering-booking-popup.php:1291
+msgid "Address is required."
+msgstr "地址為必填項。"
+
+#: template/wc-product-catering-options.php:571
+#: template/wc-product-catering-options.php:648
+msgid "All rows processed successfully."
+msgstr "所有行處理成功。"
+
+#: template/catering-booking-popup.php:694
+msgid "allergy"
+msgstr "食物敏感"
+
+#: template/catering-booking-popup.php:1399
+msgid "Are you sure you want to delete the meal choice for"
+msgstr "您確定要刪除此日期的餐點選擇嗎："
+
+#: template/catering-booking-popup.php:1575
+msgid "Are you sure you want to remove this selection?"
+msgstr "您確定要刪除此選項嗎？"
+
+#: template/catering-booking-popup.php:1371
+msgid "Are you sure you want to submit your selections?"
+msgstr "您確定要提交您的選擇嗎？"
+
+#: template/catering-booking-popup.php:1089
+msgid "Back to calendar"
+msgstr "回到餐點日程"
+
+#: include/my-account.php:183
+msgid "Billing remarks"
+msgstr "帳單備註"
+
+#: template/wc-product-catering-options.php:113
+#: template/wc-product-catering-options.php:125
+msgid "Cancel"
+msgstr "取消"
+
+#: template/wc-product-catering-options.php:335
+msgid "Category list not loaded. Please try again later."
+msgstr "分類清單未載入。請稍後再試。"
+
+#: include/my-account.php:10 template/catering-booking.php:9
+msgid "Catering Bookings"
+msgstr "餐飲預訂"
+
+#: template/wc-product-catering-options.php:75
+msgid "Catering type"
+msgstr "餐飲類型"
+
+#: template/wc-product-catering-options.php:934
+msgid ""
+"Changing due date type after customer purchase may prevent customers from "
+"selecting meals normally. Continue?"
+msgstr "客戶購買後更改預產期類型可能會阻止客戶正常選擇餐點。確定繼續？"
+
+#: template/catering-booking-popup.php:1058
+msgid "City"
+msgstr "地區"
+
+#: template/catering-booking-popup.php:1292
+msgid "City is required."
+msgstr "城市為必填項。"
+
+#: template/wc-product-catering-options.php:249
+msgid "Close"
+msgstr "關閉"
+
+#: template/wc-product-catering-options.php:522
+msgid "CSV contains invalid meal entries:"
+msgstr "CSV 包含無效的餐點項目："
+
+#: template/wc-product-catering-options.php:490
+msgid "CSV contains invalid Type values at rows:"
+msgstr "CSV 在以下行中包含無效的類型值："
+
+#: template/wc-product-catering-options.php:485
+msgid "CSV file contains invalid Category values:"
+msgstr "CSV 檔案包含無效的分類值："
+
+#: template/wc-product-catering-options.php:477
+msgid "CSV file contains rows with empty Category value at row numbers: "
+msgstr "CSV 檔案在以下行號中包含空白的分類值："
+
+#: template/wc-product-catering-options.php:473
+msgid ""
+"CSV file contains rows with empty or invalid Date column at row numbers: "
+msgstr "CSV 檔案在以下行號中包含空白或無效的日期欄位："
+
+#: template/wc-product-catering-options.php:391
+msgid "CSV file does not contain Category column."
+msgstr "CSV 檔案不包含分類欄位。"
+
+#: template/wc-product-catering-options.php:352
+msgid "CSV file is empty."
+msgstr "CSV 檔案為空。"
+
+#: template/wc-product-catering-options.php:387
+msgid "CSV must contain ID, SKU, and Meal_title columns."
+msgstr "CSV 必須包含 ID、SKU 和餐點名稱欄位。"
+
+#: template/wc-product-catering-options.php:383
+msgid "CSV must contain Tag column."
+msgstr "CSV 必須包含標籤欄位。"
+
+#: template/wc-product-catering-options.php:379
+msgid "CSV must contain Type column."
+msgstr "CSV 必須包含類型欄位。"
+
+#: template/catering-booking-popup.php:1045
+#: template/catering-booking-popup.php:1048
+msgid "Cup"
+msgstr "湯杯"
+
+#: template/wc-product-catering-options.php:98
+msgid "cup only"
+msgstr "僅限湯杯"
+
+#: template/wc-product-catering-options.php:96
+msgid "customer choice"
+msgstr "客戶選擇"
+
+#: template/catering-booking.php:15
+msgid "Day Left"
+msgstr "剩餘天數"
+
+#: template/catering-booking-popup.php:943 template/catering-booking.php:50
+#: template/catering-booking.php:51
+msgid "days"
+msgstr "天"
+
+#: template/catering-booking-popup.php:45
+#: template/catering-booking-popup.php:53
+#: template/catering-booking-popup.php:909
+msgid "Days Remaining:"
+msgstr "剩餘天數："
+
+#: include/ajax.php:880
+msgid "DB error"
+msgstr "資料庫錯誤"
+
+#: template/catering-booking-popup.php:847
+#: template/wc-product-catering-options.php:250
+msgid "Delete"
+msgstr "刪除"
+
+#: template/wc-product-catering-options.php:882
+msgid "Delete all meals scheduled for this date?"
+msgstr "刪除此日期的所有排程餐點？"
+
+#: template/catering-booking-popup.php:1421
+msgid "Delivery address"
+msgstr "送貨地址"
+
+#: template/catering-booking-popup.php:1083
+#: template/catering-booking-popup.php:1426
+msgid "Delivery Note"
+msgstr "配送備注"
+
+#: template/wc-product-catering-options.php:801
+msgid "Detail"
+msgstr "詳細資料"
+
+#: include/my-account.php:46 include/my-account.php:101
+#: include/my-account.php:157
+msgid "District"
+msgstr "地區"
+
+#: template/wc-product-catering-options.php:124
+msgid "Download"
+msgstr "下載"
+
+#: template/catering-booking-popup.php:695
+#: template/catering-booking-popup.php:782
+msgid "due date"
+msgstr "預產期"
+
+#: template/wc-product-catering-options.php:421
+msgid "Duplicate meal IDs found on the same date at rows:"
+msgstr "在相同日期的以下行數中發現重複餐點 ID："
+
+#: include/ajax.php:821 include/ajax.php:830
 msgid "Duplicated SKU"
 msgstr "SKU 重複"
 
-#: include/ajax.php:834
-msgid "SKU required"
-msgstr "必須輸入 SKU"
+#: template/catering-booking-popup.php:919
+msgid "Edit Health Status"
+msgstr "編輯健康狀態"
 
-#: include/ajax.php:840
-#: include/ajax.php:846
-msgid "Title required"
-msgstr "標題為必填"
+#: template/catering-booking-popup.php:828
+msgid "Edit Meal"
+msgstr "編輯餐點"
+
+#: template/catering-booking-popup.php:1470
+msgid "Error loading health status"
+msgstr "加載健康狀態時發生錯誤"
+
+#: template/wc-product-catering-options.php:552
+msgid "Existing schedule data cleared. Proceeding with CSV processing..."
+msgstr "現有排程資料已清除。繼續處理 CSV..."
+
+#: template/wc-product-catering-options.php:88
+msgid "Expiry"
+msgstr "有效天數"
+
+#: template/catering-booking.php:16
+msgid "Expiry Date"
+msgstr "有效期限"
+
+#: template/wc-product-catering-options.php:90
+msgid "Expiry day"
+msgstr "有效天數"
+
+#: template/meal-schedule.php:36
+msgid "Export"
+msgstr "匯出"
+
+#: template/wc-product-catering-options.php:139
+msgid "Export CSV"
+msgstr "匯出 CSV"
+
+#: template/wc-product-catering-options.php:120
+msgid "Export Schedule CSV"
+msgstr "匯出排程 CSV"
+
+#: include/core-functions.php:62
+msgid "Failed to create booking"
+msgstr "建立預訂失敗"
+
+#: template/wc-product-catering-options.php:892
+msgid "Failed to delete schedule"
+msgstr "刪除排程失敗"
+
+#: include/class-booking.php:70
+#, php-format
+msgid "Failed to update %s"
+msgstr "更新 %s 失敗"
+
+#: template/catering-booking-popup.php:1056
+msgid "First name"
+msgstr "名字"
+
+#: template/catering-booking-popup.php:1288
+msgid "First name cannot contain numbers."
+msgstr "名字不能包含數字。"
+
+#: template/catering-booking-popup.php:1287
+msgid "First name is required."
+msgstr "名字為必填項。"
+
+#: template/catering-booking-popup.php:772 template/meal-schedule.php:51
+msgid "Fri"
+msgstr "星期五"
+
+#: template/wc-product-catering-options.php:236
+msgid "Friday"
+msgstr "星期五"
+
+#: template/catering-booking-popup.php:917
+msgid "Health Status"
+msgstr "健康狀態"
+
+#: template/catering-booking-popup.php:1529
+msgid "Health status updated."
+msgstr "健康狀態已更新。"
+
+#: template/catering-booking-popup.php:794
+msgid ""
+"Holiday Meal will be delivered on the previous working day, please refer to "
+"our catering delivery policy on public holiday."
+msgstr "節日及假日的餐點將提前一天送達，請參考我們的節日及假日送餐政策。"
+
+#: template/wc-product-catering-options.php:80
+msgid "Hybird"
+msgstr "混合"
+
+#: include/ajax.php:860
+msgid "Image fetch failed"
+msgstr "圖片獲取失敗"
+
+#: template/wc-product-catering-options.php:108
+#: template/wc-product-catering-options.php:138
+msgid "Import CSV"
+msgstr "匯入 CSV"
 
 #: include/ajax.php:844
 msgid "Invalid ID"
@@ -47,58 +338,203 @@ msgstr "無效的 ID"
 msgid "Invalid mode"
 msgstr "無效的模式"
 
-#: include/ajax.php:860
-msgid "Image fetch failed"
-msgstr "圖片獲取失敗"
-
-#: include/ajax.php:880
-msgid "DB error"
-msgstr "資料庫錯誤"
-
-#: include/ajax.php:1597
-#: include/ajax.php:1626
-#: include/ajax.php:1677
-msgid "There are unsuitable meal choices after the new due date on following dates: "
-msgstr "在新預產期後的以下日期有不適合的餐點選擇："
-
-#: include/ajax.php:1684
-msgid "Update fail: The new due date will make following date of your meal choices unsuitable: %s. We are not able to delete those meal choices as time constraint. Please contact our CS team as soon as possible for assistance with this change."
-msgstr "更新健康狀態失敗：新的預產期將導致以下日子餐點選擇不再適用：%s。因截單日期已過我們無法刪除這些餐點，請盡快聯繫我們的客服團隊，以協助處理此變更事宜。"
-
-#: include/ajax.php:1684
-msgid "Warning: The new due date will make some of your meal choices unsuitable. We must delete the following meal choices before amending your due date: %s. Do you want to continue?"
-msgstr "警告：新的預產期將導致部分餐點選擇不再適用。在修改您的預產期前，我們必須刪除以下日子的餐點選擇：%s。您是否要繼續？"
-
-#: include/ajax.php:1684
-msgid "%d unsuitable meal choices have been automatically deleted."
-msgstr "%d 項不適宜的餐點選擇已自動刪除。"
-
-#: include/ajax.php:1692
-msgid "Failed to update health status"
-msgstr "更新健康狀態失敗"
-
-#: include/ajax.php:1705
-msgid "Health status updated successfully."
-msgstr "健康狀態更新成功。"
-
-#: include/ajax.php:1600
-#: include/ajax.php:1629
-#: include/ajax.php:1680
-msgid "Please delete unsuitable meal(s). Please contact CS Team if some of the meal(s) are not able to delete."
-msgstr "請刪除不適合的餐點。如果某些餐點無法刪除，請聯繫客服團隊。"
-
 #: include/class-booking.php:52
 msgid "Invalid parameter name"
 msgstr "無效的參數名稱"
 
-#: include/class-booking.php:70
-#, php-format
-msgid "Failed to update %s"
-msgstr "更新 %s 失敗"
+#: template/meal-schedule.php:153
+msgid "item"
+msgstr "商品"
 
-#: include/core-functions.php:62
-msgid "Failed to create booking"
-msgstr "建立預訂失敗"
+#: template/catering-booking-popup.php:1057
+msgid "Last name"
+msgstr "姓氏"
+
+#: template/catering-booking-popup.php:1290
+msgid "Last name cannot contain numbers."
+msgstr "姓氏不能包含數字。"
+
+#: template/catering-booking-popup.php:1289
+msgid "Last name is required."
+msgstr "姓氏為必填項。"
+
+#: template/catering-booking-popup.php:1256
+msgid "Limit reached"
+msgstr "已達上限"
+
+#: template/catering-booking-popup.php:850
+#: template/catering-booking-popup.php:853
+msgid "Make meal booking"
+msgstr "預訂餐點"
+
+#: template/catering-booking-popup.php:1019
+#: template/wc-product-catering-options.php:911
+msgid "max picks"
+msgstr "最多可選"
+
+#: template/meal-schedule.php:133
+msgid "Meal"
+msgstr "餐點"
+
+#: template/wc-product-catering-options.php:37
+msgid "Meal Category"
+msgstr "餐點分類"
+
+#: template/meal-schedule.php:35
+msgid "Meal Delivery"
+msgstr "餐點配送"
+
+#: template/wc-product-catering-options.php:247
+msgid "Meals for"
+msgstr "餐點於"
+
+#: template/catering-booking-popup.php:768 template/meal-schedule.php:47
+msgid "Mon"
+msgstr "星期一"
+
+#: template/wc-product-catering-options.php:232
+msgid "Monday"
+msgstr "星期一"
+
+#: template/catering-booking-popup.php:1087
+msgid "Next step"
+msgstr "下一步"
+
+#: template/wc-product-catering-options.php:148
+msgid "Next week"
+msgstr "下一週"
+
+#: template/catering-booking.php:87
+msgid "No bookings found"
+msgstr "沒有找到預訂"
+
+#: template/wc-product-catering-options.php:629
+msgid "No existing schedule data conflicts. Proceeding with CSV processing..."
+msgstr "沒有現有排程資料衝突。繼續處理 CSV..."
+
+#: template/catering-booking-popup.php:1163
+#: template/catering-booking-popup.php:1564
+msgid "No meals found."
+msgstr "找不到餐點。"
+
+#: include/ajax.php:799
+msgid "No permission"
+msgstr "沒有權限"
+
+#: template/wc-product-catering-options.php:77
+msgid "Normal"
+msgstr "一般"
+
+#: template/catering-booking-popup.php:1463
+#: template/catering-booking-popup.php:1466
+msgid "Not set"
+msgstr "未設置"
+
+#: template/catering-booking-popup.php:1112
+msgid "option(s) for"
+msgstr "個選項，分類"
+
+#: template/catering-booking.php:14
+msgid "Order Item Title"
+msgstr "訂單項目名稱"
+
+#: template/catering-booking.php:12
+msgid "Order Number"
+msgstr "訂單編號"
+
+#: template/catering-booking-popup.php:1019
+msgid "pcs"
+msgstr "份"
+
+#: include/my-account.php:72 include/my-account.php:127
+#: template/catering-booking-popup.php:1082
+#: template/catering-booking-popup.php:1425
+msgid "Phone"
+msgstr "聯絡電話"
+
+#: template/catering-booking-popup.php:1297
+msgid "Phone is required."
+msgstr "電話為必填項。"
+
+#: template/catering-booking.php:83
+msgid "Pick Meal"
+msgstr "選擇餐點"
+
+#: template/catering-booking-popup.php:1055
+msgid "Please confirm you delivery address"
+msgstr "請確認送貨地址"
+
+#: include/ajax.php:1600 include/ajax.php:1629 include/ajax.php:1680
+msgid ""
+"Please delete unsuitable meal(s). Please contact CS Team if some of the "
+"meal(s) are not able to delete."
+msgstr "請刪除不適合的餐點。如果某些餐點無法刪除，請聯繫客服團隊。"
+
+#: template/catering-booking-popup.php:1299
+msgid "Please enter a valid Mobile number."
+msgstr "請輸入有效的手機號碼。"
+
+#: template/wc-product-catering-options.php:340
+msgid "Please select a CSV file."
+msgstr "請選擇 CSV 檔案。"
+
+#: template/catering-booking-popup.php:1294
+msgid "Please select a valid city."
+msgstr "請選擇有效的城市。"
+
+#: template/wc-product-catering-options.php:297
+msgid "Please select both dates."
+msgstr "請選擇起始和結束日期。"
+
+#: template/catering-booking-popup.php:1111
+msgid "Please select exactly"
+msgstr "請選擇正好"
+
+#: template/wc-product-catering-options.php:79
+msgid "Postpartum"
+msgstr "產後"
+
+#: template/catering-booking-popup.php:819
+msgid "postpartum meal"
+msgstr "產後餐點"
+
+#: template/catering-booking-popup.php:1043
+#: template/catering-booking-popup.php:1047
+msgid "Pot"
+msgstr "湯壺"
+
+#: template/wc-product-catering-options.php:97
+msgid "pot only"
+msgstr "僅限湯壺"
+
+#: template/wc-product-catering-options.php:78
+msgid "Prenatal"
+msgstr "產前"
+
+#: template/catering-booking-popup.php:816
+msgid "prenatal meal"
+msgstr "產前餐點"
+
+#: template/catering-booking-popup.php:1086
+msgid "Prev step"
+msgstr "上一步"
+
+#: template/wc-product-catering-options.php:147
+msgid "Previous week"
+msgstr "上一週"
+
+#: template/catering-booking-popup.php:773 template/meal-schedule.php:52
+msgid "Sat"
+msgstr "星期六"
+
+#: template/wc-product-catering-options.php:237
+msgid "Saturday"
+msgstr "星期六"
+
+#: template/catering-booking-popup.php:1159
+#: template/catering-booking-popup.php:1552
+msgid "Search for meal..."
+msgstr "搜尋餐點..."
 
 #: include/init.php:41
 msgid "Search or select categories"
@@ -108,558 +544,147 @@ msgstr "搜尋或選擇分類"
 msgid "Search or select tags"
 msgstr "搜尋或選擇標籤"
 
-#: include/interface.php:12
-#: include/interface.php:13
-msgid "Meal schedule"
-msgstr "餐單排程"
-
-#: include/interface.php:24
-#: include/interface.php:25
-#: template/meal-schedule.php:35
-msgid "Meal Delivery"
-msgstr "餐點配送"
-
-#: include/interface.php:34
-#: include/interface.php:35
-#: template/holiday-setting.php:28
-msgid "Holiday Setting"
-msgstr "假日設置"
-
-#: include/interface.php:44
-#: include/interface.php:45
-msgid "Meal item"
-msgstr "餐點項目"
-
-#: include/interface.php:54
-#: include/interface.php:55
-msgid "Meal category"
-msgstr "餐點分類"
-
-#: include/interface.php:64
-#: include/interface.php:65
-#: template/meal-settings.php:68
-msgid "Meal Settings"
-msgstr "餐點設置"
-
-#: include/interface.php:129
-#: template/meal-form.php:258
-msgid "Select an image"
-msgstr "選擇圖片"
-
-#: include/interface.php:130
-#: template/meal-form.php:259
-msgid "Use this image"
-msgstr "使用此圖片"
-
-#: include/my-account.php:10
-#: template/catering-booking.php:9
-msgid "Catering Bookings"
-msgstr "餐飲預訂"
-
-#: include/my-account.php:31
-msgid "Shipping Address"
-msgstr "送貨地址"
+#: template/catering-booking-popup.php:1166
+#: template/catering-booking-popup.php:1567
+msgid "Searching for meals..."
+msgstr "正在搜尋餐點..."
 
 #: include/my-account.php:32
 msgid "Second Shipping Address"
 msgstr "第二送貨地址"
 
-#: include/my-account.php:46
-#: include/my-account.php:101
-#: include/my-account.php:157
-msgid "District"
-msgstr "地區"
+#: template/wc-product-catering-options.php:100
+msgid "Select soup container option"
+msgstr "選擇湯品容器選項"
 
-#: include/my-account.php:72
-#: template/catering-booking-popup.php:1082
-#: template/catering-booking-popup.php:1425
-msgid "Phone"
-msgstr "聯絡電話"
+#: template/wc-product-catering-options.php:121
+msgid "Select the date range for the export."
+msgstr "選擇匯出的日期範圍。"
 
-#: include/my-account.php:192
-#: include/my-account.php:262
-#: include/my-account.php:308
-#: template/catering-booking-popup.php:479
-msgid "Phone Country/Region Code"
-msgstr "電話地區代碼"
+#: template/wc-product-catering-options.php:54
+msgid "Select which meal categories are included in this catering plan."
+msgstr "選擇此餐飲方案包含哪些餐點分類。"
 
-#: include/my-account.php:205
-#: include/my-account.php:275
-#: template/catering-booking-popup.php:486
-msgid "Phone Number"
-msgstr "電話號碼"
+#: include/my-account.php:31
+msgid "Shipping Address"
+msgstr "送貨地址"
 
-#: include/my-account.php:211
-#: include/my-account.php:281
-#: include/my-account.php:324
-#: template/catering-booking-popup.php:486
-msgid "Enter phone number"
-msgstr "輸入電話號碼"
-
-#: include/my-account.php:57
-msgid "%sphone: Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9)"
-msgstr "%s電話：請輸入有效的香港手機號碼（8位數字，以4、5、6或9開頭）"
-
-#: include/my-account.php:59
-msgid "%sphone: Please enter a valid Macau mobile number (8 digits starting with 6)"
-msgstr "%s電話：請輸入有效的澳門手機號碼（8位數字，以6開頭）"
-
-#: include/my-account.php:61
-msgid "%sphone: Please enter a valid China mobile number (11 digits starting with 1)"
-msgstr "%s電話：請輸入有效的中國手機號碼（11位數字，以1開頭）"
-
-#: include/my-account.php:63
-msgid "%sphone: Please enter a valid phone number"
-msgstr "%s電話：請輸入有效的電話號碼"
-
-#: include/ajax.php:1224
-#: template/catering-booking-popup.php:711
-msgid "Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9)."
-msgstr "請輸入有效的香港手機號碼（8位數字，以4、5、6或9開頭）。"
-
-#: include/ajax.php:1227
-#: template/catering-booking-popup.php:713
-msgid "Please enter a valid Macau mobile number (8 digits starting with 6)."
-msgstr "請輸入有效的澳門手機號碼（8位數字，以6開頭）。"
-
-#: include/ajax.php:1230
-#: template/catering-booking-popup.php:715
-msgid "Please enter a valid China mobile number (11 digits starting with 1)."
-msgstr "請輸入有效的中國手機號碼（11位數字，以1開頭）。"
-
-#: template/catering-booking-popup.php:732
-msgid "Phone country code is required."
-msgstr "電話國家代碼為必填項。"
-
-#: include/ajax.php:1233
-#: template/catering-booking-popup.php:717
-msgid "Please enter a valid mobile number."
-msgstr "請輸入有效的手機號碼。"
-
-#: include/my-account.php:82
-#: include/my-account.php:137
+#: include/my-account.php:82 include/my-account.php:137
 msgid "Shipping remarks"
 msgstr "送貨備註"
 
-#: include/my-account.php:183
-msgid "Billing remarks"
-msgstr "帳單備註"
-
-#: include/order-function.php:53
-#: include/order-function.php:85
-msgid "Daily picks for"
-msgstr "每日可選"
-
-#: include/order-function.php:213
-msgid "Food Allergy Information"
-msgstr "食物過敏資訊"
-
-#: include/order-function.php:216
-msgid "Please select all food allergies you have:"
-msgstr "請選擇您有的所有食物過敏："
-
-#: include/order-function.php:218
-#: public/catering-i18n.js:4
-msgid "Peanuts"
-msgstr "花生"
-
-#: include/order-function.php:219
-#: public/catering-i18n.js:4
-msgid "Gluten"
-msgstr "麩質"
-
-#: include/order-function.php:220
-#: public/catering-i18n.js:4
-msgid "Dairy"
-msgstr "乳製品"
-
-#: include/order-function.php:221
-#: public/catering-i18n.js:4
-msgid "Seafood"
-msgstr "海鮮"
-
-#: include/order-function.php:222
-#: public/catering-i18n.js:4
-msgid "Soy"
-msgstr "大豆"
-
-#: include/order-function.php:223
-#: public/catering-i18n.js:4
-msgid "Egg"
-msgstr "蛋"
-
-#: include/order-function.php:224
-#: public/catering-i18n.js:4
-msgid "No allergy"
-msgstr "無過敏"
-
-#: include/order-function.php:228
-msgid "Your Due Date"
-msgstr "您的預產期"
-
-#: include/order-function.php:232
-msgid "Confirm"
-msgstr "確認"
-
-#: include/order-function.php:250
-msgid "Please select at least one option."
-msgstr "請至少選擇一個選項。"
-
-#: include/order-function.php:258
-msgid "Cannot select 'No allergy' with other options."
-msgstr "「無過敏」選項不能與其他選項一同選擇。"
-
-#: include/order-function.php:265
-msgid "This field is required."
-msgstr "此欄位為必填。"
-
-#: include/order-function.php:345
-msgid "Choose shipping address"
-msgstr "選擇送貨地址"
-
-#: include/order-function.php:700
-msgid "Delivery Date"
-msgstr "配送日期"
-
-#: include/order-function.php:702
-msgid "Tracking Number"
-msgstr "追蹤號碼"
-
-#: include/order-function.php:705
-msgid "CS Note"
-msgstr "客服備註"
-
-#: include/order-function.php:718
-#: include/order-function.php:789
-#: include/order-function.php:812
-msgid "Delivery Status"
-msgstr "配送狀態"
-
-#: include/order-function.php:721
-#: include/order-function.php:825
-msgid "Pending"
-msgstr "等待中"
-
-#: include/order-function.php:724
-#: include/order-function.php:828
-msgid "Partially delivered"
-msgstr "部分配送"
-
-#: include/order-function.php:727
-#: include/order-function.php:831
-msgid "Awaiting fulfillment"
-msgstr "等待履行"
-
-#: include/order-function.php:730
-#: include/order-function.php:834
-msgid "Completed"
-msgstr "完成"
-
-#: include/order-function.php:733
-#: include/order-function.php:837
-msgid "Not applicable"
-msgstr "不適用"
-
-#: include/order-function.php:XXX
-msgid "Delivery Date:"
-msgstr "配送日期:"
-
-#: include/order-function.php:XXX
-msgid "Tracking Number:"
-msgstr "追蹤號碼:"
-
-#: include/order-function.php:XXX
-msgid "CS Note:"
-msgstr "客服備註:"
-
-#: include/order-function.php:XXX
-msgid "Delivery date updated"
-msgstr "配送日期已更新"
-
-#: include/order-function.php:XXX
-msgid "Delivery date deleted"
-msgstr "配送日期已刪除"
-
-#: include/order-function.php:XXX
-msgid "Tracking number updated"
-msgstr "追蹤號碼已更新"
-
-#: include/order-function.php:XXX
-msgid "Tracking number deleted"
-msgstr "追蹤號碼已刪除"
-
-#: include/order-function.php:XXX
-msgid "CS note saved"
-msgstr "客服備註已儲存"
-
-#: include/order-function.php:XXX
-msgid "CS note deleted"
-msgstr "客服備註已刪除"
-
-#: include/order-function.php:XXX
-msgid "Enter tracking number"
-msgstr "輸入追蹤號碼"
-
-#: include/order-function.php:XXX
-msgid "Update Delivery Date"
-msgstr "更新配送日期"
-
-#: include/order-function.php:XXX
-msgid "Update Tracking Number"
-msgstr "更新追蹤號碼"
-
-#: include/order-function.php:XXX
-msgid "CS note"
-msgstr "客服備註"
-
-#: include/order-function.php:XXX
-msgid "Open booking"
-msgstr "開啟預訂"
-
-#: include/delivery-report.php:XXX
-msgid "Order Note"
-msgstr "訂單備註"
-
-#: include/wc-product-catering-plan.php:10
-msgid "Catering plan"
-msgstr "餐飲方案"
-
-#: include/wc-product-catering-plan.php:58
-msgid "Catering option"
-msgstr "餐飲選項"
-
-#: template/catering-booking-popup.php:45
-#: template/catering-booking-popup.php:53
-#: template/catering-booking-popup.php:909
-msgid "Days Remaining:"
-msgstr "剩餘天數："
-
-#: template/catering-booking-popup.php:1433
-msgid "Nil"
-msgstr "無"
-
-#: template/catering-booking-popup.php:694
-#: public/catering-i18n.js:4
-msgid "allergy"
-msgstr "食物敏感"
-
-#: template/catering-booking-popup.php:694
-#: public/catering-i18n.js:4
-msgid "Allergy"
-msgstr "食物敏感"
-
-#: template/catering-booking-popup.php:694
-#: public/catering-i18n.js:4
-msgid "Allergies"
-msgstr "食物敏感"
-
-#: template/catering-booking-popup.php:694
-#: public/catering-i18n.js:4
-msgid "Food Allergy"
-msgstr "食物敏感"
-
-#: template/catering-booking-popup.php:695
-#: template/catering-booking-popup.php:782
-#: public/catering-i18n.js:4
-msgid "due date"
-msgstr "預產期"
-
-#: template/catering-booking-popup.php:767
-#: template/catering-booking-popup.php:797
-#: template/holiday-setting.php:16
-#: template/holiday-setting.php:349
-#: template/meal-schedule.php:46
-msgid "Sun"
-msgstr "星期日"
-
-#: template/catering-booking-popup.php:768
-#: template/holiday-setting.php:17
-#: template/meal-schedule.php:47
-msgid "Mon"
-msgstr "星期一"
-
-#: template/catering-booking-popup.php:769
-#: template/holiday-setting.php:18
-#: template/meal-schedule.php:48
-msgid "Tue"
-msgstr "星期二"
-
-#: template/catering-booking-popup.php:770
-#: template/holiday-setting.php:19
-#: template/meal-schedule.php:49
-msgid "Wed"
-msgstr "星期三"
-
-#: template/catering-booking-popup.php:771
-#: template/holiday-setting.php:20
-#: template/meal-schedule.php:50
-msgid "Thu"
-msgstr "星期四"
-
-#: template/catering-booking-popup.php:772
-#: template/holiday-setting.php:21
-#: template/meal-schedule.php:51
-msgid "Fri"
-msgstr "星期五"
-
-#: template/catering-booking-popup.php:773
-#: template/holiday-setting.php:22
-#: template/meal-schedule.php:52
-msgid "Sat"
-msgstr "星期六"
-
-#: template/catering-booking-popup.php:794
-msgid "Holiday Meal will be delivered on the previous working day, please refer to our catering delivery policy on public holiday."
-msgstr "節日及假日的餐點將提前一天送達，請參考我們的節日及假日送餐政策。"
-
-#: template/catering-booking-popup.php:811
-msgid "This day is lock as was edited by our CS Team"
-msgstr "此餐點預訂已不可更改。"
-
-#: template/catering-booking-popup.php:816
-msgid "prenatal meal"
-msgstr "產前餐點"
-
-#: template/catering-booking-popup.php:819
-msgid "postpartum meal"
-msgstr "產後餐點"
-
-#: template/catering-booking-popup.php:828
-#: template/meal-form.php:160
-msgid "Edit Meal"
-msgstr "編輯餐點"
-
-#: template/catering-booking-popup.php:847
-#: template/meal-form.php:238
-#: template/meal-item.php:200
-#: template/terms-list.php:367
-#: template/terms-list.php:483
-#: template/wc-product-catering-options.php:250
-msgid "Delete"
-msgstr "刪除"
-
-#: template/terms-list.php:483
-msgid "Category"
-msgstr "餐點分類"
-
-#: template/terms-list.php:483
-msgid "Categories"
-msgstr "餐點分類"
-
-#: template/catering-booking-popup.php:850
-#: template/catering-booking-popup.php:853
-msgid "Make meal booking"
-msgstr "預訂餐點"
-
-#: template/catering-booking-popup.php:917
-msgid "Health Status"
-msgstr "健康狀態"
-
-#: template/catering-booking-popup.php:919
-msgid "Edit Health Status"
-msgstr "編輯健康狀態"
-
-#: template/catering-booking-popup.php:943
-#: template/catering-booking.php:50
-#: template/catering-booking.php:51
-msgid "days"
-msgstr "天"
-
-#: template/catering-booking-popup.php:1019
-#: template/wc-product-catering-options.php:911
-msgid "max picks"
-msgstr "最多可選"
-
-#: template/catering-booking-popup.php:1019
-msgid "pcs"
-msgstr "份"
-
-#: template/catering-booking-popup.php:1030
-msgid "Add New"
-msgstr "新增"
-
-#: template/catering-booking-popup.php:1040
-msgid "Which container would you like for the soup?"
-msgstr "請問您希望用什麼容器盛湯？"
-
-#: template/catering-booking-popup.php:1041
-msgid "Please note that during holidays, all soups will be served in soup cups."
-msgstr "請留意假日湯水都必須為湯杯選項"
-
-#: template/catering-booking-popup.php:1043
-#: template/catering-booking-popup.php:1047
-msgid "Pot"
-msgstr "湯壺"
-
-#: template/catering-booking-popup.php:1045
-#: template/catering-booking-popup.php:1048
-msgid "Cup"
-msgstr "湯杯"
-
-#: template/catering-booking-popup.php:1055
-msgid "Please confirm you delivery address"
-msgstr "請確認送貨地址"
-
-#: template/catering-booking-popup.php:1056
-msgid "First name"
-msgstr "名字"
-
-#: template/catering-booking-popup.php:1057
-msgid "Last name"
-msgstr "姓氏"
-
-#: template/catering-booking-popup.php:1058
-msgid "City"
-msgstr "地區"
-
-#: template/catering-booking-popup.php:1081
-msgid "Address"
-msgstr "地址"
-
-#: template/catering-booking-popup.php:1083
-#: template/catering-booking-popup.php:1426
-msgid "Delivery Note"
-msgstr "配送備注"
-
-#: template/catering-booking-popup.php:1086
-msgid "Prev step"
-msgstr "上一步"
-
-#: template/catering-booking-popup.php:1087
-msgid "Next step"
-msgstr "下一步"
+#: include/ajax.php:834
+msgid "SKU required"
+msgstr "必須輸入 SKU"
+
+#: template/wc-product-catering-options.php:94
+msgid "Soup container setting"
+msgstr "湯品容器設置"
+
+#: template/wc-product-catering-options.php:300
+msgid "Start date cannot be later than end date."
+msgstr "開始日期不能晚於結束日期。"
+
+#: template/catering-booking.php:13
+msgid "Status"
+msgstr "狀態"
 
 #: template/catering-booking-popup.php:1088
 msgid "Submit choices"
 msgstr "提交餐點選擇"
 
-#: template/catering-booking-popup.php:1089
-msgid "Back to calendar"
-msgstr "回到餐點日程"
+#: template/catering-booking-popup.php:767
+#: template/catering-booking-popup.php:797 template/meal-schedule.php:46
+msgid "Sun"
+msgstr "星期日"
 
-#: template/catering-booking-popup.php:1111
-msgid "Please select exactly"
-msgstr "請選擇正好"
+#: template/wc-product-catering-options.php:231
+msgid "Sunday"
+msgstr "星期日"
 
-#: template/catering-booking-popup.php:1112
-msgid "option(s) for"
-msgstr "個選項，分類"
+#: template/wc-product-catering-options.php:539
+msgid "The following dates already have schedule data: "
+msgstr "以下日期已有排程資料："
 
-#: template/catering-booking-popup.php:1159
-#: template/catering-booking-popup.php:1552
-msgid "Search for meal..."
-msgstr "搜尋餐點..."
+#: include/ajax.php:xxxx
+msgid ""
+"The following meal choices will be automatically deleted:\n"
+"\n"
+"%s\n"
+"\n"
+"Do you want to continue?"
+msgstr ""
 
-#: template/catering-booking-popup.php:1163
-#: template/catering-booking-popup.php:1564
-#: template/meal-item.php:261
-msgid "No meals found."
-msgstr "找不到餐點。"
+#: include/ajax.php:xxxx
+msgid ""
+"The new due date will make some meal choices unsuitable. These meals can be "
+"automatically deleted as they are outside the minimum advance order period."
+msgstr ""
 
-#: template/catering-booking-popup.php:1166
-#: template/catering-booking-popup.php:1567
-msgid "Searching for meals..."
-msgstr "正在搜尋餐點..."
+#: include/ajax.php:1597 include/ajax.php:1626 include/ajax.php:1677
+msgid ""
+"There are unsuitable meal choices after the new due date on following dates: "
+msgstr "在新預產期後的以下日期有不適合的餐點選擇："
+
+#: template/catering-booking-popup.php:811
+msgid "This day is lock as was edited by our CS Team"
+msgstr "此餐點預訂已不可更改。"
+
+#: template/catering-booking-popup.php:771 template/meal-schedule.php:50
+msgid "Thu"
+msgstr "星期四"
+
+#: template/wc-product-catering-options.php:235
+msgid "Thursday"
+msgstr "星期四"
+
+#: include/ajax.php:840 include/ajax.php:846
+msgid "Title required"
+msgstr "標題為必填"
+
+#: template/wc-product-catering-options.php:146
+msgid "Today"
+msgstr "今天"
+
+#: template/catering-booking-popup.php:769 template/meal-schedule.php:48
+msgid "Tue"
+msgstr "星期二"
+
+#: template/wc-product-catering-options.php:233
+msgid "Tuesday"
+msgstr "星期二"
+
+#: include/js/frontend-ajax.js:xxxx
+msgid "Update cancelled by user."
+msgstr ""
+
+#: template/catering-booking-popup.php:1535
+msgid "Update failed."
+msgstr "更新失敗。"
+
+#: template/wc-product-catering-options.php:112
+msgid "Upload CSV"
+msgstr "上傳 CSV"
+
+#: template/catering-booking-popup.php:1670
+msgid "Warning"
+msgstr "重要提示"
+
+#: template/catering-booking-popup.php:770 template/meal-schedule.php:49
+msgid "Wed"
+msgstr "星期三"
+
+#: template/wc-product-catering-options.php:234
+msgid "Wednesday"
+msgstr "星期三"
+
+#: template/wc-product-catering-options.php:133
+msgid "Weekly Meal Schedule"
+msgstr "每週餐單排程"
+
+#: template/catering-booking-popup.php:1040
+msgid "Which container would you like for the soup?"
+msgstr "請問您希望用什麼容器盛湯？"
 
 #: template/catering-booking-popup.php:1190
 #: template/catering-booking-popup.php:1198
@@ -667,1192 +692,3 @@ msgstr "正在搜尋餐點..."
 #: template/catering-booking-popup.php:1600
 msgid "You meal choice will show here."
 msgstr "您的餐點選擇將在此顯示："
-
-#: template/catering-booking-popup.php:1256
-msgid "Limit reached"
-msgstr "已達上限"
-
-#: template/catering-booking-popup.php:1287
-#: include/ajax.php:1198
-msgid "First name is required."
-msgstr "名字為必填項。"
-
-#: template/catering-booking-popup.php:1288
-#: include/ajax.php:1201
-msgid "First name cannot contain numbers."
-msgstr "名字不能包含數字。"
-
-#: template/catering-booking-popup.php:1289
-#: include/ajax.php:1204
-msgid "Last name is required."
-msgstr "姓氏為必填項。"
-
-#: template/catering-booking-popup.php:1290
-#: include/ajax.php:1207
-msgid "Last name cannot contain numbers."
-msgstr "姓氏不能包含數字。"
-
-#: template/catering-booking-popup.php:1291
-#: include/ajax.php:1210
-msgid "Address is required."
-msgstr "地址為必填項。"
-
-#: template/catering-booking-popup.php:1292
-#: include/ajax.php:1213
-msgid "City is required."
-msgstr "城市為必填項。"
-
-#: template/catering-booking-popup.php:1294
-#: include/ajax.php:1216
-msgid "Please select a valid city."
-msgstr "請選擇有效的城市。"
-
-#: template/catering-booking-popup.php:1297
-#: include/ajax.php:1219
-msgid "Phone is required."
-msgstr "電話為必填項。"
-
-#: template/catering-booking-popup.php:1299
-msgid "Please enter a valid Mobile number."
-msgstr "請輸入有效的手機號碼。"
-
-#: template/catering-booking-popup.php:1371
-msgid "Are you sure you want to submit your selections?"
-msgstr "您確定要提交您的選擇嗎？"
-
-#: template/catering-booking-popup.php:1394
-msgid "Delete failed."
-msgstr "刪除失敗。"
-
-#: template/catering-booking-popup.php:1399
-msgid "Are you sure you want to delete the meal choice for"
-msgstr "您確定要刪除此日期的餐點選擇嗎："
-
-#: template/catering-booking-popup.php:1421
-msgid "Delivery address"
-msgstr "送貨地址"
-
-#: template/catering-booking-popup.php:1463
-#: template/catering-booking-popup.php:1466
-msgid "Not set"
-msgstr "未設置"
-
-#: template/catering-booking-popup.php:1470
-msgid "Error loading health status"
-msgstr "加載健康狀態時發生錯誤"
-
-#: template/catering-booking-popup.php:1529
-msgid "Health status updated."
-msgstr "健康狀態已更新。"
-
-#: template/catering-booking-popup.php:1535
-msgid "Update failed."
-msgstr "更新失敗。"
-
-#: template/catering-booking-popup.php:1575
-msgid "Are you sure you want to remove this selection?"
-msgstr "您確定要刪除此選項嗎？"
-
-#: template/catering-booking-popup.php:1670
-msgid "Warning"
-msgstr "重要提示"
-
-#: template/catering-booking.php:12
-msgid "Order Number"
-msgstr "訂單編號"
-
-#: template/catering-booking.php:13
-msgid "Status"
-msgstr "狀態"
-
-#: template/catering-booking.php:14
-msgid "Order Item Title"
-msgstr "訂單項目名稱"
-
-#: template/catering-booking.php:45
-msgid "Active"
-msgstr "啟用"
-
-#: template/catering-booking.php:45
-msgid "Inactive"
-msgstr "停用"
-
-#: template/catering-booking.php:15
-msgid "Day Left"
-msgstr "剩餘天數"
-
-#: template/catering-booking.php:16
-msgid "Expiry Date"
-msgstr "有效期限"
-
-#: template/catering-booking.php:17
-msgid "Action"
-msgstr "操作"
-
-#: template/catering-booking.php:83
-msgid "Pick Meal"
-msgstr "選擇餐點"
-
-#: template/catering-booking.php:87
-msgid "No bookings found"
-msgstr "沒有找到預訂"
-
-#: template/holiday-setting.php:33
-#: template/holiday-setting.php:43
-msgid "Import iCal"
-msgstr "匯入 iCal"
-
-#: template/holiday-setting.php:39
-msgid "Choose iCal file (.ics)"
-msgstr "選擇 iCal 檔案 (.ics)"
-
-#: template/holiday-setting.php:51
-msgid "Holiday Calendar"
-msgstr "公眾假期日曆"
-
-#: template/holiday-setting.php:67
-msgid "Save Changes"
-msgstr "保存更改"
-
-#: template/holiday-setting.php:76
-#: template/holiday-setting.php:300
-msgid "Add Holiday"
-msgstr "增加假日"
-
-#: template/holiday-setting.php:78
-msgid "Holiday Name:"
-msgstr "假日名稱："
-
-#: template/holiday-setting.php:79
-msgid "Enter holiday name"
-msgstr "輸入假日名稱"
-
-#: template/holiday-setting.php:83
-msgid "Add"
-msgstr "添加"
-
-#: template/holiday-setting.php:86
-#: template/meal-form.php:234
-#: template/meal-item.php:294
-#: template/terms-list.php:430
-#: template/wc-product-catering-options.php:113
-#: template/wc-product-catering-options.php:125
-msgid "Cancel"
-msgstr "取消"
-
-#: template/holiday-setting.php:146
-msgid "Please select an iCal file."
-msgstr "請選擇 iCal 文件。"
-
-#: template/holiday-setting.php:163
-msgid "No events found in iCal."
-msgstr "iCal 中未找到假日。"
-
-#: template/holiday-setting.php:170
-msgid "iCal has these events:"
-msgstr "iCal 中包含以下假日："
-
-#: template/holiday-setting.php:172
-msgid "Set these days as holiday?"
-msgstr "將這些日期設為假日？"
-
-#: template/holiday-setting.php:180
-msgid "Holidays successfully import."
-msgstr "假日成功匯入。"
-
-#: template/holiday-setting.php:202
-msgid "Please enter a holiday name."
-msgstr "請輸入假日名稱。"
-
-#: template/holiday-setting.php:398
-msgid "Holidays updated!"
-msgstr "已更新假日"
-
-#: template/meal-form.php:43
-msgid "Meal not found."
-msgstr "找不到餐點。"
-
-#: template/meal-form.php:160
-msgid "Add New Meal"
-msgstr "新增餐點"
-
-#: template/meal-form.php:161
-msgid "Update Meal"
-msgstr "更新餐點"
-
-#: template/meal-form.php:161
-msgid "Save Meal"
-msgstr "保存餐點"
-
-#: template/meal-form.php:168
-msgid "Back to Meal Items"
-msgstr "返回餐點項目"
-
-#: template/meal-form.php:176
-msgid "Error: Duplicated SKU with other meal item, please double check."
-msgstr "錯誤：與其他餐點項目的商品編號重複，請再次檢查。"
-
-#: template/meal-form.php:180
-msgid "Error: Unable to save the meal item. Please try again."
-msgstr "錯誤：無法保存餐點項目。請重試。"
-
-#: template/meal-form.php:194
-#: template/meal-item.php:220
-msgid "SKU"
-msgstr "商品編號"
-
-#: template/meal-form.php:199
-msgid "Meal Title"
-msgstr "餐點名稱"
-
-#: template/meal-form.php:204
-msgid "Description"
-msgstr "描述"
-
-#: template/meal-form.php:209
-msgid "Cost"
-msgstr "成本"
-
-#: template/meal-form.php:214
-msgid "Photo"
-msgstr "圖片"
-
-#: template/meal-form.php:218
-msgid "Select Image"
-msgstr "選擇圖片"
-
-#: template/meal-form.php:280
-msgid "Are you sure you want to delete this meal?"
-msgstr "您確定要刪除此餐點嗎？"
-
-#: template/meal-item.php:64
-msgid "Meal Item"
-msgstr "餐點項目"
-
-#: template/meal-item.php:66
-msgid "Add new meal"
-msgstr "新增餐點"
-
-#: template/meal-item.php:75
-msgid "New meal added successfully!"
-msgstr "新餐點添加成功！"
-
-#: template/meal-item.php:79
-msgid "Meal updated successfully!"
-msgstr "餐點更新成功！"
-
-#: template/meal-item.php:83
-msgid "Meal deleted successfully!"
-msgstr "餐點刪除成功！"
-
-#: template/meal-item.php:87
-msgid "Selected meals have been deleted."
-msgstr "已刪除所選餐點。"
-
-#: template/meal-item.php:91
-#: template/terms-list.php:282
-msgid "Please select an action to perform."
-msgstr "請選擇要執行的操作。"
-
-#: template/meal-item.php:95
-msgid "Please select at least one meal."
-msgstr "請至少選擇一項餐點。"
-
-#: template/meal-item.php:184
-msgid "Search meals..."
-msgstr "搜尋餐點"
-
-#: template/meal-item.php:185
-#: template/terms-list.php:344
-#: template/terms-list.php:345
-msgid "Search"
-msgstr "搜尋"
-
-#: template/meal-item.php:199
-#: template/terms-list.php:366
-msgid "Bulk action"
-msgstr "批次操作"
-
-#: template/meal-item.php:201
-#: template/meal-schedule.php:36
-msgid "Export"
-msgstr "匯出"
-
-#: template/meal-item.php:204
-#: template/terms-list.php:370
-msgid "Apply"
-msgstr "套用"
-
-#: template/meal-item.php:207
-msgid "Import"
-msgstr "匯入"
-
-#: template/meal-item.php:219
-#: template/terms-list.php:382
-msgid "ID"
-msgstr "ID"
-
-#: template/meal-item.php:221
-msgid "Title"
-msgstr "標題"
-
-#: template/meal-item.php:275
-msgid "Import Meals CSV"
-msgstr "匯入餐點 CSV"
-
-#: template/meal-item.php:277
-msgid "Mode"
-msgstr "模式"
-
-#: template/meal-item.php:279
-msgid "Import New Meals"
-msgstr "匯入新餐點"
-
-#: template/meal-item.php:280
-msgid "Update Existing Meals"
-msgstr "更新現有餐點"
-
-#: template/meal-item.php:284
-msgid "CSV File"
-msgstr "CSV 檔案"
-
-#: template/meal-item.php:295
-msgid "Submit"
-msgstr "送出"
-
-#: template/meal-item.php:315
-msgid "Are you sure you want to delete the selected meals?"
-msgstr "您確定要刪除所選的餐點嗎？"
-
-#: template/meal-item.php:369
-#: template/wc-product-catering-options.php:340
-msgid "Please select a CSV file."
-msgstr "請選擇 CSV 檔案。"
-
-#: template/meal-item.php:371
-msgid "Invalid file type, only CSV allowed."
-msgstr "檔案類型無效，只允許 CSV。"
-
-#: template/meal-item.php:391
-msgid "Invalid CSV headers: missing required columns."
-msgstr "CSV 標題無效：缺少必要欄位。"
-
-#: template/meal-item.php:397
-msgid "CSV is empty or missing data rows."
-msgstr "CSV 檔案為空或缺少資料列。"
-
-#: template/meal-item.php:407
-msgid "Invalid CSV headers. Accepted: ID, SKU, Meal_title, description, cost, photo"
-msgstr "CSV 標題無效。正確格式：ID, SKU, Meal_title, description, cost, photo"
-
-#: template/meal-item.php:418
-#: template/meal-item.php:468
-msgid "Row"
-msgstr "第"
-
-#: template/meal-item.php:421
-msgid "ID must be empty for importing new meal."
-msgstr "匯入新餐點時，ID 必須為空。"
-
-#: template/meal-item.php:424
-#: template/meal-item.php:431
-msgid "Meal title is required."
-msgstr "餐點名稱為必填。"
-
-#: template/meal-item.php:428
-msgid "Valid numeric ID required for update."
-msgstr "更新時必須提供有效的數字 ID。"
-
-#: template/meal-item.php:513
-#, php-format
-msgid "%d meals"
-msgstr "%d 個餐點"
-
-#: template/meal-item.php:527
-#: template/terms-list.php:753
-msgid "All"
-msgstr "全部"
-
-#: template/meal-item.php:552
-msgid "The"
-msgstr "第"
-
-#: template/meal-item.php:559
-#: template/meal-item.php:563
-msgid "pages"
-msgstr "頁"
-
-#: template/meal-item.php:561
-#: template/terms-list.php:810
-msgid "of"
-msgstr "共"
-
-#: template/meal-schedule.php:133
-msgid "Meal"
-msgstr "餐點"
-
-#: template/meal-schedule.php:153
-msgid "item"
-msgstr "商品"
-
-#: template/meal-schedule.php:174
-msgid "Order ID"
-msgstr "訂單編號"
-
-#: template/meal-schedule.php:175
-msgid "Customer (ID)"
-msgstr "客戶 (ID)"
-
-#: template/meal-schedule.php:176
-msgid "Due Date"
-msgstr "預產期"
-
-#: template/meal-schedule.php:178
-msgid "Product"
-msgstr "產品"
-
-#: template/meal-schedule.php:179
-msgid "Count"
-msgstr "數量"
-
-#: template/meal-settings.php:50
-msgid "Settings saved."
-msgstr "設置已保存。"
-
-#: template/meal-settings.php:86
-msgid "Min Advance Day for Meal Booking"
-msgstr "餐點預訂的最小提前天數"
-
-#: template/meal-settings.php:100
-msgid "Meal Categories for Alphabet Prefix"
-msgstr "需要字母前綴的餐點分類"
-
-#: template/meal-settings.php:120
-msgid "Save Settings"
-msgstr "保存設置"
-
-#: template/meal-settings.php:130
-msgid "Select categories"
-msgstr "選擇分類"
-
-#: template/terms-list.php:256
-#, php-format
-msgid "%s"
-msgstr "%s"
-
-#: template/terms-list.php:270
-#, php-format
-msgid "New %s added."
-msgstr "已新增 %s。"
-
-#: template/terms-list.php:273
-#, php-format
-msgid "%s deleted."
-msgstr "%s 已刪除。"
-
-#: template/terms-list.php:276
-#, php-format
-msgid "%s updated."
-msgstr "%s 已更新。"
-
-#: template/terms-list.php:279
-#, php-format
-msgid "Selected %s have been deleted."
-msgstr "已刪除所選 %s。"
-
-#: template/terms-list.php:286
-msgid "Please select at least one term."
-msgstr "請至少選擇一個項目。"
-
-#: template/terms-list.php:290
-#, php-format
-msgid "%s with this title already exists."
-msgstr "已有相同名稱的 %s。"
-
-#: template/terms-list.php:294
-msgid "This term is protected and cannot be deleted."
-msgstr "此項目受保護，無法刪除。"
-
-#: template/terms-list.php:298
-msgid "One or more selected terms are protected and cannot be deleted."
-msgstr "一個或多個所選項目受保護，無法刪除。"
-
-#: template/terms-list.php:315
-#, php-format
-msgid "%s Name"
-msgstr "%s 名稱"
-
-#: template/terms-list.php:327
-#, php-format
-msgid "Add New %s"
-msgstr "新增 %s"
-
-#: template/terms-list.php:385
-msgid "Color"
-msgstr "顏色"
-
-#: template/terms-list.php:387
-msgid "Actions"
-msgstr "操作"
-
-#: template/terms-list.php:422
-msgid "Save"
-msgstr "儲存"
-
-#: template/terms-list.php:467
-msgid "Edit"
-msgstr "編輯"
-
-#: template/terms-list.php:481
-msgid "Are you sure you want to delete this item?"
-msgstr "確定要刪除此項目嗎？"
-
-#: template/terms-list.php:494
-#, php-format
-msgid "No %s found."
-msgstr "找不到 %s。"
-
-#: template/terms-list.php:528
-msgid "Are you sure you want to delete the selected terms?"
-msgstr "確定要刪除所選項目嗎？"
-
-#: template/terms-list.php:737
-#, php-format
-msgid "%d %s"
-msgstr "%d %s"
-
-#: template/terms-list.php:803
-msgid "Page"
-msgstr "頁面"
-
-#: template/wc-product-catering-options.php:37
-msgid "Meal Category"
-msgstr "餐點分類"
-
-#: template/wc-product-catering-options.php:54
-msgid "Select which meal categories are included in this catering plan."
-msgstr "選擇此餐飲方案包含哪些餐點分類。"
-
-#: template/wc-product-catering-options.php:65
-#, php-format
-msgid "%s max picks"
-msgstr "%s 最多可選"
-
-#: template/wc-product-catering-options.php:75
-msgid "Catering type"
-msgstr "餐飲類型"
-
-#: template/wc-product-catering-options.php:77
-msgid "Normal"
-msgstr "一般"
-
-#: template/wc-product-catering-options.php:78
-msgid "Prenatal"
-msgstr "產前"
-
-#: template/wc-product-catering-options.php:79
-msgid "Postpartum"
-msgstr "產後"
-
-#: template/wc-product-catering-options.php:80
-msgid "Hybird"
-msgstr "混合"
-
-#: template/wc-product-catering-options.php:84
-msgid "* In hybird catering plan, you must update the meal schedule with column type to differentiate meal suitable for prenatal or postpartum status."
-msgstr "* 在混合餐飲方案中，您必須在餐單排程中標註類型以區分適合產前或產後的餐點。"
-
-#: template/wc-product-catering-options.php:88
-msgid "Expiry"
-msgstr "有效天數"
-
-#: template/wc-product-catering-options.php:90
-msgid "Expiry day"
-msgstr "有效天數"
-
-#: template/wc-product-catering-options.php:94
-msgid "Soup container setting"
-msgstr "湯品容器設置"
-
-#: template/wc-product-catering-options.php:96
-msgid "customer choice"
-msgstr "客戶選擇"
-
-#: template/wc-product-catering-options.php:97
-msgid "pot only"
-msgstr "僅限湯壺"
-
-#: template/wc-product-catering-options.php:98
-msgid "cup only"
-msgstr "僅限湯杯"
-
-#: template/wc-product-catering-options.php:100
-msgid "Select soup container option"
-msgstr "選擇湯品容器選項"
-
-#: template/wc-product-catering-options.php:108
-#: template/wc-product-catering-options.php:138
-msgid "Import CSV"
-msgstr "匯入 CSV"
-
-#: template/wc-product-catering-options.php:112
-msgid "Upload CSV"
-msgstr "上傳 CSV"
-
-#: template/wc-product-catering-options.php:120
-msgid "Export Schedule CSV"
-msgstr "匯出排程 CSV"
-
-#: template/wc-product-catering-options.php:121
-msgid "Select the date range for the export."
-msgstr "選擇匯出的日期範圍。"
-
-#: template/wc-product-catering-options.php:124
-msgid "Download"
-msgstr "下載"
-
-#: template/wc-product-catering-options.php:133
-msgid "Weekly Meal Schedule"
-msgstr "每週餐單排程"
-
-#: template/wc-product-catering-options.php:139
-msgid "Export CSV"
-msgstr "匯出 CSV"
-
-#: template/wc-product-catering-options.php:146
-msgid "Today"
-msgstr "今天"
-
-#: template/wc-product-catering-options.php:147
-msgid "Previous week"
-msgstr "上一週"
-
-#: template/wc-product-catering-options.php:148
-msgid "Next week"
-msgstr "下一週"
-
-#: template/wc-product-catering-options.php:231
-msgid "Sunday"
-msgstr "星期日"
-
-#: template/wc-product-catering-options.php:232
-msgid "Monday"
-msgstr "星期一"
-
-#: template/wc-product-catering-options.php:233
-msgid "Tuesday"
-msgstr "星期二"
-
-#: template/wc-product-catering-options.php:234
-msgid "Wednesday"
-msgstr "星期三"
-
-#: template/wc-product-catering-options.php:235
-msgid "Thursday"
-msgstr "星期四"
-
-#: template/wc-product-catering-options.php:236
-msgid "Friday"
-msgstr "星期五"
-
-#: template/wc-product-catering-options.php:237
-msgid "Saturday"
-msgstr "星期六"
-
-#: template/wc-product-catering-options.php:247
-msgid "Meals for"
-msgstr "餐點於"
-
-#: template/wc-product-catering-options.php:249
-msgid "Close"
-msgstr "關閉"
-
-#: template/wc-product-catering-options.php:297
-msgid "Please select both dates."
-msgstr "請選擇起始和結束日期。"
-
-#: template/wc-product-catering-options.php:300
-msgid "Start date cannot be later than end date."
-msgstr "開始日期不能晚於結束日期。"
-
-#: template/wc-product-catering-options.php:335
-msgid "Category list not loaded. Please try again later."
-msgstr "分類清單未載入。請稍後再試。"
-
-#: template/wc-product-catering-options.php:352
-msgid "CSV file is empty."
-msgstr "CSV 檔案為空。"
-
-#: template/wc-product-catering-options.php:379
-msgid "CSV must contain Type column."
-msgstr "CSV 必須包含類型欄位。"
-
-#: template/wc-product-catering-options.php:383
-msgid "CSV must contain Tag column."
-msgstr "CSV 必須包含標籤欄位。"
-
-#: template/wc-product-catering-options.php:387
-msgid "CSV must contain ID, SKU, and Meal_title columns."
-msgstr "CSV 必須包含 ID、SKU 和餐點名稱欄位。"
-
-#: template/wc-product-catering-options.php:391
-msgid "CSV file does not contain Category column."
-msgstr "CSV 檔案不包含分類欄位。"
-
-#: template/wc-product-catering-options.php:421
-msgid "Duplicate meal IDs found on the same date at rows:"
-msgstr "在相同日期的以下行數中發現重複餐點 ID："
-
-#: template/wc-product-catering-options.php:473
-msgid "CSV file contains rows with empty or invalid Date column at row numbers: "
-msgstr "CSV 檔案在以下行號中包含空白或無效的日期欄位："
-
-#: template/wc-product-catering-options.php:477
-msgid "CSV file contains rows with empty Category value at row numbers: "
-msgstr "CSV 檔案在以下行號中包含空白的分類值："
-
-#: template/wc-product-catering-options.php:485
-msgid "CSV file contains invalid Category values:"
-msgstr "CSV 檔案包含無效的分類值："
-
-#: template/wc-product-catering-options.php:490
-msgid "CSV contains invalid Type values at rows:"
-msgstr "CSV 在以下行中包含無效的類型值："
-
-#: template/wc-product-catering-options.php:522
-msgid "CSV contains invalid meal entries:"
-msgstr "CSV 包含無效的餐點項目："
-
-#: template/wc-product-catering-options.php:539
-msgid "The following dates already have schedule data: "
-msgstr "以下日期已有排程資料："
-
-#: template/wc-product-catering-options.php:539
-msgid ". Do you want to clear the existing data for these dates?"
-msgstr "。您想要清除這些日期的現有資料嗎？"
-
-#: template/wc-product-catering-options.php:552
-msgid "Existing schedule data cleared. Proceeding with CSV processing..."
-msgstr "現有排程資料已清除。繼續處理 CSV..."
-
-#: template/wc-product-catering-options.php:571
-#: template/wc-product-catering-options.php:648
-msgid "All rows processed successfully."
-msgstr "所有行處理成功。"
-
-#: template/wc-product-catering-options.php:629
-msgid "No existing schedule data conflicts. Proceeding with CSV processing..."
-msgstr "沒有現有排程資料衝突。繼續處理 CSV..."
-
-#: template/wc-product-catering-options.php:801
-msgid "Detail"
-msgstr "詳細資料"
-
-#: template/wc-product-catering-options.php:882
-msgid "Delete all meals scheduled for this date?"
-msgstr "刪除此日期的所有排程餐點？"
-
-#: template/wc-product-catering-options.php:892
-msgid "Failed to delete schedule"
-msgstr "刪除排程失敗"
-
-#: template/wc-product-catering-options.php:XXX
-msgid "This setting will only affect data shown in delivery report."
-msgstr "此設定僅影響送餐報告中顯示的資料。"
-
-#: template/wc-product-catering-options.php:XXX
-msgid "Yes"
-msgstr "是"
-
-#: template/wc-product-catering-options.php:XXX
-msgid "No"
-msgstr "否"
-
-#: template/wc-product-catering-options.php:934
-msgid "Changing due date type after customer purchase may prevent customers from selecting meals normally. Continue?"
-msgstr "客戶購買後更改預產期類型可能會阻止客戶正常選擇餐點。確定繼續？"
-
-#: template/wc-product-catering-options.php:XXX
-msgid "Is set menu"
-msgstr "套餐設定"
-
-#: template/schedule-preview.php:4
-msgid "Preview Schedule"
-msgstr "預覽排程"
-
-#: template/schedule-preview.php:7
-msgid "Meal Schedule Preview"
-msgstr "餐點排程預覽"
-
-#: template/schedule-preview.php:474
-msgid "No meals scheduled for this day."
-msgstr "此日沒有安排餐點。"
-
-#: template/meal-schedule.php:224
-msgid "Please enter valid start and end dates."
-msgstr "請輸入有效的開始和結束日期。"
-
-#: template/meal-schedule.php:228
-msgid "Start Date must be before or the same as End Date."
-msgstr "開始日期必須早於或等於結束日期。"
-
-#: template/meal-schedule.php:64
-msgid "Export Report"
-msgstr "匯出報告"
-
-#: template/meal-schedule.php:66
-msgid "Start Date"
-msgstr "開始日期"
-
-#: template/meal-schedule.php:69
-msgid "End Date"
-msgstr "結束日期"
-
-#: template/catering-booking-popup.php:1145
-msgid "Your meal selection has been saved."
-msgstr "您的餐點選擇已儲存。"
-
-#: template/catering-booking-popup.php:293
-msgid "Error"
-msgstr "錯誤"
-
-#: template/catering-booking-popup.php:468
-msgid "Saving failed."
-msgstr "保存失敗。"
-
-#: template/catering-booking-popup.php:1208
-msgid "Duplicate meal selected. Please choose a different meal."
-msgstr "已選擇重複的餐點。請選擇其他餐點。"
-
-#: template/catering-booking-popup.php:866
-msgid "Meal History"
-msgstr "餐點歷史記錄"
-
-#: template/catering-booking-popup.php:1764
-msgid "Meal Choice History"
-msgstr "餐點選擇歷史記錄"
-
-#: template/catering-booking-popup.php:1789
-msgid "No history found or error loading data."
-msgstr "未找到歷史記錄或加載數據時出錯。"
-
-#: template/catering-booking-popup.php:1792
-msgid "Error loading meal history."
-msgstr "加載餐點歷史記錄時出錯。"
-
-#: template/catering-booking-popup.php:1798
-msgid "No meal choice history found for this date."
-msgstr "此日期未找到餐點選擇歷史記錄。"
-
-#: template/catering-booking-popup.php:1833
-msgid "Changed by"
-msgstr "更改者"
-
-#: template/catering-booking-popup.php:1835
-msgid "Reason"
-msgstr "原因"
-
-#: template/catering-booking-popup.php:1841
-msgid "Previous Choice"
-msgstr "之前的選擇"
-
-#: template/catering-booking-popup.php:1848
-msgid "New Choice"
-msgstr "新選擇"
-
-#: template/catering-booking-popup.php:1863
-msgid "Initial Choice"
-msgstr "初始選擇"
-
-#: template/catering-booking-popup.php:1865
-msgid "Updated Choice"
-msgstr "已更新選擇"
-
-#: template/catering-booking-popup.php:1867
-msgid "Deleted Choice"
-msgstr "已刪除選擇"
-
-#: template/catering-booking-popup.php:1869
-msgid "Other Action"
-msgstr "其他操作"
-
-#: template/catering-booking-popup.php:1875
-msgid "No data"
-msgstr "無數據"
-
-#: include/email.php:15
-msgid "Your order has been completed. Thank you for choosing our catering service! We hope you enjoy your meals."
-msgstr "您的訂單已完成。感謝您選擇我們的餐飲服務！希望您享受美味的餐點。"
-
-#: include/email.php:16
-msgid "You may also contact us for any comment about our services."
-msgstr "您也可以聯繫我們，對我們的服務提出任何意見。"
-
-#: include/email.php:25
-#: include/email.php:36
-msgid "Thank you for choosing Ms. Lo Soup! We have received you order and confirmed your payment."
-msgstr "感謝您選擇盧太太湯水！我們已收到您的訂單並確認付款。"
-
-#: include/email.php:26
-msgid "You can now book you meal via following button, or on catering booking tab on my account page."
-msgstr "您現在可以通過以下按鈕預訂餐點，或在我的帳戶頁面的餐飲預訂標籤中進行預訂。"
-
-#: include/email.php:28
-msgid "Book Meal"
-msgstr "預訂餐點"
-
-#: include/email.php:29
-#: include/email.php:37
-#: include/email.php:47
-#: include/email.php:62
-#: include/email.php:69
-msgid "If you have any questions or special requests, please don't hesitate to contact us."
-msgstr "如果您有任何問題或特殊要求，請隨時聯繫我們。"
-
-#: include/email.php:20
-#: include/email.php:33
-#: include/email.php:41
-#: include/email.php:51
-#: include/email.php:61
-msgid "Your order details are shown below for your reference:"
-msgstr "您的訂單詳情如下供參考："
-
-#: include/email.php:46
-msgid "Thank you for choosing Ms. Lo Soup! We have received your order and now waiting for payment to be settled. Please be awared that you order will be on-hold until we confirm payment has been received."
-msgstr "感謝您選擇盧太太湯水！我們已收到您的訂單，現在等待付款確認。請注意，您的訂單將保持暫停狀態，直到我們確認收到付款。"
-
-#: include/email.php:55
-msgid "Your order has been refunded. If you have any questions or concerns, please contact us."
-msgstr "您的訂單已退款。如果您有任何問題或疑慮，請聯繫我們。"
-
-#: include/email.php:68
-msgid "A note has been added to your order, the details are in the following:"
-msgstr "您的訂單已添加備註，詳情如下："
-
-#: include/email.php:94
-msgid "Someone requested that the password be reset for the following account:"
-msgstr "有人要求重設以下帳戶的密碼："
-
-#: include/email.php:95
-msgid "Username: {customer_username}"
-msgstr "用戶名：{customer_username}"
-
-#: include/email.php:96
-msgid "If you did not request a password reset, please ignore this email."
-msgstr "如果您沒有要求重設密碼，請忽略此電子郵件。"
-
-#: include/email.php:97
-msgid "To reset your password, visit the following address:"
-msgstr "要重設您的密碼，請訪問以下地址："
-
-#: include/email.php:101
-msgid "Thank you for joining Ms. Lo Soup!"
-msgstr "感謝您加入盧太太湯水！"
-
-#: template/rewards.php:4
-#: include/my-account.php:226
-msgid "My Rewards"
-msgstr "我的獎勵"
-
-#: template/rewards.php:11
-msgid "Your current points balance:"
-msgstr "您目前的積分餘額："
-
-#: template/rewards.php:13
-msgid "Here is you history and usage of your rewards points."
-msgstr "以下是您的消費回贈積分歷史記錄和使用情況。"
-
-#: include/email.php:120
-msgid "Ms. Lo soup Points Summary"
-msgstr "盧太太湯水 消費回贈"
-
-#: include/email.php:121
-msgid "Here is your current Ms. Lo soup points balance:"
-msgstr "以下是您目前的盧太太湯水積分餘額："
-
-#: include/email.php:122
-msgid "You current points is equal to value: "
-msgstr "您目前的積分等值於："
-
-#: include/email.php:123
-msgid "You can use your points to redeem rewards or discounts on future orders."
-msgstr "您可以使用積分兌換獎勵或於未來訂單中享有折扣。"
-
-#: include/email.php:124
-msgid "You can view your points balance and usage history in your account."
-msgstr "您可以在帳戶中查看積分餘額和使用記錄。"
-
-#: include/email.php:124
-msgid "Point History"
-msgstr "積分記錄"
-
-#: include/ajax.php:59
-#: include/ajax.php:100
-msgid "No meals or terms selected."
-msgstr "未選擇餐食或條款。"
-
-#: include/ajax.php:62
-#: include/ajax.php:103
-#: include/ajax.php:130
-msgid "Invalid termType"
-msgstr "無效的條款類型"
-
-#: include/ajax.php:161
-msgid "No iCal file uploaded or upload error."
-msgstr "未上傳iCal文件或上傳錯誤。"
-
-#: include/ajax.php:165
-msgid "Uploaded file not found on server."
-msgstr "在服務器上找不到上傳的文件。"
-
-#: include/ajax.php:173
-msgid "No valid events found in iCal file."
-msgstr "在iCal文件中找不到有效事件。"
-
-#: include/ajax.php:244
-msgid "Invalid year/month"
-msgstr "無效的年/月"
-
-#: include/ajax.php:284
-msgid "No changes_json provided"
-msgstr "未提供changes_json"
-
-#: include/ajax.php:292
-msgid "Invalid JSON for changes"
-msgstr "變更的JSON無效"
-
-#: include/ajax.php:347
-msgid "No events array provided"
-msgstr "未提供事件數組"
-
-#: include/ajax.php:430
-msgid "DB error or invalid term_id"
-msgstr "數據庫錯誤或無效的term_id"
-
-#: include/ajax.php:446
-msgid "Invalid data"
-msgstr "無效數據"
-
-#: include/ajax.php:517
-msgid "Invalid meals data"
-msgstr "無效的餐食數據"
-
-#: include/ajax.php:912
-msgid "Your selected date does not meet the minimum advance order requirement."
-msgstr "您選擇的日期不滿足最少提前訂購要求。"
-
-#: include/ajax.php:924
-msgid "Your plan has expired on this day"
-msgstr "您的方案在此日期已過期"
-
-#: include/ajax.php:1127
-msgid "Invalid booking ID."
-msgstr "無效的預訂ID。"
-
-#: include/ajax.php:1134
-msgid "Booking does not belong to current user."
-msgstr "預訂不屬於當前用戶。"
-
-#: include/class-booking.php:128
-msgid "Your selected date is later than your due date; meals not suitable."
-msgstr "您選擇的日期晚於您的預產期；餐點不適合。"
-
-#: include/class-booking.php:131
-msgid "Your selected date is before your due date; meals not suitable."
-msgstr "您選擇的日期早於您的預產期；餐點不適合。"
-
-#: include/class-booking.php:237
-msgid "Failed to delete booking"
-msgstr "刪除預訂失敗"
-
-#: include/class-booking.php:249
-msgid "Failed to delete meal choices"
-msgstr "刪除餐食選擇失敗"
-
-#: include/ajax.php:2133
-msgid "Invalid order item IDs"
-msgstr "無效的訂單項目ID"
-
-#: include/ajax.php:2136
-msgid "WooCommerce function missing"
-msgstr "缺少WooCommerce功能"
-
-#: include/order-function.php:429
-msgid "Are you sure you want to delete this delivery date?"
-msgstr "您確定要刪除此配送日期嗎？"
-
-#: include/order-function.php:515
-msgid "Are you sure you want to delete this tracking number?"
-msgstr "您確定要刪除此追蹤號碼嗎？"
-
-#: include/order-function.php:621
-msgid "Are you sure you want to delete this CS note?"
-msgstr "您確定要刪除此客服備註嗎？"
-
-#: template/catering-booking-popup.php:454
-msgid "Select Address 1"
-msgstr "選擇地址 1"
-
-#: template/catering-booking-popup.php:455
-msgid "Select Address 2"
-msgstr "選擇地址 2"
-
-#: template/catering-booking-popup.php:1372
-msgid "Loading..."
-msgstr "載入中..."
-
-#: template/catering-booking-popup.php:1393
-msgid "Address 1 loaded successfully!"
-msgstr "地址 1 載入成功！"
-
-#: template/catering-booking-popup.php:1395
-msgid "Address 2 loaded successfully!"
-msgstr "地址 2 載入成功！"
-
-#: template/catering-booking-popup.php:1400
-msgid "No saved Address 1 found. Please enter your address manually."
-msgstr "找不到已儲存的地址 1。請手動輸入您的地址。"
-
-#: template/catering-booking-popup.php:1402
-msgid "No saved Address 2 found. Please enter your address manually."
-msgstr "找不到已儲存的地址 2。請手動輸入您的地址。"
-
-#: template/catering-booking-popup.php:1409
-msgid "Failed to load address. Please try again."
-msgstr "載入地址失敗。請重試。"
-
-#: include/ajax.php:2523
-msgid "User not logged in"
-msgstr "用戶未登入"
-
-#: include/ajax.php:2529
-msgid "Invalid address type"
-msgstr "無效的地址類型"
-
-#: include/ajax.php:2555
-msgid "No saved address found"
-msgstr "找不到已儲存的地址"
-
-#: include/order-function.php:XXX
-msgid "Update Due Date"
-msgstr "更新預產期"
-
-#: include/order-function.php:XXX
-msgid "Due Date:"
-msgstr "預產期:"
-
-#: include/order-function.php:XXX
-msgid "Due date updated"
-msgstr "預產期已更新"
-
-#: include/order-function.php:XXX
-msgid "Are you sure you want to delete this due date?"
-msgstr "您確定要刪除此預產期嗎？"
-
-#: include/order-function.php:XXX
-msgid "Due date deleted"
-msgstr "預產期已刪除"
-
-#: include/ajax.php:XXX
-msgid "Failed to delete due date"
-msgstr "刪除預產期失敗"
