@@ -2323,7 +2323,7 @@ function catering_ajax_get_daily_delivery_items(){
                 if($order){
                     $order_status = $order->get_status();
                     // Only process items from orders with 'processing' or 'completed' status
-                    if(!in_array($order_status, ['processing', 'completed'])){
+                    if(!in_array($order_status, ['processing', 'completed','partially-paid'])){
                         continue; // Skip this item
                     }
                 } else {

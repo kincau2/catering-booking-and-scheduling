@@ -71,7 +71,7 @@ if ($booking_ids) {
 
         echo '<td>' . esc_html( $display_expiry_date ) . '</td>';
         echo '<td><button'
-             .' class="catering-pick-meal-btn"'
+             .' class="catering-pick-meal-btn '.$disabled.' "'
              . $disabled
              .' data-booking-id="'.esc_attr($booking->id).'"'
              .' data-product-id="'.esc_attr($product_id).'"'

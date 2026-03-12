@@ -7,9 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_shortcode('debug','display_debug_message');
 
 function display_debug_message(){
-
+    $order = wc_get_order(6133);
+    $order_status = $order->get_status();
     echo "<pre>";
-    echo print_r(get_transient('debug').'2',1);
+    echo print_r(get_transient('debug').$order_status,1);
     echo "</pre>";
 
 }

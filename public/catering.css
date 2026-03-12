@@ -1445,6 +1445,11 @@ span.item-count {
     border-radius: unset;
 }
 
+.my-account-catering-booking button.catering-pick-meal-btn.disabled {
+    background: #9e9e9e;
+    cursor: not-allowed;
+}
+
 .woocommerce-MyAccount-content a{
     color:#D89F74
 }
