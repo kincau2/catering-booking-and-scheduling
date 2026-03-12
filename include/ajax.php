@@ -1319,8 +1319,21 @@ function catering_ajax_save_user_choice(){
     $preference = isset($_POST['preference']) && is_array($_POST['preference'])
                   ? $_POST['preference'] : [];
     
-    if(!$booking_id || !$user_id || !$date || empty($choice) || empty($address) ){
-        wp_send_json_error(__('Missing or invalid parameters.', 'catering-booking-and-scheduling'));
+    // Validate required parameters
+    if(!$booking_id){
+        wp_send_json_error(__('Booking information is missing. Please try again.', 'catering-booking-and-scheduling'));
+    }
+    if(!$user_id){
+        wp_send_json_error(__('User information is missing. Please try again.', 'catering-booking-and-scheduling'));
+    }
+    if(!$date){
+        wp_send_json_error(__('Please select a delivery date.', 'catering-booking-and-scheduling'));
+    }
+    if(empty($choice)){
+        wp_send_json_error(__('Please select your meal choices.', 'catering-booking-and-scheduling'));
+    }
+    if(empty($address)){
+        wp_send_json_error(__('Please provide a delivery address.', 'catering-booking-and-scheduling'));
     }
 
     // --- address validation ---

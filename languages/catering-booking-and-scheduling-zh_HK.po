@@ -87,6 +87,26 @@ msgstr "健康狀態更新成功。"
 msgid "Please delete unsuitable meal(s). Please contact CS Team if some of the meal(s) are not able to delete."
 msgstr "請刪除不適合的餐點。如果某些餐點無法刪除，請聯繫客服團隊。"
 
+#: include/ajax.php:1316
+msgid "Booking information is missing. Please try again."
+msgstr "缺少預訂資訊，請重試。"
+
+#: include/ajax.php:1319
+msgid "User information is missing. Please try again."
+msgstr "缺少用戶資訊，請重試。"
+
+#: include/ajax.php:1322
+msgid "Please select a delivery date."
+msgstr "請選擇送貨日期。"
+
+#: include/ajax.php:1325
+msgid "Please select your meal choices."
+msgstr "缺少餐點選項，請選擇您的餐點。"
+
+#: include/ajax.php:1328
+msgid "Please provide a delivery address."
+msgstr "請提供送貨地址。"
+
 #: include/class-booking.php:52
 msgid "Invalid parameter name"
 msgstr "無效的參數名稱"
