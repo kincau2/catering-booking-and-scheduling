@@ -244,8 +244,6 @@ jQuery(function($){
                 }
             } else if(!disabled && scheduledDates.indexOf(dateStr)!==-1 && window.remainingDays > 0){
                     html += '<button class="catering-add-meal" data-holiday="'+is_holiday+'" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
-            } else if(!disabled){
-                    html += '<button class="catering-add-meal" data-holiday="'+is_holiday+'" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
             }
             
             // Add meal history button for all days (only show if user can manage catering)
