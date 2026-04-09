@@ -143,7 +143,7 @@ jQuery(function($){
             var is_holiday = 0;
             var diff     = Math.floor((day - today0)/(1000*60*60*24));
             var disabled = ( diff <= minDayBefore )? true : false; // disable past minDayBefore     
-
+            var isAdmin = false;
             if( expiryDate && dateStr > expiryDate ){
                 disabled = true; // disable past expiry date
             }
@@ -154,6 +154,7 @@ jQuery(function($){
             <?php else: ?>
                 // Admin can always edit
                 disabled = false;
+                isAdmin = true;
             <?php endif; ?>
             
             var html = '<div class="popup-week-days">';
@@ -244,9 +245,9 @@ jQuery(function($){
                 }
             } else if(!disabled && scheduledDates.indexOf(dateStr)!==-1 && window.remainingDays > 0){
                     html += '<button class="catering-add-meal" data-holiday="'+is_holiday+'" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
+            } else if(isAdmin){
+                    html += '<button class="catering-add-meal" data-holiday="'+is_holiday+'" data-date="'+dateStr+'"><?php _e("Make meal booking","catering-booking-and-scheduling") ?></button>';
             }
-            
-            // Add meal history button for all days (only show if user can manage catering)
             <?php if(current_user_can('manage_catering')): ?>
             html += '<button type="button" class="meal-history-btn" data-date="'+dateStr+'"><?php _e("Meal History","catering-booking-and-scheduling") ?></button>';
             <?php endif; ?>
@@ -271,10 +272,12 @@ jQuery(function($){
         currentBookingId = $btn.data('booking-id');
         expiryDate = $btn.data('expiry-date') || '';
         productTitle = $btn.data('product-title') || '';
+        productTitle = productTitle.replace("<span>", "");
+        productTitle = productTitle.replace("</span>", "")
         daysLeft = $btn.data('days-left') || 0;
         startDate = getMonday(new Date());
-        $('.catering-product-title').text($btn.data('product-title'));
-        $('.catering-days-remaining').text($btn.data('days-left'));
+        $('.catering-product-title').text(productTitle);
+        $('.catering-days-remaining').text(daysLeft);
         // Validate booking first
         validateBooking(currentBookingId, function(resp){
             if(resp.success){
