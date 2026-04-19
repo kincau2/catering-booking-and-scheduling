@@ -8,7 +8,7 @@ function catering_validate_phone_with_country($phone, $country_code) {
     switch ($country_code) {
         case '+852': // Hong Kong
             // Hong Kong mobile: 4/5/6/9 followed by 7 digits
-            return preg_match('/^[4569]\d{7}$/', $phone);
+            return preg_match('/^[456789]\d{7}$/', $phone);
             
         case '+853': // Macau
             // Macau mobile: 6 followed by 7 digits
@@ -54,7 +54,7 @@ function catering_get_phone_error_message($country_code, $field_type = '') {
     
     switch ($country_code) {
         case '+852':
-            return sprintf(__('%sphone: Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9)', 'catering-booking-and-scheduling'), $prefix);
+            return sprintf(__('%sphone: Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, 7, 8 or 9)', 'catering-booking-and-scheduling'), $prefix);
         case '+853':
             return sprintf(__('%sphone: Please enter a valid Macau mobile number (8 digits starting with 6)', 'catering-booking-and-scheduling'), $prefix);
         case '+86':
