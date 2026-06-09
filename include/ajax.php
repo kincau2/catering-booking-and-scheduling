@@ -1495,55 +1495,41 @@ function catering_ajax_save_user_choice(){
         $type_value = 'prenatal';
     }
 
-    // Save/update meal choice with type column
-    if($existing){
-        $update_data   = [
-            'choice'     => $serialized_choice,
-            'address'    => $serialized_address,
-            'preference' => $serialized_preference  // add preference
-        ];
-        $update_format = ['%s','%s','%s'];
-        if( !empty($booking->type) ){
-            $update_data['type'] = $type_value;
-            $update_format[] = '%s';
-        }
-        // NEW: add lock column if current user can manage options
-        if(current_user_can('manage_catering')){
-            $update_data['locked'] = 'true';
-            $update_format[] = '%s';
-        }
-        $res = $wpdb->update(
-            $table_choice,
-            $update_data,
-            ['booking_id'=>$booking_id, 'user_id'=>$user_id, 'date'=>$date],
-            $update_format,
-            ['%d','%d','%s','%s']
-        );
-    } else {
-        $insert_data   = [
-            'booking_id' => $booking_id,
-            'user_id'    => $user_id,
-            'date'       => $date,
-            'choice'     => $serialized_choice,
-            'address'    => $serialized_address,
-            'preference' => $serialized_preference   // add preference
-        ];
-        $insert_format = ['%d','%d','%s','%s','%s','%s'];
-        if( !empty($booking->type) ){
-            $insert_data['type'] = $type_value;
-            $insert_format[] = '%s';
-        }
-        // NEW: add lock column if current user can manage options
-        if(current_user_can('manage_catering')){
-            $insert_data['locked'] = 'true';
-            $insert_format[] = '%s';
-        }
-        $res = $wpdb->insert(
-            $table_choice,
-            $insert_data,
-            $insert_format
-        );
+    // Atomic upsert — prevents duplicate rows if concurrent requests race past the $existing check above.
+    // The UNIQUE KEY on (booking_id, user_id, date) ensures at most one row per day.
+    $upsert_cols    = ['booking_id', 'user_id', 'date', 'choice', 'address', 'preference'];
+    $upsert_vals    = [$booking_id, $user_id, $date, $serialized_choice, $serialized_address, $serialized_preference];
+    $upsert_formats = ['%d', '%d', '%s', '%s', '%s', '%s'];
+
+    if (!empty($booking->type)) {
+        $upsert_cols[]    = 'type';
+        $upsert_vals[]    = $type_value;
+        $upsert_formats[] = '%s';
     }
+    if (current_user_can('manage_catering')) {
+        $upsert_cols[]    = 'locked';
+        $upsert_vals[]    = 'true';
+        $upsert_formats[] = '%s';
+    }
+
+    $col_list         = implode(', ', $upsert_cols);
+    $val_placeholders = implode(', ', $upsert_formats);
+
+    $on_dup = 'choice = VALUES(choice), address = VALUES(address), preference = VALUES(preference)';
+    if (!empty($booking->type)) {
+        $on_dup .= ', type = VALUES(type)';
+    }
+    if (current_user_can('manage_catering')) {
+        $on_dup .= ', locked = VALUES(locked)';
+    }
+
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    $res = $wpdb->query(
+        $wpdb->prepare(
+            "INSERT INTO {$table_choice} ({$col_list}) VALUES ({$val_placeholders}) ON DUPLICATE KEY UPDATE {$on_dup}",
+            ...$upsert_vals
+        )
+    );
 
     if(false === $res){
          wp_send_json_error(__('DB insert/update failed.', 'catering-booking-and-scheduling'));

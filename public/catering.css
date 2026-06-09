@@ -1,3 +1,16 @@
+/* Login form */
+
+@media (max-width: 768px) {
+    div#customer_login form {
+        height: auto !important;
+    }
+}
+@media (min-width: 769px) {
+    div#customer_login form {
+        height: 480px !important;
+    }
+}
+
 /* Delivery Status Labels */
 .delivery-status-label {
     padding: 0 10px;

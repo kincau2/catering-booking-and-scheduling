@@ -841,9 +841,13 @@ jQuery(function($){
     if ( ! confirm(confirmMsg) ) {
         return;
     }
-        
+
+        // Disable button to prevent double-submit while AJAX is in flight
+        var $submitBtn = $('#step-submit').prop('disabled', true);
+
         // Pass preference into the AJAX call
         saveUserChoice(currentBookingId, selectedDate, choiceData, delivery, preference, function(resp){
+              $submitBtn.prop('disabled', false);
               if(resp.success){
                   alert("<?php _e('Your meal selection has been saved.',"catering-booking-and-scheduling");?>");
                   // Clear selections and reset calendar header

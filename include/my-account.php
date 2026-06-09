@@ -409,3 +409,58 @@ add_action('woocommerce_account_point-history_endpoint', 'point_history_content'
 function point_history_content() {
     include CATERING_PLUGIN_DIR . '/template/rewards.php';
 }
+
+// Registration form: add mobile country code and phone number fields
+add_action('woocommerce_register_form', 'catering_registration_phone_fields');
+function catering_registration_phone_fields() {
+    $country_options = array(
+        '+852' => '+852 (Hong Kong)',
+        '+853' => '+853 (Macau)',
+        '+86'  => '+86 (China)',
+    );
+    $selected_country = isset($_POST['register_phone_country']) ? sanitize_text_field($_POST['register_phone_country']) : '+852';
+    $phone_value      = isset($_POST['register_phone']) ? sanitize_text_field($_POST['register_phone']) : '';
+    ?>
+    <p class="woocommerce-form-row woocommerce-form-row--first form-row form-row-first">
+        <label for="register_phone_country"><?php esc_html_e('Phone Country/Region Code', 'catering-booking-and-scheduling'); ?> <span class="required">*</span></label>
+        <select name="register_phone_country" id="register_phone_country" class="woocommerce-Input woocommerce-Input--select input-select">
+            <?php foreach ($country_options as $code => $label) : ?>
+                <option value="<?php echo esc_attr($code); ?>"<?php selected($selected_country, $code); ?>><?php echo esc_html($label); ?></option>
+            <?php endforeach; ?>
+        </select>
+    </p>
+    <p class="woocommerce-form-row woocommerce-form-row--last form-row form-row-last">
+        <label for="register_phone"><?php esc_html_e('Phone Number', 'catering-booking-and-scheduling'); ?> <span class="required">*</span></label>
+        <input type="text" class="woocommerce-Input woocommerce-Input--text input-text catering-phone-input" name="register_phone" id="register_phone" value="<?php echo esc_attr($phone_value); ?>" placeholder="<?php esc_attr_e('Enter phone number', 'catering-booking-and-scheduling'); ?>" />
+    </p>
+    <div class="clear"></div>
+    <?php
+}
+
+// Registration form: validate mobile fields
+add_filter('woocommerce_registration_errors', 'catering_validate_registration_phone', 10, 3);
+function catering_validate_registration_phone($errors, $username, $email) {
+    $country_code = isset($_POST['register_phone_country']) ? sanitize_text_field($_POST['register_phone_country']) : '';
+    $phone        = isset($_POST['register_phone']) ? sanitize_text_field($_POST['register_phone']) : '';
+
+    if (empty($phone)) {
+        $errors->add('register_phone_required', __('Phone number is required.', 'catering-booking-and-scheduling'));
+    } elseif (empty($country_code)) {
+        $errors->add('register_phone_country_required', __('Phone country/region code is required.', 'catering-booking-and-scheduling'));
+    } elseif (!catering_validate_phone_with_country($phone, $country_code)) {
+        $errors->add('register_phone_invalid', catering_get_phone_error_message($country_code));
+    }
+
+    return $errors;
+}
+
+// Registration form: save mobile fields to user meta
+add_action('woocommerce_created_customer', 'catering_save_registration_phone');
+function catering_save_registration_phone($customer_id) {
+    if (isset($_POST['register_phone_country'])) {
+        update_user_meta($customer_id, 'shipping_phone_country', sanitize_text_field($_POST['register_phone_country']));
+    }
+    if (isset($_POST['register_phone'])) {
+        update_user_meta($customer_id, 'shipping_phone', sanitize_text_field($_POST['register_phone']));
+    }
+}
