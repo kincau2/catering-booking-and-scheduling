@@ -918,9 +918,11 @@ function export_catering_schedule(){
     }
 
     // output CSV
-    header('Content-Type: text/csv');
+    header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="schedule-'.$start.'-'.$end.'.csv"');
     $out = fopen('php://output','w');
+    // BOM so Excel detects UTF-8 instead of misreading CJK/foreign text
+    fputs($out, "\xEF\xBB\xBF");
     fputcsv($out, ['ID','SKU','Meal_title','Category','Type','Date','Tag']);
     foreach($rows as $r){
         $cats   = (array) maybe_unserialize($r['cat_id']);

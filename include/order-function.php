@@ -1159,4 +1159,52 @@ function get_user_rewards_points($user_id) {
     return $current_points !== null ? intval($current_points) : 0;
 }
 
+// Statuses where the order is still a draft and the linked customer may be changed freely
+function catering_email_editable_order_statuses() {
+    return ['auto-draft', 'draft', 'checkout-draft'];
+}
+
+// Prevent the linked customer account from being changed once the order is no longer a draft
+// (the "顧客" select2 field determines the order's email since billing fields are hidden at checkout)
+// Guest orders (no customer assigned yet) remain editable so they can be assigned to a user after publishing
+add_action('woocommerce_process_shop_order_meta', 'catering_lock_customer_user_on_save', 5, 2);
+function catering_lock_customer_user_on_save($order_id, $post) {
+    $order = wc_get_order($order_id);
+    if (!$order) {
+        return;
+    }
+    if (in_array($order->get_status(), catering_email_editable_order_statuses(), true)) {
+        return;
+    }
+    if (!$order->get_customer_id()) {
+        return; // guest order, allow assigning a customer
+    }
+    if (isset($_POST['customer_user'])) {
+        $_POST['customer_user'] = $order->get_customer_id();
+    }
+}
+
+// Disable the customer_user select2 field in admin once the order is no longer a draft
+// (skipped for guest orders so they can still be assigned to a user after publishing)
+add_action('woocommerce_admin_order_data_after_order_details', 'catering_disable_customer_user_field_ui', 20);
+function catering_disable_customer_user_field_ui($order) {
+    if (in_array($order->get_status(), catering_email_editable_order_statuses(), true)) {
+        return;
+    }
+    if (!$order->get_customer_id()) {
+        return; // guest order, allow assigning a customer
+    }
+    ?>
+    <script type="text/javascript">
+    jQuery(function($){
+        var $customer = $('#customer_user');
+        $customer.prop('disabled', true).attr('title', '<?php echo esc_js(__('Customer cannot be changed once the order is published.', 'catering-booking-and-scheduling')); ?>');
+        // select2 doesn't always re-render on .prop('disabled') alone, so also grey out its rendered widget
+        $customer.next('.select2').css({ opacity: 0.6, pointerEvents: 'none' });
+    });
+    </script>
+    <?php
+}
+
+
 

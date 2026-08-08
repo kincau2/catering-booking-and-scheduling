@@ -842,9 +842,7 @@ if ( empty( $is_set_menu ) ) {
                     cids.forEach(function(cid){
                         var cat = terms[cid];
                         cell.append('<div class="date-label" style="font-weight:bold;">'+cat.title+'</div>');
-                        // sort meals by ID ascending
-                        var mealsSorted = sched[d][cid].slice().sort(function(a,b){ return a.id - b.id; });
-                        mealsSorted.forEach(function(m){
+                        sched[d][cid].forEach(function(m){
                             var bg = cat.color || '#FFF';
                             cell.append(
                               '<span class="meal-badge" style="background:'+bg+'; margin:2px;">'+
