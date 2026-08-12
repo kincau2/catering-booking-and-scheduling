@@ -1179,9 +1179,8 @@ function catering_lock_customer_user_on_save($order_id, $post) {
     if (!$order->get_customer_id()) {
         return; // guest order, allow assigning a customer
     }
-    if (isset($_POST['customer_user'])) {
-        $_POST['customer_user'] = $order->get_customer_id();
-    }
+    // Force it back even when absent from $_POST, since a disabled select isn't submitted at all
+    $_POST['customer_user'] = $order->get_customer_id();
 }
 
 // Disable the customer_user select2 field in admin once the order is no longer a draft
@@ -1198,8 +1197,10 @@ function catering_disable_customer_user_field_ui($order) {
     <script type="text/javascript">
     jQuery(function($){
         var $customer = $('#customer_user');
-        $customer.prop('disabled', true).attr('title', '<?php echo esc_js(__('Customer cannot be changed once the order is published.', 'catering-booking-and-scheduling')); ?>');
-        // select2 doesn't always re-render on .prop('disabled') alone, so also grey out its rendered widget
+        // Don't use .prop('disabled', true) - disabled selects are excluded from form submission,
+        // which cleared customer_user on save. Block interaction instead, keep the field submittable.
+        $customer.attr('title', '<?php echo esc_js(__('Customer cannot be changed once the order is published.', 'catering-booking-and-scheduling')); ?>');
+        $customer.on('select2:opening', function(e){ e.preventDefault(); });
         $customer.next('.select2').css({ opacity: 0.6, pointerEvents: 'none' });
     });
     </script>
