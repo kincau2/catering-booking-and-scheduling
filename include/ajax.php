@@ -1359,7 +1359,7 @@ function catering_ajax_save_user_choice(){
         
         switch ($country_code) {
             case '+852': // Hong Kong
-                return preg_match('/^[4569]\d{7}$/', $phone);
+                return preg_match('/^[45679]\d{7}$/', $phone);
             case '+853': // Macau
                 return preg_match('/^6\d{7}$/', $phone);
             case '+86': // China

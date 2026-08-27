@@ -5,7 +5,7 @@ function validatePhoneWithCountry(phone, countryCode) {
     
     switch (countryCode) {
         case '+852': // Hong Kong
-            return /^[4569]\d{7}$/.test(phone);
+            return /^[45679]\d{7}$/.test(phone);
         case '+853': // Macau
             return /^6\d{7}$/.test(phone);
         case '+86': // China
