@@ -217,7 +217,7 @@ msgid "Enter phone number"
 msgstr "輸入電話號碼"
 
 #: include/my-account.php:57
-msgid "%sphone: Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9)"
+msgid "%sphone: Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, 7, 8 or 9)"
 msgstr "%s電話：請輸入有效的香港手機號碼（8位數字，以4、5、6或9開頭）"
 
 #: include/my-account.php:59
@@ -234,8 +234,8 @@ msgstr "%s電話：請輸入有效的電話號碼"
 
 #: include/ajax.php:1224
 #: template/catering-booking-popup.php:711
-msgid "Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9)."
-msgstr "請輸入有效的香港手機號碼（8位數字，以4、5、6或9開頭）。"
+msgid "Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, 7, 8 or 9)."
+msgstr "請輸入有效的香港手機號碼（8位數字，以4、5、6、7、8或9開頭）。"
 
 #: include/ajax.php:1227
 #: template/catering-booking-popup.php:713

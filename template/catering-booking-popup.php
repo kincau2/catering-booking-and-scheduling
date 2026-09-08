@@ -740,7 +740,7 @@ jQuery(function($){
         function getPhoneErrorMessage(countryCode) {
             switch (countryCode) {
                 case '+852':
-                    return '<?php _e("Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9).","catering-booking-and-scheduling");?>';
+                    return '<?php _e("Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, 7, 8 or 9).","catering-booking-and-scheduling");?>';
                 case '+853':
                     return '<?php _e("Please enter a valid Macau mobile number (8 digits starting with 6).","catering-booking-and-scheduling");?>';
                 case '+86':

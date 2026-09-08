@@ -18,7 +18,7 @@ function validatePhoneWithCountry(phone, countryCode) {
 function getPhoneErrorMessage(countryCode) {
     switch (countryCode) {
         case '+852':
-            return cateringi18n('Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9)');
+            return cateringi18n('Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, 7, 8 or 9)');
         case '+853':
             return cateringi18n('Please enter a valid Macau mobile number (8 digits starting with 6)');
         case '+86':

@@ -1398,7 +1398,7 @@ function catering_ajax_save_user_choice(){
     if (!validate_phone_with_country($phone, $phone_country)) {
         switch ($phone_country) {
             case '+852':
-                wp_send_json_error(__('Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, or 9).', 'catering-booking-and-scheduling'));
+                wp_send_json_error(__('Please enter a valid Hong Kong mobile number (8 digits starting with 4, 5, 6, 7, 8 or 9).', 'catering-booking-and-scheduling'));
                 break;
             case '+853':
                 wp_send_json_error(__('Please enter a valid Macau mobile number (8 digits starting with 6).', 'catering-booking-and-scheduling'));
