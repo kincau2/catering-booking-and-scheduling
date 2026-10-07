@@ -913,9 +913,7 @@ jQuery(function($){
             window.getHealthStatus(currentBookingId, function(resp){
                 if(resp.success){
                     var hs = resp.data;
-                    if(hs && hs.due_date){
-                        dueDate = hs.due_date; // assign global dueDate
-                    }
+                    dueDate = (hs && hs.due_date) || '';
                     var display = '';
                     if(hs && typeof hs === 'object'){
                         for(var key in hs){
@@ -981,12 +979,19 @@ jQuery(function($){
                 html += '<input type="date" name="health_status[due_date]" value="'+due_date+'">';
                 html += '</div>';
                 html += '<div style="margin-top:10px;">';
+                html += '<button type="button" id="delete-booking-due-date" class="cb-btn cb-btn--secondary"><?php esc_html_e('Delete Due Date','catering-booking-and-scheduling'); ?></button>';
+                html += '</div>';
+                html += '<div style="margin-top:10px;">';
                 html += '<button type="button" id="save-health-status" class="cb-btn cb-btn--primary"><?php _e('Save','catering-booking-and-scheduling') ;?></button>';
                 html += '<button type="button" id="cancel-health-status" class="cb-btn cb-btn--secondary" style="margin-left:10px;"><?php _e('Cancel','catering-booking-and-scheduling') ;?></button>';
                 html += '</div>';
                 html += '</div>';
             $('#health-status-display').html(html);
         });
+    });
+
+    $(document).on('click', '#delete-booking-due-date', function(){
+        $('#health-status-form input[name="health_status[due_date]"]').val('');
     });
 
     // Changed event binding from form submission to button click for saving health status

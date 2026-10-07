@@ -1929,6 +1929,11 @@ function catering_ajax_update_health_status(){
     }
     
     // If we reach here, either no unsuitable meals found or user confirmed deletion
+    // An empty due date removes it from the booking; order-item metadata is retained.
+    if (isset($health_status['due_date']) && $health_status['due_date'] === '') {
+        unset($health_status['due_date']);
+    }
+
     // Proceed with health status update
     $serialized = maybe_serialize($health_status);
     $res = $booking->set('health_status', $serialized);

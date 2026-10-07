@@ -691,3 +691,7 @@ msgstr ""
 #: include/js/frontend-ajax.js:xxxx
 msgid "Update cancelled by user."
 msgstr ""
+
+#: template/catering-booking-popup.php
+msgid "Delete Due Date"
+msgstr ""

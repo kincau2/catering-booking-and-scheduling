@@ -1876,3 +1876,7 @@ msgstr "預產期已刪除"
 #: include/ajax.php:XXX
 msgid "Failed to delete due date"
 msgstr "刪除預產期失敗"
+
+#: template/catering-booking-popup.php
+msgid "Delete Due Date"
+msgstr "刪除預產期"
